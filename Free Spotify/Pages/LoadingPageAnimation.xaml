@@ -8,6 +8,5 @@
     mc:Ignorable="d"
     Background="Transparent">
     <Grid>
-        <TextBlock Text="Loading page..." Foreground="Gray" FontFamily="Arial" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center"/>
     </Grid>
 </Page>

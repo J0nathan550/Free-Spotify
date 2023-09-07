@@ -36,7 +36,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="100"/>
                 <RowDefinition/>
-                <RowDefinition Height="100"/>
+                <RowDefinition Height="80"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="400"/>
@@ -90,14 +90,16 @@
                             <ColumnDefinition/>
                             <ColumnDefinition Width="50"/>
                         </Grid.ColumnDefinitions>
-                        <fa:FontAwesome Icon="List" Foreground="White" FontSize="24" HorizontalAlignment="Center" />
+                        <fa:FontAwesome Margin="5,0,0,0" Icon="List" Foreground="White" FontSize="24" HorizontalAlignment="Center" />
                         <TextBlock Grid.Column="1" Text="Your Library" Foreground="White" Padding="5,15,0,0" FontFamily="Arial" FontWeight="Bold"/>
                         <fa:FontAwesome Grid.Column="2" Icon="Plus" Foreground="White" FontSize="14" HorizontalAlignment="Center" />
                     </Grid>
                     <!-- This will store all the visuals. (Playlists) -->
-                    <Grid Grid.Row="1" Name="playListCreation">
-                        <TextBlock Text="There are no saved playlists..." Foreground="Gray" FontFamily="Arial" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16"/>
-                    </Grid>
+                    <ScrollViewer Grid.Row="1">
+                        <Grid Name="playListCreation">
+                            <TextBlock Text="There are no saved playlists..." Foreground="Gray" FontFamily="Arial" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16"/>
+                        </Grid>
+                    </ScrollViewer>
                 </Grid>
             </Border>
             <!-- Main frame loader, used to load 'home' page to represent playlists, also the search page to search for the songs. -->
@@ -107,7 +109,7 @@
             <Grid Grid.Row="2" Grid.ColumnSpan="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
-                    <ColumnDefinition/>
+                    <ColumnDefinition Width="2*"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <Grid Grid.Column="1">
@@ -115,7 +117,32 @@
                         <RowDefinition/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <Slider Grid.Row="1" Style="{StaticResource SpotifySlider}" BorderThickness="1" Background="{StaticResource SliderTrackValueFillBackground}" CornerRadius="6" Value="0" FocusVisualSecondaryBrush="Transparent" FocusVisualPrimaryBrush="#00000000"/>
+                    <Grid HorizontalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" MaxWidth="100"/>
+                            <ColumnDefinition Width="*" MaxWidth="100"/>
+                            <ColumnDefinition Width="*" MaxWidth="100"/>
+                            <ColumnDefinition Width="*" MaxWidth="100"/>
+                            <ColumnDefinition Width="*" MaxWidth="100"/>
+                        </Grid.ColumnDefinitions>
+                        <fa:FontAwesome Grid.Column="0" Margin="10,0,0,0" Icon="Random" Foreground="White" FontSize="24" HorizontalAlignment="Center" />
+                        <fa:FontAwesome Grid.Column="1" Margin="10,0,0,0" Icon="ArrowLeft" Foreground="White" FontSize="24" HorizontalAlignment="Center" />
+                        <fa:FontAwesome Grid.Column="2" Margin="10,0,0,0" Icon="PauseCircle" Foreground="White" FontSize="36" HorizontalAlignment="Center" />
+                        <fa:FontAwesome Grid.Column="3" Margin="10,0,0,0" Icon="ArrowRight" Foreground="White" FontSize="24" HorizontalAlignment="Center" />
+                        <fa:FontAwesome Grid.Column="4" Margin="10,0,0,0" Icon="Repeat" Foreground="White" FontSize="24" HorizontalAlignment="Center" />
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="4*"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" TextAlignment="Right" Padding="0,8,5,0" Text="0:00" Foreground="#979DA7" FontFamily="Arial"/>
+                            <Slider Grid.Column="1" Style="{StaticResource SpotifySlider}" BorderThickness="1" Background="{StaticResource SliderTrackValueFillBackground}" CornerRadius="6" Value="0" FocusVisualSecondaryBrush="Transparent" FocusVisualPrimaryBrush="#00000000"/>
+                            <TextBlock Grid.Column="2" TextAlignment="Left" Padding="5,8,0,0" Text="0:00" Foreground="#979DA7" FontFamily="Arial"/>
+                        </Grid>
+                    </Grid>
                 </Grid>
             </Grid>
         </Grid>

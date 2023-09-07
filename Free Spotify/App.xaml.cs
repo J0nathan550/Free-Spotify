@@ -1,20 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
+using System.Diagnostics;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.ApplicationModel.Core;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 namespace Free_Spotify
@@ -22,6 +13,9 @@ namespace Free_Spotify
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
     /// </summary>
+    /// 
+
+
     sealed partial class App : Application
     {
         /// <summary>
@@ -97,6 +91,31 @@ namespace Free_Spotify
             var deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Save application state and stop any background activity
             deferral.Complete();
+        }
+
+        public readonly double minW = 800, minH = 390;
+
+        protected override void OnWindowCreated(WindowCreatedEventArgs args)
+        {
+            SetWindowMinSize(new Size(args.Window.Bounds.Width, args.Window.Bounds.Height));
+            args.Window.CoreWindow.SizeChanged += CoreWindow_SizeChanged;
+            base.OnWindowCreated(args);
+        }
+
+        private void CoreWindow_SizeChanged(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.WindowSizeChangedEventArgs args)
+        {
+            if (SetWindowMinSize(args.Size)) sender.ReleasePointerCapture();
+        }
+
+        private bool SetWindowMinSize(Size size)
+        {
+            if (size.Width < minW || size.Height < minH)
+            {
+                if (size.Width < minW) size.Width = minW;
+                if (size.Height < minH) size.Height = minH;
+                return ApplicationView.GetForCurrentView().TryResizeView(size);
+            }
+            return false;
         }
     }
 }

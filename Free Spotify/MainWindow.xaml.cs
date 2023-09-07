@@ -6,6 +6,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media.Animation;
+using Windows.UI.Shell;
 
 namespace Free_Spotify
 {
@@ -28,6 +29,9 @@ namespace Free_Spotify
             titleBar.ButtonInactiveBackgroundColor = Windows.UI.Color.FromArgb(0, 0, 0, 0);
             titleBar.ButtonInactiveForegroundColor = Windows.UI.Color.FromArgb(255, 255, 255, 255);
             this.InitializeComponent();
+            
+
+
             LoadPageAnimation();
         }
 
