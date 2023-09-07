@@ -1,0 +1,2 @@
+﻿Client ID = 9da338b6396c446c8bcbe7e052f79250
+Client Secret = 94f68987bdf14d5797ddf312d698b47b

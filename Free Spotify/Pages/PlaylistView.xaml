@@ -7,7 +7,15 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="Transparent">
-    <Grid>
-
-    </Grid>
+    <Border CornerRadius="12">
+        <Border.Background>
+            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                <GradientStop Color="#58163B"/>
+                <GradientStop Color="#121212" Offset="0.3"/>
+            </LinearGradientBrush>
+        </Border.Background>
+        <StackPanel x:Name="visuals">
+            
+        </StackPanel>
+    </Border>
 </Page>
