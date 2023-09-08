@@ -1,15 +1,14 @@
-﻿using System.IO;
-using System.Net;
+﻿using NAudio.Wave;
+using SpotifyExplode;
+using SpotifyExplode.Tracks;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using NAudio.Wave;
-using SpotifyExplode;
-using SpotifyExplode.Tracks;
 using YoutubeExplode;
-using YoutubeExplode.Videos.Streams ;
+using YoutubeExplode.Videos.Streams;
 
 namespace Spotify_Fetch
 {
@@ -17,6 +16,7 @@ namespace Spotify_Fetch
     {
         public SpotifyClient SpotifyFreeClient = new SpotifyClient();
         private YoutubeClient youtube;
+        private bool songIsRunning = false;
 
         public MainWindow()
         {
@@ -29,8 +29,8 @@ namespace Spotify_Fetch
 
         private async void LoadingTracks()
         {
-            track = await SpotifyFreeClient.Tracks.GetAsync("https://open.spotify.com/track/7rhOaEGYyPzY81e7acou1k?si=23b434cff5274100");
-            YouTubeID = await SpotifyFreeClient.Tracks.GetYoutubeIdAsync("https://open.spotify.com/track/7rhOaEGYyPzY81e7acou1k?si=23b434cff5274100");
+            track = await SpotifyFreeClient.Tracks.GetAsync("https://open.spotify.com/track/01PX1U2dua0zNgqiRlykKP?si=1770472990dd4439");
+            YouTubeID = await SpotifyFreeClient.Tracks.GetYoutubeIdAsync("https://open.spotify.com/track/01PX1U2dua0zNgqiRlykKP?si=1770472990dd4439");
 
             TextBlock title = new TextBlock();
             title.Text = track.Title;
@@ -49,14 +49,17 @@ namespace Spotify_Fetch
 
         public async void PlayMp3FromUrl(string url)
         {
+            if (songIsRunning)
+            {
+                return;
+            }
             await Task.Run(() =>
             {
                 var youtube = new YoutubeClient();
                 var video = youtube.Videos.GetAsync($"https://youtube.com/watch?v={YouTubeID}");
                 var streamManifest = youtube.Videos.Streams.GetManifestAsync($"https://youtube.com/watch?v={YouTubeID}");
                 var streamInfo = streamManifest.Result.GetAudioStreams().GetWithHighestBitrate();
-                using (WaveStream blockAlignedStream =
-                    new BlockAlignReductionStream(
+                using (WaveStream blockAlignedStream = new BlockAlignReductionStream(
                         WaveFormatConversionStream.CreatePcmStream(
                             new MediaFoundationReader(streamInfo.Url))))
                 {
@@ -65,10 +68,15 @@ namespace Spotify_Fetch
                         waveOut.Volume = 0.05f;
                         waveOut.Init(blockAlignedStream);
                         waveOut.Play();
+                        songIsRunning = true;
                         while (waveOut.PlaybackState == PlaybackState.Playing)
                         {
                             Thread.Sleep(100);
                         }
+                        songIsRunning = false;
+                        waveOut.Dispose();
+                        youtube = null;
+                        GC.Collect();
                     }
                 }
 
