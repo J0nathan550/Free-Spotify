@@ -9,6 +9,6 @@
       Title="HomeViewPage">
 
     <Grid>
-        <TextBlock Text="zxc" Foreground="White"/>
+        <TextBlock Text="There are no favorite music right now." FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Gray"/>
     </Grid>
 </Page>

@@ -13,13 +13,6 @@ namespace Free_Spotify
         public MainWindow()
         {
             InitializeComponent();
-            RemoveSplashScreen();
-        }
-
-        private async void RemoveSplashScreen()
-        {
-            await Task.Delay(1500);
-            LoadingPagesFrame.Opacity = 1.0;
         }
 
         /// <summary>

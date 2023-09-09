@@ -50,7 +50,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="DiscordRichPresence" Version="1.2.1.24" />
     <PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" />
+    <PackageReference Include="SpotifyExplode" Version="1.0.7" />
+    <PackageReference Include="YoutubeExplode" Version="6.3.4" />
   </ItemGroup>
 
   <ItemGroup>

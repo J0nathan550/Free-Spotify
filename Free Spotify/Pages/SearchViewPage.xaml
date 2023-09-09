@@ -3,12 +3,27 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:Free_Spotify.Pages"
+      xmlns:local="clr-namespace:Free_Spotify.Pages" xmlns:fa="http://schemas.fontawesome.io/icons/"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="SearchViewPage">
-
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Border CornerRadius="20" Background="#242424" BorderThickness="2" BorderBrush="White">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <fa:FontAwesome Icon="Search" FontSize="24" Foreground="White" VerticalAlignment="Center"/>
+                <TextBox x:Name="SearchBarTextBox" Text="Что хотите послушать?" Foreground="Gray" Grid.Column="1" BorderThickness="0" Background="Transparent" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" FontSize="18" FontWeight="Medium" BorderBrush="#00000000" SelectionBrush="White" SelectionTextBrush="#00000000" Margin="0,0,22,0" GotFocus="SearchTextBox_Focus" LostFocus="SearchTextBox_LostFocus" CaretBrush="#FF00FF04" TextChanged="SearchBarTextBox_TextChanged"/>
+            </Grid>
+        </Border>
+        <Grid x:Name="searchVisual" Grid.Row="1" Margin="5">
+            
+        </Grid>
     </Grid>
 </Page>
