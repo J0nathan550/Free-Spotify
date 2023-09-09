@@ -42,6 +42,7 @@
                     </Button>
                 </Grid>
             </Grid>
+            <Frame Name="LoadingPagesFrame" NavigationUIVisibility="Hidden" Grid.Row="1" Source="/Pages/MainScreenPage.xaml"/>
         </Grid>
     </Border>
 </Window>

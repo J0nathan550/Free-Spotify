@@ -87,6 +87,5 @@
         <Style x:Key="TextBlockGothamBold" TargetType="TextBlock">
             <Setter Property="TextElement.FontFamily" Value="Fonts/#GothamBold"/>
         </Style>
-
     </Application.Resources>
 </Application>
