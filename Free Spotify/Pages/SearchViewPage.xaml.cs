@@ -1,24 +1,31 @@
-﻿using SpotifyExplode;
+﻿using NAudio.Wave;
+using SpotifyExplode;
 using SpotifyExplode.Search;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using YoutubeExplode;
+using YoutubeExplode.Videos.Streams;
 
 namespace Free_Spotify.Pages
 {
     public partial class SearchViewPage : Page
     {
-
         public SearchViewPage()
         {
             InitializeComponent();
         }
 
         private bool isTextErased = false; // used to remove the tip
+        private SearchFilter filter = SearchFilter.Track; // used to search something certain in Search Engine.
+        private bool isSongPlaying = false;
+        private WaveOut waveOut;
 
         /// <summary>
         /// An a event that is used in search bar to represent if you are clicked it, if you have no text inside, it will remove the tip.
@@ -57,11 +64,21 @@ namespace Free_Spotify.Pages
         /// </summary>
         private async void SearchBarTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
+            await Dispatcher.InvokeAsync(() =>
+            {
+                SearchingSystem();
+            });
+        }
+
+        private async void SearchingSystem()
+        {
             await Dispatcher.InvokeAsync(async () =>
             {
+                StackPanel stackPanelVisual = new StackPanel();
                 if (searchVisual.Children.Count != 0)
                 {
                     searchVisual.Children.Clear();
+                    searchVisual.Children.Add(stackPanelVisual);
                 }
 
                 if (!isTextErased)
@@ -77,15 +94,14 @@ namespace Free_Spotify.Pages
                 {
                     removeEverythingFromSearchBoxButton.Visibility = Visibility.Hidden;
                 }
-
                 try
                 {
                     var spotifyClient = new SpotifyClient();
                     /// searching for the song or else.
-                    List<ISearchResult> searchMatches = await spotifyClient.Search.GetResultsAsync(SearchBarTextBox.Text);
+                    List<ISearchResult> searchMatches = await spotifyClient.Search.GetResultsAsync(SearchBarTextBox.Text, filter);
                     if (searchMatches.Count != 0)
                     {
-                        foreach (var result in await spotifyClient.Search.GetResultsAsync(SearchBarTextBox.Text))
+                        foreach (var result in searchMatches)
                         {
                             // Use pattern matching to handle different results (albums, artists, tracks, playlists)
                             switch (result)
@@ -95,9 +111,54 @@ namespace Free_Spotify.Pages
                                         var id = track.Id;
                                         var title = track.Title;
                                         var duration = track.DurationMs;
-                                        searchVisual.Children.Clear();
-
-
+                                        await Dispatcher.InvokeAsync(() =>
+                                        {
+                                            TextBlock testText = new TextBlock();
+                                            testText.Text = $"Artist: {track.Artists[0].Name}\n" +
+                                            $"Track: {track.Title}\n";
+                                            testText.Foreground = new SolidColorBrush(Colors.White);
+                                            testText.Style = (Style)testText.FindResource("fontMontserrat");
+                                            testText.FontSize = 14;
+                                            testText.Cursor = Cursors.Hand; 
+                                            testText.MouseDown += new MouseButtonEventHandler(async (o, i) =>
+                                            {
+                                                await Task.Run(async () =>
+                                                {
+                                                    if (isSongPlaying)
+                                                    {
+                                                        waveOut.Stop();
+                                                        isSongPlaying = false;
+                                                        return;
+                                                    }
+                                                    SpotifyClient spotifyYouTubeRetrive = new SpotifyClient();
+                                                    string? youtubeID = await spotifyYouTubeRetrive.Tracks.GetYoutubeIdAsync(track.Url);
+                                                    YoutubeClient? youtube = new YoutubeClient();
+                                                    var video = youtube.Videos.GetAsync($"https://youtube.com/watch?v={youtubeID}");
+                                                    var streamManifest = youtube.Videos.Streams.GetManifestAsync($"https://youtube.com/watch?v={youtubeID}");
+                                                    var streamInfo = streamManifest.Result.GetAudioStreams().GetWithHighestBitrate();
+                                                    using (WaveStream blockAlignedStream = new BlockAlignReductionStream(
+                                                            WaveFormatConversionStream.CreatePcmStream(
+                                                                new MediaFoundationReader(streamInfo.Url))))
+                                                    {
+                                                        using (waveOut = new WaveOut(WaveCallbackInfo.FunctionCallback()))
+                                                        {
+                                                            waveOut.Volume = 0.05f;
+                                                            waveOut.Init(blockAlignedStream);
+                                                            waveOut.Play();
+                                                            while (waveOut.PlaybackState == PlaybackState.Playing)
+                                                            {
+                                                                isSongPlaying = true; 
+                                                                Thread.Sleep(100);
+                                                            }
+                                                            waveOut.Dispose();
+                                                            youtube = null;
+                                                            GC.Collect();
+                                                        }
+                                                    }
+                                                });
+                                            });
+                                            stackPanelVisual.Children.Add(testText);
+                                        });
                                         break;
                                     }
                                 case PlaylistSearchResult playlist:
@@ -174,7 +235,7 @@ namespace Free_Spotify.Pages
                         searchVisual.Children.Add(resultTextBlock);
                     });
                 }
-                catch(ArgumentException) 
+                catch (ArgumentException)
                 {
                     // ignore for now, shows error that track does not exist to download.
                 }
@@ -185,7 +246,6 @@ namespace Free_Spotify.Pages
                 }
             });
         }
-
         /// <summary>
         /// Button that removes everything from the textbox, nice little feature.
         /// </summary>
@@ -200,31 +260,81 @@ namespace Free_Spotify.Pages
             });
         }
 
-        /*
-          var youtube = new YoutubeClient();
-                var video = youtube.Videos.GetAsync($"https://youtube.com/watch?v={YouTubeID}");
-                var streamManifest = youtube.Videos.Streams.GetManifestAsync($"https://youtube.com/watch?v={YouTubeID}");
-                var streamInfo = streamManifest.Result.GetAudioStreams().GetWithHighestBitrate();
-                using (WaveStream blockAlignedStream = new BlockAlignReductionStream(
-                        WaveFormatConversionStream.CreatePcmStream(
-                            new MediaFoundationReader(streamInfo.Url))))
-                {
-                    using (WaveOut waveOut = new WaveOut(WaveCallbackInfo.FunctionCallback()))
-                    {
-                        waveOut.Volume = 0.05f;
-                        waveOut.Init(blockAlignedStream);
-                        waveOut.Play();
-                        songIsRunning = true;
-                        while (waveOut.PlaybackState == PlaybackState.Playing)
-                        {
-                            Thread.Sleep(100);
-                        }
-                        songIsRunning = false;
-                        waveOut.Dispose();
-                        youtube = null;
-                        GC.Collect();
-                    }
-                }
-        */
+        /// <summary>
+        /// Function that if you will press it, will show you all information about artists that you were looking for.
+        /// </summary>
+        private async void ArtistsTag_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            await Dispatcher.InvokeAsync(() =>
+            {
+                artistsTag.Background = new SolidColorBrush(Colors.White);
+                artistsTagText.Foreground = new SolidColorBrush(Colors.Black);
+                playlistTag.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x23, 0x23, 0x23));
+                playlistTagText.Foreground = new SolidColorBrush(Colors.White);
+                trackTag.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x23, 0x23, 0x23));
+                trackTagText.Foreground = new SolidColorBrush(Colors.White);
+                albumsTag.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x23, 0x23, 0x23));
+                albumsTagText.Foreground = new SolidColorBrush(Colors.White);
+            });
+            filter = SearchFilter.Artist;
+            SearchingSystem();
+        }
+        /// <summary>
+        /// Function that if you will press it, will show you all possible playlists that were created by author.
+        /// </summary>
+        private async void PlaylistTag_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            await Dispatcher.InvokeAsync(() =>
+            {
+                artistsTag.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x23, 0x23, 0x23));
+                artistsTagText.Foreground = new SolidColorBrush(Colors.White);
+                playlistTag.Background = new SolidColorBrush(Colors.White);
+                playlistTagText.Foreground = new SolidColorBrush(Colors.Black);
+                trackTag.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x23, 0x23, 0x23));
+                trackTagText.Foreground = new SolidColorBrush(Colors.White);
+                albumsTag.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x23, 0x23, 0x23));
+                albumsTagText.Foreground = new SolidColorBrush(Colors.White);
+            });
+            filter = SearchFilter.Playlist;
+            SearchingSystem();
+        }
+        /// <summary>
+        /// Function that if you will press it, will show you all possible tracks that were created by author.
+        /// </summary>
+        private async void TrackTag_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            await Dispatcher.InvokeAsync(() =>
+            {
+                artistsTag.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x23, 0x23, 0x23));
+                artistsTagText.Foreground = new SolidColorBrush(Colors.White);
+                playlistTag.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x23, 0x23, 0x23));
+                playlistTagText.Foreground = new SolidColorBrush(Colors.White);
+                trackTag.Background = new SolidColorBrush(Colors.White);
+                trackTagText.Foreground = new SolidColorBrush(Colors.Black);
+                albumsTag.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x23, 0x23, 0x23));
+                albumsTagText.Foreground = new SolidColorBrush(Colors.White);
+            });
+            filter = SearchFilter.Track;
+            SearchingSystem();
+        }
+        /// <summary>
+        /// Function that if you will press it, will show you all possible albums that were created by author.
+        /// </summary>
+        private async void AlbumsTag_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            await Dispatcher.InvokeAsync(() =>
+            {
+                artistsTag.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x23, 0x23, 0x23));
+                artistsTagText.Foreground = new SolidColorBrush(Colors.White);
+                playlistTag.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x23, 0x23, 0x23));
+                playlistTagText.Foreground = new SolidColorBrush(Colors.White);
+                trackTag.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x23, 0x23, 0x23));
+                trackTagText.Foreground = new SolidColorBrush(Colors.White);
+                albumsTag.Background = new SolidColorBrush(Colors.White);
+                albumsTagText.Foreground = new SolidColorBrush(Colors.Black);
+            });
+            filter = SearchFilter.Album;
+            SearchingSystem();
+        }
     }
 }

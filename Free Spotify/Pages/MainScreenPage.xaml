@@ -30,7 +30,7 @@
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <fa:FontAwesome Icon="Home" FontSize="18" Foreground="Gray" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="1" Margin="3,0,0,0" VerticalAlignment="Center" Text="Главная" FontWeight="Medium" Foreground="Gray"/>
+                        <TextBlock Style="{StaticResource fontMontserrat}" Grid.Column="1" Margin="3,0,0,0" VerticalAlignment="Center" Text="Главная" FontWeight="Medium" Foreground="Gray"/>
                     </Grid>
                     <Grid Grid.Row="1" x:Name="buttonSearchPage" MouseDown="buttonSearchPage_MouseDown" Cursor="Hand">
                         <Grid.ColumnDefinitions>
@@ -38,7 +38,7 @@
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <fa:FontAwesome VerticalAlignment="Center" Icon="Search" FontSize="14" Foreground="Gray"/>
-                        <TextBlock VerticalAlignment="Center" Grid.Column="1" Margin="4,0,0,0" Text="Поиск" FontWeight="Medium" Foreground="Gray"/>
+                        <TextBlock Style="{StaticResource fontMontserrat}" VerticalAlignment="Center" Grid.Column="1" Margin="4,0,0,0" Text="Поиск" FontWeight="Medium" Foreground="Gray"/>
                     </Grid>
                 </Grid>
             </Border>
@@ -55,8 +55,8 @@
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <fa:FontAwesome Margin="3,0,0,0" Icon="List" Foreground="Gray" FontSize="14" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="1" Text="Мои плейлисты" Foreground="Gray" VerticalAlignment="Center" FontWeight="Medium" Margin="5,0,0,3"/>
-                        <TextBlock Cursor="Hand" Grid.Column="2" Text="+" Foreground="Gray" FontSize="18" FontWeight="Medium" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,5"/>
+                        <TextBlock Style="{StaticResource fontMontserrat}" Grid.Column="1" Text="Мои плейлисты" Foreground="Gray" VerticalAlignment="Center" FontWeight="Medium" Margin="5,0,0,1"/>
+                        <TextBlock Style="{StaticResource fontMontserrat}" Cursor="Hand" Grid.Column="2" Text="+" Foreground="Gray" FontSize="18" FontWeight="Medium" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,1,0,0"/>
                     </Grid>
                     <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden" Grid.Row="1">
                         <Grid Name="playListLoader">
