@@ -10,6 +10,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="60"/>
+            <RowDefinition Height="50"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Border CornerRadius="20" Background="#242424" BorderThickness="2" BorderBrush="White">
@@ -17,13 +18,36 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="50"/>
                     <ColumnDefinition/>
+                    <ColumnDefinition Width="50"/>
                 </Grid.ColumnDefinitions>
                 <fa:FontAwesome Icon="Search" FontSize="24" Foreground="White" VerticalAlignment="Center"/>
-                <TextBox x:Name="SearchBarTextBox" Text="Что хотите послушать?" Foreground="Gray" Grid.Column="1" BorderThickness="0" Background="Transparent" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" FontSize="18" FontWeight="Medium" BorderBrush="#00000000" SelectionBrush="White" SelectionTextBrush="#00000000" Margin="0,0,22,0" GotFocus="SearchTextBox_Focus" LostFocus="SearchTextBox_LostFocus" CaretBrush="#FF00FF04" TextChanged="SearchBarTextBox_TextChanged"/>
+                <TextBox x:Name="SearchBarTextBox" Style="{StaticResource fontTextBoxMontserrat}" Text="Что хотите послушать?" Foreground="Gray" Grid.Column="1" BorderThickness="0" Background="Transparent" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" FontSize="18" FontWeight="Medium" BorderBrush="#00000000" SelectionBrush="White" SelectionTextBrush="#00000000" Margin="0,0,22,0" GotFocus="SearchTextBox_Focus" LostFocus="SearchTextBox_LostFocus" CaretBrush="#FF00FF04" TextChanged="SearchBarTextBox_TextChanged"/>
+                <fa:FontAwesome MouseDown="removeEverythingFromSearchBoxButton_MouseDown" Cursor="Hand" Visibility="Hidden" Grid.Column="2" x:Name="removeEverythingFromSearchBoxButton" Icon="Remove" FontSize="24" Foreground="White" VerticalAlignment="Center"/>
             </Grid>
         </Border>
-        <Grid x:Name="searchVisual" Grid.Row="1" Margin="5">
-            
-        </Grid>
+        <ScrollViewer Margin="12,10,0,0" Grid.Row="1" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden">
+            <WrapPanel>
+                <Border Cursor="Hand" Background="White" Padding="7" CornerRadius="10">
+                    <TextBlock Style="{StaticResource fontMontserrat}" FontWeight="Medium" Text="Всё" Foreground="Black"/>
+                </Border>
+                <Border Cursor="Hand" Margin="5,0,0,0" Background="#232323" Padding="7" CornerRadius="10">
+                    <TextBlock Style="{StaticResource fontMontserrat}" FontWeight="Medium" Text="Исполнители" Foreground="White"/>
+                </Border>
+                <Border Cursor="Hand" Margin="5,0,0,0" Background="#232323" Padding="7" CornerRadius="10">
+                    <TextBlock Style="{StaticResource fontMontserrat}" FontWeight="Medium" Text="Плейлисты" Foreground="White"/>
+                </Border>
+                <Border Cursor="Hand" Margin="5,0,0,0" Background="#232323" Padding="7" CornerRadius="10">
+                    <TextBlock Style="{StaticResource fontMontserrat}" FontWeight="Medium" Text="Треки" Foreground="White"/>
+                </Border>
+                <Border Cursor="Hand" Margin="5,0,0,0" Background="#232323" Padding="7" CornerRadius="10">
+                    <TextBlock Style="{StaticResource fontMontserrat}" FontWeight="Medium" Text="Альбомы" Foreground="White"/>
+                </Border>
+            </WrapPanel>
+        </ScrollViewer>
+        <ScrollViewer Grid.Row="2" Margin="5" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden">
+            <Grid x:Name="searchVisual">
+                
+            </Grid>
+        </ScrollViewer>
     </Grid>
 </Page>

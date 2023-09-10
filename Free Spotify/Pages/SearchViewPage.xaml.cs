@@ -46,7 +46,7 @@ namespace Free_Spotify.Pages
                 if (SearchBarTextBox.Text.Length == 0)
                 {
                     SearchBarTextBox.Foreground = new SolidColorBrush(Color.FromArgb(255, 0x80, 0x80, 0x80));
-                    SearchBarTextBox.Text = "Что-то хотите послушать?";
+                    SearchBarTextBox.Text = "Что хочешь послушать?";
                     isTextErased = false;
                 }
             });
@@ -68,6 +68,16 @@ namespace Free_Spotify.Pages
                 {
                     return;
                 }
+
+                if (SearchBarTextBox.Text.Length != 0)
+                {
+                    removeEverythingFromSearchBoxButton.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    removeEverythingFromSearchBoxButton.Visibility = Visibility.Hidden;
+                }
+
                 try
                 {
                     var spotifyClient = new SpotifyClient();
@@ -85,7 +95,9 @@ namespace Free_Spotify.Pages
                                         var id = track.Id;
                                         var title = track.Title;
                                         var duration = track.DurationMs;
-                                        //MessageBox.Show(track.Title);
+                                        searchVisual.Children.Clear();
+
+
                                         break;
                                     }
                                 case PlaylistSearchResult playlist:
@@ -112,12 +124,15 @@ namespace Free_Spotify.Pages
                                     {
                                         await Dispatcher.InvokeAsync(() =>
                                         {
+                                            searchVisual.Children.Clear();
                                             TextBlock resultTextBlock = new TextBlock();
                                             resultTextBlock.Text = $"По запросу: \"{SearchBarTextBox.Text}\" ничего не найдено.";
                                             resultTextBlock.FontSize = 14;
                                             resultTextBlock.HorizontalAlignment = HorizontalAlignment.Center;
                                             resultTextBlock.VerticalAlignment = VerticalAlignment.Center;
                                             resultTextBlock.Foreground = new SolidColorBrush(Colors.White);
+                                            resultTextBlock.TextWrapping = TextWrapping.Wrap;
+                                            resultTextBlock.Style = (Style)FindResource("fontMontserrat");
                                             searchVisual.Children.Add(resultTextBlock);
                                         });
                                         break;
@@ -129,12 +144,15 @@ namespace Free_Spotify.Pages
                     {
                         await Dispatcher.InvokeAsync(() =>
                         {
+                            searchVisual.Children.Clear();
                             TextBlock resultTextBlock = new TextBlock();
                             resultTextBlock.Text = $"По запросу: \"{SearchBarTextBox.Text}\" ничего не найдено.";
                             resultTextBlock.FontSize = 14;
                             resultTextBlock.HorizontalAlignment = HorizontalAlignment.Center;
                             resultTextBlock.VerticalAlignment = VerticalAlignment.Center;
                             resultTextBlock.Foreground = new SolidColorBrush(Colors.White);
+                            resultTextBlock.TextWrapping = TextWrapping.Wrap;
+                            resultTextBlock.Style = (Style)FindResource("fontMontserrat");
                             searchVisual.Children.Add(resultTextBlock);
                         });
                     }
@@ -144,20 +162,41 @@ namespace Free_Spotify.Pages
                 {
                     await Dispatcher.InvokeAsync(() =>
                     {
+                        searchVisual.Children.Clear();
                         TextBlock resultTextBlock = new TextBlock();
                         resultTextBlock.Text = $"Начните печатать что-то, чтобы насладится приятной музыкой!";
                         resultTextBlock.FontSize = 14;
                         resultTextBlock.HorizontalAlignment = HorizontalAlignment.Center;
                         resultTextBlock.VerticalAlignment = VerticalAlignment.Center;
                         resultTextBlock.Foreground = new SolidColorBrush(Colors.White);
+                        resultTextBlock.TextWrapping = TextWrapping.Wrap;
+                        resultTextBlock.Style = (Style)FindResource("fontMontserrat");
                         searchVisual.Children.Add(resultTextBlock);
                     });
+                }
+                catch(ArgumentException) 
+                {
+                    // ignore for now, shows error that track does not exist to download.
                 }
                 catch (Exception e)
                 {
                     MessageBox.Show(e.GetType().Name);
                     MessageBox.Show(e.Message);
                 }
+            });
+        }
+
+        /// <summary>
+        /// Button that removes everything from the textbox, nice little feature.
+        /// </summary>
+        private async void removeEverythingFromSearchBoxButton_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            await Dispatcher.InvokeAsync(() =>
+            {
+                SearchBarTextBox.Text = string.Empty;
+                Keyboard.ClearFocus(); // removes focus from the textbox.
+                searchVisual.Children.Clear();
+                removeEverythingFromSearchBoxButton.Visibility = Visibility.Hidden;
             });
         }
 

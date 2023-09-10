@@ -10,28 +10,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\cha-cha-preview.png" />
     <None Remove="Assets\close-icon.png" />
     <None Remove="Assets\SplashScreen.scale-100.png" />
     <None Remove="Assets\SplashScreen.scale-200.png" />
     <None Remove="Assets\SplashScreen.scale-400.png" />
-    <None Remove="Fonts\Gotham-Black.otf" />
-    <None Remove="Fonts\Gotham-Bold.otf" />
-    <None Remove="Fonts\Gotham-BookItalic.otf" />
-    <None Remove="Fonts\Gotham-Light.otf" />
-    <None Remove="Fonts\Gotham-Thin.otf" />
-    <None Remove="Fonts\Gotham-ThinItalic.otf" />
-    <None Remove="Fonts\Gotham-UltraItalic.otf" />
-    <None Remove="Fonts\Gotham-XLight.otf" />
-    <None Remove="Fonts\Gotham-XLightItalic.otf" />
-    <None Remove="Fonts\GothamBold.ttf" />
-    <None Remove="Fonts\GothamBoldItalic.ttf" />
-    <None Remove="Fonts\GothamBook.ttf" />
-    <None Remove="Fonts\GothamBookItalic.ttf" />
-    <None Remove="Fonts\GothamLight.ttf" />
-    <None Remove="Fonts\GothamLightItalic.ttf" />
-    <None Remove="Fonts\GothamMedium.ttf" />
-    <None Remove="Fonts\GothamMediumItalic.ttf" />
-    <None Remove="Fonts\GothamMedium_1.ttf" />
     <None Remove="Assets\maximize-icon-selected.png" />
     <None Remove="Assets\maximize-icon.png" />
     <None Remove="Assets\minimize-icon.png" />
@@ -39,6 +22,25 @@
     <None Remove="Assets\Square44x44Logo.altform-unplated_targetsize-16.png" />
     <None Remove="Assets\Square44x44Logo.altform-unplated_targetsize-32.png" />
     <None Remove="Assets\Square44x44Logo.altform-unplated_targetsize-48.png" />
+    <None Remove="Fonts\Montserrat-Black.ttf" />
+    <None Remove="Fonts\Montserrat-BlackItalic.ttf" />
+    <None Remove="Fonts\Montserrat-Bold.ttf" />
+    <None Remove="Fonts\Montserrat-BoldItalic.ttf" />
+    <None Remove="Fonts\Montserrat-ExtraBold.ttf" />
+    <None Remove="Fonts\Montserrat-ExtraBoldItalic.ttf" />
+    <None Remove="Fonts\Montserrat-ExtraLight.ttf" />
+    <None Remove="Fonts\Montserrat-ExtraLightItalic.ttf" />
+    <None Remove="Fonts\Montserrat-Italic.ttf" />
+    <None Remove="Fonts\Montserrat-Light.ttf" />
+    <None Remove="Fonts\Montserrat-LightItalic.ttf" />
+    <None Remove="Fonts\Montserrat-Medium.ttf" />
+    <None Remove="Fonts\Montserrat-MediumItalic.ttf" />
+    <None Remove="Fonts\Montserrat-Regular.ttf" />
+    <None Remove="Fonts\Montserrat-SemiBold.ttf" />
+    <None Remove="Fonts\Montserrat-SemiBoldItalic.ttf" />
+    <None Remove="Fonts\Montserrat-Thin.ttf" />
+    <None Remove="Fonts\Montserrat-ThinItalic.ttf" />
+    <None Remove="Fonts\Montserrat-VariableFont_wght.ttf" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,6 +48,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Assets\cha-cha-preview.png" />
     <Resource Include="Assets\SmallTile.scale-100.ico" />
   </ItemGroup>
 
@@ -60,27 +63,15 @@
     <Resource Include="Assets\close-icon.png" />
     <Resource Include="Assets\SplashScreen.scale-100.png" />
     <Resource Include="Assets\SplashScreen.scale-200.png" />
+    <Resource Include="Fonts\Montserrat-ThinItalic.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Fonts\Montserrat-VariableFont_wght.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <SplashScreen Include="Assets\SplashScreen.scale-400.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </SplashScreen>
-    <Resource Include="Fonts\Gotham-Black.otf" />
-    <Resource Include="Fonts\Gotham-Bold.otf" />
-    <Resource Include="Fonts\Gotham-BookItalic.otf" />
-    <Resource Include="Fonts\Gotham-Light.otf" />
-    <Resource Include="Fonts\Gotham-Thin.otf" />
-    <Resource Include="Fonts\Gotham-ThinItalic.otf" />
-    <Resource Include="Fonts\Gotham-UltraItalic.otf" />
-    <Resource Include="Fonts\Gotham-XLight.otf" />
-    <Resource Include="Fonts\Gotham-XLightItalic.otf" />
-    <Resource Include="Fonts\GothamBold.ttf" />
-    <Resource Include="Fonts\GothamBoldItalic.ttf" />
-    <Resource Include="Fonts\GothamBook.ttf" />
-    <Resource Include="Fonts\GothamBookItalic.ttf" />
-    <Resource Include="Fonts\GothamLight.ttf" />
-    <Resource Include="Fonts\GothamLightItalic.ttf" />
-    <Resource Include="Fonts\GothamMedium.ttf" />
-    <Resource Include="Fonts\GothamMediumItalic.ttf" />
-    <Resource Include="Fonts\GothamMedium_1.ttf" />
     <Resource Include="Assets\maximize-icon-selected.png" />
     <Resource Include="Assets\maximize-icon.png" />
     <Resource Include="Assets\minimize-icon.png" />

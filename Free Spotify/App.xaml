@@ -4,6 +4,15 @@
              xmlns:local="clr-namespace:Free_Spotify"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
+        <Style x:Key="fontMontserrat" TargetType="TextBlock">
+            <Setter Property="TextElement.FontFamily" Value="/Fonts/#Montserrat"></Setter>
+        </Style>
+        <Style x:Key="fontTextBoxMontserrat" TargetType="TextBox">
+            <Setter Property="TextElement.FontFamily" Value="/Fonts/#Montserrat"></Setter>
+        </Style>
+        <Style x:Key="fontLabelMontserrat" TargetType="Label">
+            <Setter Property="TextElement.FontFamily" Value="/Fonts/#Montserrat"></Setter>
+        </Style>
         <Style TargetType="{x:Type ResizeGrip}">
             <Setter Property="MinWidth" Value="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}"/>
             <Setter Property="MinHeight" Value="{DynamicResource {x:Static SystemParameters.HorizontalScrollBarHeightKey}}"/>
