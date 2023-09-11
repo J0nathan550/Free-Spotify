@@ -8,7 +8,7 @@
         Background="Transparent"
         AllowsTransparency="True"
         Title="Free Spotify" MinHeight="600" MinWidth="800" Height="600" Width="800" MouseLeftButtonDown="MoveWindow_Down" ResizeMode="CanResizeWithGrip" WindowStartupLocation="CenterScreen" Icon="/Assets/Square44x44Logo.altform-unplated_targetsize-32.png">
-    <Border Background="Black" CornerRadius="8" BorderThickness="0.5" BorderBrush="White">
+    <Border Background="Black" CornerRadius="6" BorderThickness="1" BorderBrush="Gray">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>

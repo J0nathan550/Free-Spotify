@@ -41,7 +41,7 @@
                 </Border>
             </WrapPanel>
         </ScrollViewer>
-        <ScrollViewer Grid.Row="2" Margin="5" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden">
+        <ScrollViewer Grid.Row="2" Margin="5" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
             <Grid x:Name="searchVisual">
             </Grid>
         </ScrollViewer>
