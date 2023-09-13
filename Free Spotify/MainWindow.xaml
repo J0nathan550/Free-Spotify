@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:fa="http://schemas.fontawesome.io/icons/"
         mc:Ignorable="d"
         WindowStyle="None"
         Background="Transparent"
@@ -13,6 +13,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
                 <RowDefinition/>
+                <RowDefinition Height="75"/>
             </Grid.RowDefinitions>
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -43,6 +44,103 @@
                 </Grid>
             </Grid>
             <Frame Name="LoadingPagesFrame" NavigationUIVisibility="Hidden" Grid.Row="1" Source="/Pages/MainScreenPage.xaml"/>
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="210"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="200"/>
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="70"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="25"/>
+                    </Grid.ColumnDefinitions>
+                    <Image Margin="10" Source="/Assets/cha-cha-preview.png"/>
+                    <Grid Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Label Margin="5,0,0,0" x:Name="songTitle" Foreground="White" Content="Back to back" Padding="0" FontSize="12" VerticalContentAlignment="Bottom" Style="{StaticResource fontLabelMontserrat}"/>
+                        <Label Margin="5,0,0,0" x:Name="songAuthor" Grid.Row="1" Foreground="LightGray" Content="Inline" Padding="0" FontSize="12" Style="{StaticResource fontLabelMontserrat}"/>
+                    </Grid>
+                    <fa:FontAwesome x:Name="favoriteSongButton" Grid.Column="2" Icon="HeartOutline" FontSize="16" Foreground="Gray" VerticalAlignment="Center"/>
+                </Grid>
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="50"/>
+                            <ColumnDefinition Width="50"/>
+                            <ColumnDefinition Width="50"/>
+                            <ColumnDefinition Width="50"/>
+                            <ColumnDefinition Width="50"/>
+                        </Grid.ColumnDefinitions>
+                        <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                            <fa:FontAwesome x:Name="randomSongButton" Icon="Random" FontSize="17" Foreground="White"/>
+                        </Label>
+                        <Label Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                            <fa:FontAwesome x:Name="leftSong" Icon="CaretSquareOutlineLeft" FontSize="17" Foreground="White"/>
+                        </Label>
+                        <Label Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                            <fa:FontAwesome x:Name="musicToggle" Icon="Pause" FontSize="17" Foreground="White"/>
+                        </Label>
+                        <Label Grid.Column="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                            <fa:FontAwesome x:Name="rightSong" Icon="CaretSquareOutlineRight" FontSize="17" Foreground="White"/>
+                        </Label>
+                        <Label Grid.Column="4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                            <fa:FontAwesome x:Name="repeatSong" Icon="Repeat" FontSize="17" Foreground="White" RenderTransformOrigin="0.5,0.5">
+                                <fa:FontAwesome.RenderTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform ScaleX="-1"/>
+                                        <SkewTransform/>
+                                        <RotateTransform/>
+                                        <TranslateTransform/>
+                                    </TransformGroup>
+                                </fa:FontAwesome.RenderTransform>
+                            </fa:FontAwesome>
+                        </Label>
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="50"/>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="50"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Name="startOfSong" Content="0:00" Foreground="White" Style="{StaticResource fontLabelMontserrat}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></Label>
+                        <Slider Name="musicProgress" Grid.Column="1" VerticalAlignment="Center"/>
+                        <Label Grid.Column="2" Name="endOfSong" Content="3:00" Foreground="White" Style="{StaticResource fontLabelMontserrat}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></Label>
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="40"/>
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </Grid>
+                <Grid Grid.Column="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="30"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                        <fa:FontAwesome x:Name="volumeIcon" Icon="VolumeUp" FontSize="17" Foreground="White"/>
+                    </Label>
+                    <Grid Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Slider Grid.Row="1" Margin="0,0,5,0"/>
+                    </Grid>
+                </Grid>
+            </Grid>
         </Grid>
     </Border>
 </Window>
