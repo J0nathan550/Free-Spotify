@@ -10,7 +10,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using YoutubeExplode;
 using YoutubeExplode.Videos.Streams;
@@ -19,15 +18,47 @@ namespace Free_Spotify.Pages
 {
     public partial class SearchViewPage : Page
     {
+        private System.Timers.Timer countTimer = new System.Timers.Timer() { Interval = 1000 };
+        private TrackSearchResult track = new TrackSearchResult();
+        private TimeSpan currentTime = TimeSpan.Zero;
+        private TimeSpan endTime = TimeSpan.Zero;
+
         public SearchViewPage()
         {
             InitializeComponent();
+            countTimer.Elapsed += new System.Timers.ElapsedEventHandler(async (o, i) =>
+            {
+                await Dispatcher.BeginInvoke(() =>
+                {
+                    if (currentTime == endTime)
+                    {
+                        countTimer.Stop();
+                    }
+
+                    currentTime = currentTime.Add(TimeSpan.FromSeconds(1));
+                    endTime = TimeSpan.FromMilliseconds(track.DurationMs);
+                    MainWindow.GetMainWindow(null).musicProgress.Value = currentTime.TotalMilliseconds;
+                    if (currentTime.Hours > 0)
+                    {
+                        MainWindow.GetMainWindow(null).startOfSong.Content = currentTime.ToString(@"h\:m\:ss");
+                    }
+                    else
+                    {
+                        MainWindow.GetMainWindow(null).startOfSong.Content = currentTime.ToString(@"m\:ss");
+                    }
+
+                });
+            });
+            MainWindow.GetMainWindow(null).musicToggle.MouseDown += new MouseButtonEventHandler((o, i) =>
+            {
+                StopSound();
+            });
         }
 
         private bool isTextErased = false; // used to remove the tip
         private SearchFilter filter = SearchFilter.Track; // used to search something certain in Search Engine.
         private bool isSongPlaying = false;
-        private WaveOut? waveOut;
+        private WaveOut waveOut = new WaveOut();
 
         /// <summary>
         /// An a event that is used in search bar to represent if you are clicked it, if you have no text inside, it will remove the tip.
@@ -113,83 +144,83 @@ namespace Free_Spotify.Pages
                             {
                                 case TrackSearchResult track:
                                     {
+                                
                                         await Dispatcher.InvokeAsync(() =>
                                         {
                                             Border background = new Border();
-                                            background.CornerRadius = new CornerRadius(6); 
+                                            background.CornerRadius = new CornerRadius(6);
                                             background.Cursor = Cursors.Hand;
                                             background.MouseDown += new MouseButtonEventHandler(async (o, i) =>
                                             {
                                                 if (isSongPlaying)
                                                 {
-                                                    if (waveOut != null)
-                                                    {
-                                                        waveOut.Stop();
-                                                        waveOut.Dispose();
-                                                    }
-                                                    isSongPlaying = false;
-                                                    GC.Collect();
                                                     return;
                                                 }
+                                                isSongPlaying = true; 
                                                 await Task.Run(async () =>
                                                 {
                                                     try
                                                     { // need to fix an issue of stacking songs. 
-                                                        SpotifyClient spotifyYouTubeRetrive = new SpotifyClient();
-                                                        string? youtubeID = await spotifyYouTubeRetrive.Tracks.GetYoutubeIdAsync(track.Url);
-                                                        YoutubeClient? youtube = new YoutubeClient();
-                                                        var video = youtube.Videos.GetAsync($"https://youtube.com/watch?v={youtubeID}");
-                                                        var streamManifest = youtube.Videos.Streams.GetManifestAsync($"https://youtube.com/watch?v={youtubeID}");
-                                                        var streamInfo = streamManifest.Result.GetAudioStreams().GetWithHighestBitrate();
-                                                        using (WaveStream blockAlignedStream = new BlockAlignReductionStream(
-                                                                WaveFormatConversionStream.CreatePcmStream(
-                                                                    new MediaFoundationReader(streamInfo.Url))))
+
+                                                        this.track = track;
+                                                        PlaySound();
+                                                        await Dispatcher.BeginInvoke(() =>
                                                         {
-                                                            using (waveOut = new WaveOut(WaveCallbackInfo.FunctionCallback()))
+
+                                                            MainWindow.GetMainWindow(null).mp3PlayerHolder.Visibility = Visibility.Visible;
+                                                            MainWindow.GetMainWindow(null).songTitle.Content = track.Title;
+                                                            MainWindow.GetMainWindow(null).songAuthor.Content = track.Artists[0].Name;
+                                                            MainWindow.GetMainWindow(null).musicProgress.Maximum = track.DurationMs;
+                                                            
+                                                            BitmapImage sourceImageOfTrack = new BitmapImage();
+                                                            sourceImageOfTrack.BeginInit();
+                                                            sourceImageOfTrack.CreateOptions = BitmapCreateOptions.None;
+                                                            sourceImageOfTrack.CacheOption = BitmapCacheOption.None;
+                                                            sourceImageOfTrack.UriSource = new Uri(track.Album.Images[0].Url);
+                                                            sourceImageOfTrack.EndInit();
+
+                                                            MainWindow.GetMainWindow(null).iconTrack.Source = sourceImageOfTrack;
+
+                                                            uint hourMillisecond = 3600000;
+                                                            if (track.DurationMs > hourMillisecond)
                                                             {
-                                                                if (waveOut != null)
-                                                                {
-                                                                    waveOut.Volume = 0.2f;
-                                                                    waveOut.Init(blockAlignedStream);
-                                                                    waveOut.Play();
-                                                                    while (waveOut.PlaybackState == PlaybackState.Playing)
-                                                                    {
-                                                                        isSongPlaying = true;
-                                                                        Thread.Sleep(100);
-                                                                    }
-                                                                    waveOut.Dispose();
-                                                                    youtube = null;
-                                                                    GC.Collect();
-                                                                    isSongPlaying = false;
-                                                                }
+                                                                MainWindow.GetMainWindow(null).endOfSong.Content = $"{TimeSpan.FromMilliseconds(track.DurationMs).ToString(@"h\:m\:ss")}";
                                                             }
-                                                        }
+                                                            else
+                                                            {
+                                                                MainWindow.GetMainWindow(null).endOfSong.Content = $"{TimeSpan.FromMilliseconds(track.DurationMs).ToString(@"m\:ss")}";
+                                                            }
+
+                                                            countTimer.Start();
+                                                        });
                                                     }
-                                                    catch (Exception ex) 
+                                                    catch (Exception ex)
                                                     {
                                                         MessageBox.Show(ex.GetType().Name);
                                                         MessageBox.Show(ex.Message);
                                                         waveOut?.Stop();
                                                         waveOut?.Dispose();
                                                         isSongPlaying = false;
+                                                        countTimer.Stop();
+                                                        currentTime = TimeSpan.Zero;
                                                         GC.Collect();
                                                     }
                                                 });
                                             });
-                                            background.Background = new SolidColorBrush(Color.FromArgb(0x00, 0x21,0x21,0x21));
+                                            background.Background = new SolidColorBrush(Color.FromArgb(0x00, 0x21, 0x21, 0x21));
                                             background.Width = 256;
-                                            background.Height = 256;    
+                                            background.Height = 256;
 
                                             Grid mainVisualGrid = new Grid();
 
                                             background.Child = mainVisualGrid;
 
                                             RowDefinition rowDefinition = new RowDefinition();
-                                            rowDefinition.Height = new GridLength(3, GridUnitType.Star); 
+                                            rowDefinition.Height = new GridLength(3, GridUnitType.Star);
                                             mainVisualGrid.RowDefinitions.Add(rowDefinition);
 
                                             RowDefinition textDefinition = new RowDefinition();
-                                            textDefinition.Height = new GridLength(1, GridUnitType.Star);   
+                                            textDefinition.Height = new GridLength(1, GridUnitType.Star);
                                             mainVisualGrid.RowDefinitions.Add(textDefinition);
 
                                             BitmapImage sourceImageOfTrack = new BitmapImage();
@@ -207,7 +238,9 @@ namespace Free_Spotify.Pages
                                             actualImageOfTrack.CacheMode = null;
                                             mainVisualGrid.Children.Add(actualImageOfTrack);
 
-                                            Grid.SetZIndex(actualImageOfTrack, -2); 
+                                 
+
+                                            Grid.SetZIndex(actualImageOfTrack, -2);
 
                                             Grid.SetRow(actualImageOfTrack, 0);
                                             Grid.SetRowSpan(actualImageOfTrack, 2);
@@ -297,28 +330,48 @@ namespace Free_Spotify.Pages
                     }
 
                 }
-                catch (HttpRequestException)
+                catch (HttpRequestException request)
                 {
-                    await Dispatcher.InvokeAsync(() =>
+                    if (request.Message.Contains("400"))
                     {
-                        GC.Collect();
-                        searchVisual.Children.Clear();
-                        TextBlock resultTextBlock = new TextBlock();
-                        resultTextBlock.Text = $"Начните печатать что-то, чтобы насладится приятной музыкой!";
-                        resultTextBlock.FontSize = 14;
-                        resultTextBlock.HorizontalAlignment = HorizontalAlignment.Center;
-                        resultTextBlock.VerticalAlignment = VerticalAlignment.Center;
-                        resultTextBlock.Foreground = new SolidColorBrush(Colors.White);
-                        resultTextBlock.TextWrapping = TextWrapping.Wrap;
-                        resultTextBlock.Style = (Style)FindResource("fontMontserrat");
-                        searchVisual.Children.Add(resultTextBlock);
-                    });
+                        await Dispatcher.InvokeAsync(() =>
+                        {
+                            GC.Collect();
+                            searchVisual.Children.Clear();
+                            TextBlock resultTextBlock = new TextBlock();
+                            resultTextBlock.Text = $"Начните печатать что-то, чтобы насладится приятной музыкой!";
+                            resultTextBlock.FontSize = 14;
+                            resultTextBlock.HorizontalAlignment = HorizontalAlignment.Center;
+                            resultTextBlock.VerticalAlignment = VerticalAlignment.Center;
+                            resultTextBlock.Foreground = new SolidColorBrush(Colors.White);
+                            resultTextBlock.TextWrapping = TextWrapping.Wrap;
+                            resultTextBlock.Style = (Style)FindResource("fontMontserrat");
+                            searchVisual.Children.Add(resultTextBlock);
+                        });
+                    }
+                    else
+                    {
+                        await Dispatcher.InvokeAsync(() =>
+                        {
+                            GC.Collect();
+                            searchVisual.Children.Clear();
+                            TextBlock resultTextBlock = new TextBlock();
+                            resultTextBlock.Text = $"Похоже у вас проблемы с интернетом!";
+                            resultTextBlock.FontSize = 14;
+                            resultTextBlock.HorizontalAlignment = HorizontalAlignment.Center;
+                            resultTextBlock.VerticalAlignment = VerticalAlignment.Center;
+                            resultTextBlock.Foreground = new SolidColorBrush(Colors.White);
+                            resultTextBlock.TextWrapping = TextWrapping.Wrap;
+                            resultTextBlock.Style = (Style)FindResource("fontMontserrat");
+                            searchVisual.Children.Add(resultTextBlock);
+                        });
+                    }
                 }
                 catch (ArgumentException)
                 {
                     // ignore for now, shows error that track does not exist to download.
                 }
-                catch(InvalidOperationException)
+                catch (InvalidOperationException)
                 {
                     // ignore for now, appears something related to user? json issue.
                 }
@@ -329,6 +382,54 @@ namespace Free_Spotify.Pages
                 }
             });
         }
+
+        private void StopSound()
+        {
+            waveOut?.Stop();
+            waveOut?.Dispose();
+            currentTime = TimeSpan.Zero;
+            countTimer.Stop();
+            isSongPlaying = false;  
+            GC.Collect();
+        }
+
+        private async void PlaySound()
+        {
+            SpotifyClient spotifyYouTubeRetrive = new SpotifyClient();
+            string? youtubeID = await spotifyYouTubeRetrive.Tracks.GetYoutubeIdAsync(track.Url);
+            YoutubeClient? youtube = new YoutubeClient();
+            var video = youtube.Videos.GetAsync($"https://youtube.com/watch?v={youtubeID}");
+            var streamManifest = youtube.Videos.Streams.GetManifestAsync($"https://youtube.com/watch?v={youtubeID}");
+            var streamInfo = streamManifest.Result.GetAudioStreams().GetWithHighestBitrate();
+            using (WaveStream blockAlignedStream = new BlockAlignReductionStream(
+                    WaveFormatConversionStream.CreatePcmStream(
+                        new MediaFoundationReader(streamInfo.Url))))
+            {
+                using (waveOut = new WaveOut(WaveCallbackInfo.FunctionCallback()))
+                {
+                    if (waveOut != null)
+                    {
+                        waveOut.Init(blockAlignedStream);
+                        waveOut.Play();
+                        while (waveOut.PlaybackState == PlaybackState.Playing)
+                        {
+                            await Dispatcher.BeginInvoke(() =>
+                            {
+                                waveOut.Volume = (float)MainWindow.GetMainWindow(null).volumeSlider.Value;
+                            });
+                            Thread.Sleep(100);
+                        }
+                        waveOut.Dispose();
+                        youtube = null;
+                        isSongPlaying = false;
+                        currentTime = TimeSpan.Zero;
+                        countTimer.Stop();
+                        GC.Collect();
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Button that removes everything from the textbox, nice little feature.
         /// </summary>

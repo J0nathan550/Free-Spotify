@@ -1,6 +1,4 @@
-﻿using Free_Spotify.Pages;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 
 namespace Free_Spotify
@@ -10,9 +8,21 @@ namespace Free_Spotify
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static MainWindow? window;
+
         public MainWindow()
         {
             InitializeComponent();
+            GetMainWindow(this);
+        }
+
+        public static MainWindow GetMainWindow(MainWindow? mainWindow)
+        {
+            if (window == null)
+            {
+                window = mainWindow;
+            }
+            return window;
         }
 
         /// <summary>
