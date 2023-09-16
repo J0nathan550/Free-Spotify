@@ -248,7 +248,7 @@ namespace Free_Spotify.Pages
                                                         PlaySound();
                                                         await Dispatcher.BeginInvoke(() =>
                                                         {
-
+                                                            MainWindow.GetMainWindow(null).musicToggle.Icon = FontAwesomeIcon.Pause;
                                                             MainWindow.GetMainWindow(null).songTitle.Content = track.Title;
                                                             MainWindow.GetMainWindow(null).songAuthor.Content = track.Artists[0].Name;
                                                             
@@ -518,6 +518,11 @@ namespace Free_Spotify.Pages
 
                 }
             }
+            catch(ArgumentException)
+            {
+                MessageBox.Show(@"К сожалению, эта песня не существует на YouTube чтобы её можно было проиграть. Поищите другую песню ¯\_(ツ)_/¯", "☹", MessageBoxButton.OK);
+                StopSound();
+            }
             catch (HttpRequestException request)
             {
                 if (request.Message.Contains("400"))
@@ -556,9 +561,13 @@ namespace Free_Spotify.Pages
                 }
                 StopSound();
             }
+            catch(NullReferenceException)
+            {
+                StopSound();
+            }
             catch(Exception ex)
             {
-                MessageBox.Show($"ERROR: {ex.GetType()}, Message: {ex.Message}, Please screenshot this error, and send me in github!\nLINK: {githubLink}");
+                MessageBox.Show($"ERROR: {ex.GetType()},\n Message: {ex.Message},\n Please screenshot this error, and send me in github!\nLINK: {githubLink}");
                 StopSound();
             }
         }
@@ -654,6 +663,5 @@ namespace Free_Spotify.Pages
             filter = SearchFilter.Album;
             SearchingSystem();
         }
-
     }
 }
