@@ -30,7 +30,7 @@ namespace Free_Spotify
         /// </summary>
         private async void MoveWindow_Down(object sender, MouseButtonEventArgs e)
         {
-            await Dispatcher.InvokeAsync(() => { DragMove(); });
+            await Dispatcher.BeginInvoke(() => { DragMove(); });
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace Free_Spotify
         /// </summary>
         private async void MinimizeIcon_Click(object sender, RoutedEventArgs e)
         {
-            await Dispatcher.InvokeAsync(() => { WindowState = WindowState.Minimized; });
+            await Dispatcher.BeginInvoke(() => { WindowState = WindowState.Minimized; });
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace Free_Spotify
         /// </summary>
         private async void MaximizedIcon_Click(object sender, RoutedEventArgs e)
         {
-            await Dispatcher.InvokeAsync(() => {
+            await Dispatcher.BeginInvoke(() => {
                 if (WindowState != WindowState.Maximized)
                 {
                     WindowState = WindowState.Maximized;

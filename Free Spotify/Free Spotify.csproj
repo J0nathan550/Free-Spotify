@@ -10,7 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Assets\cha-cha-preview.png" />
     <None Remove="Assets\close-icon.png" />
     <None Remove="Assets\SplashScreen.scale-100.png" />
     <None Remove="Assets\SplashScreen.scale-200.png" />
@@ -48,7 +47,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Assets\cha-cha-preview.png" />
     <Resource Include="Assets\SmallTile.scale-100.ico" />
   </ItemGroup>
 

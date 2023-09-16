@@ -44,7 +44,7 @@
                 </Grid>
             </Grid>
             <Frame Name="LoadingPagesFrame" NavigationUIVisibility="Hidden" Grid.Row="1" Source="/Pages/MainScreenPage.xaml"/>
-            <Grid x:Name="mp3PlayerHolder" Visibility="Hidden" Grid.Row="2">
+            <Grid x:Name="mp3PlayerHolder" Visibility="Visible" Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="210"/>
                     <ColumnDefinition/>
