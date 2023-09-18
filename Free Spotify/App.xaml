@@ -4,6 +4,7 @@
              xmlns:local="clr-namespace:Free_Spotify"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
+        
         <Style x:Key="fontMontserrat" TargetType="TextBlock">
             <Setter Property="TextElement.FontFamily" Value="/Fonts/#Montserrat"></Setter>
         </Style>

@@ -1,14 +1,18 @@
 ﻿<Window x:Class="Free_Spotify.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:fa="http://schemas.fontawesome.io/icons/"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:fa="http://schemas.fontawesome.io/icons/"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        WindowStyle="None"
+        WindowStyle="SingleBorderWindow"
         Background="Transparent"
-        AllowsTransparency="True"
+        AllowsTransparency="False"
         Title="Free Spotify" MinHeight="600" MinWidth="800" Height="600" Width="800" MouseLeftButtonDown="MoveWindow_Down" ResizeMode="CanResizeWithGrip" WindowStartupLocation="CenterScreen" Icon="/Assets/Square44x44Logo.altform-unplated_targetsize-32.png">
-    <Border Background="Black" CornerRadius="6" BorderThickness="1" BorderBrush="Gray">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="30" ResizeBorderThickness="3"/>
+    </WindowChrome.WindowChrome>
+    <Border Background="Black"  BorderThickness="1" BorderBrush="Gray">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
@@ -29,16 +33,16 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0" Style="{StaticResource RoundedButtonStyle}" BorderThickness="0" Padding="10" Click="MinimizeIcon_Click">
+                    <Button WindowChrome.IsHitTestVisibleInChrome="True" Grid.Column="0" Style="{StaticResource RoundedButtonStyle}" BorderThickness="0" Padding="10" Click="MinimizeIcon_Click">
                         <Image Source="/Assets/minimize-icon.png" Stretch="Uniform"/>
                     </Button>
-                    <Button Grid.Column="1" Style="{StaticResource RoundedButtonStyle}" BorderThickness="0" Padding="10" Click="MaximizedIcon_Click">
+                    <Button WindowChrome.IsHitTestVisibleInChrome="True" Grid.Column="1" Style="{StaticResource RoundedButtonStyle}" BorderThickness="0" Padding="10" Click="MaximizedIcon_Click">
                         <Grid>
                             <Image x:Name="iconMaximizedDefault" Source="/Assets/maximize-icon.png" Stretch="Uniform"/>
                             <Image Visibility="Hidden" x:Name="iconMaximizedSelected" Source="/Assets/maximize-icon-selected.png" Stretch="Uniform"/>
                         </Grid>
                     </Button>
-                    <Button Grid.Column="2" Style="{StaticResource RoundedButtonExitStyle}" BorderThickness="0" Padding="10" Click="CloseWindow_Click">
+                    <Button WindowChrome.IsHitTestVisibleInChrome="True" Grid.Column="2" Style="{StaticResource RoundedButtonExitStyle}" BorderThickness="0" Padding="10" Click="CloseWindow_Click">
                         <Image Source="/Assets/close-icon.png" Stretch="Uniform"/>
                     </Button>
                 </Grid>
