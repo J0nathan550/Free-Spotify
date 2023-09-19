@@ -6,7 +6,9 @@
     <RootNamespace>Free_Spotify</RootNamespace>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
-    <ApplicationIcon>Assets\Spotify_icon.ico</ApplicationIcon>
+    <ApplicationIcon>Assets\spotify-icon-png-15398-Windows.ico</ApplicationIcon>
+    <Company>J0nathan550</Company>
+    <Version>1.0.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,7 +19,10 @@
     <None Remove="Assets\maximize-icon-selected.png" />
     <None Remove="Assets\maximize-icon.png" />
     <None Remove="Assets\minimize-icon.png" />
+    <None Remove="Assets\spotify-icon-png-15398-Windows.ico" />
     <None Remove="Assets\Spotify_icon.png" />
+    <None Remove="Assets\Spotify_icon.svg-_1_.ico" />
+    <None Remove="Assets\Spotify_icon.svg-_3_.ico" />
     <None Remove="Assets\Square44x44Logo.altform-unplated_targetsize-16.png" />
     <None Remove="Assets\Square44x44Logo.altform-unplated_targetsize-32.png" />
     <None Remove="Assets\Square44x44Logo.altform-unplated_targetsize-48.png" />
@@ -43,7 +48,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Assets\Spotify_icon.ico" />
+    <Content Include="Assets\spotify-icon-png-15398-Windows.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -53,7 +58,6 @@
   <ItemGroup>
     <PackageReference Include="DiscordRichPresence" Version="1.2.1.24" />
     <PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" />
-    <PackageReference Include="ModernUI.WPF" Version="1.0.9" />
     <PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="SpotifyExplode" Version="1.0.7" />
     <PackageReference Include="YoutubeExplode" Version="6.3.4" />
@@ -63,6 +67,7 @@
     <Resource Include="Assets\close-icon.png" />
     <Resource Include="Assets\SplashScreen.scale-100.png" />
     <Resource Include="Assets\SplashScreen.scale-200.png" />
+    <Resource Include="Assets\spotify-icon-png-15398-Windows.ico" />
     <Resource Include="Fonts\Montserrat-ThinItalic.ttf">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>

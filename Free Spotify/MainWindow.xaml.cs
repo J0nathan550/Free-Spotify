@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using Free_Spotify.Pages;
+using System.Windows;
 using System.Windows.Input;
 
 namespace Free_Spotify
@@ -22,15 +23,9 @@ namespace Free_Spotify
             {
                 window = mainWindow;
             }
+#pragma warning disable CS8603 // Possible null reference return.
             return window;
-        }
-
-        /// <summary>
-        /// Function that moves window arround. Without it, regular window that has no style will not move.
-        /// </summary>
-        private async void MoveWindow_Down(object sender, MouseButtonEventArgs e)
-        {
-            await Dispatcher.BeginInvoke(() => { DragMove(); });
+#pragma warning restore CS8603 // Possible null reference return.
         }
 
         /// <summary>
@@ -50,14 +45,11 @@ namespace Free_Spotify
                 if (WindowState != WindowState.Maximized)
                 {
                     WindowState = WindowState.Maximized;
-                    iconMaximizedDefault.Visibility = Visibility.Hidden;
-                    iconMaximizedSelected.Visibility = Visibility.Visible;
+
                 }
                 else
                 {
                     WindowState = WindowState.Normal;
-                    iconMaximizedDefault.Visibility = Visibility.Visible;
-                    iconMaximizedSelected.Visibility = Visibility.Hidden;
                 }
             });
         }
@@ -68,6 +60,32 @@ namespace Free_Spotify
         private void CloseWindow_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (MainScreenPage.instance != null)
+            {
+                MainScreenPage.instance.searchPage.cancelTimer.Cancel();
+                MainScreenPage.instance.searchPage.countTimer.Stop();
+            }
+        }
+
+        private async void WindowProcedure(object sender, System.EventArgs e)
+        {
+            await Dispatcher.BeginInvoke(() =>
+            {
+                if (WindowState != WindowState.Maximized)
+                {
+                    iconMaximizedDefault.Visibility = Visibility.Visible;
+                    iconMaximizedSelected.Visibility = Visibility.Hidden;
+                }
+                else
+                {
+                    iconMaximizedDefault.Visibility = Visibility.Hidden;
+                    iconMaximizedSelected.Visibility = Visibility.Visible;
+                }
+            });
         }
     }
 }

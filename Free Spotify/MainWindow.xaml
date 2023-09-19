@@ -8,10 +8,13 @@
         WindowStyle="SingleBorderWindow"
         Background="Transparent"
         AllowsTransparency="False"
-        Title="Free Spotify" MinHeight="600" MinWidth="800" Height="600" Width="800" MouseLeftButtonDown="MoveWindow_Down" ResizeMode="CanResizeWithGrip" WindowStartupLocation="CenterScreen" Icon="/Assets/Square44x44Logo.altform-unplated_targetsize-32.png">
+        Title="Free Spotify" MinHeight="600" MinWidth="800" Height="600" Width="800" ResizeMode="CanResizeWithGrip" WindowStartupLocation="CenterScreen" Icon="/Assets/Square44x44Logo.altform-unplated_targetsize-32.png" Closing="Window_Closing" StateChanged="WindowProcedure">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="30" ResizeBorderThickness="3"/>
     </WindowChrome.WindowChrome>
+    <Window.TaskbarItemInfo>
+        <TaskbarItemInfo x:Name="progressSongTaskBar" />
+    </Window.TaskbarItemInfo>
     <Border Background="Black"  BorderThickness="1" BorderBrush="Gray">
         <Grid>
             <Grid.RowDefinitions>
@@ -25,8 +28,8 @@
                     <ColumnDefinition/>
                     <ColumnDefinition Width="100"/>
                 </Grid.ColumnDefinitions>
-                <Image Margin="5,5,2,5" Source="/Assets/Square44x44Logo.altform-unplated_targetsize-32.png"/>
-                <TextBlock  Margin="3, 0, 0, 0" Grid.Column="1" Foreground="White" Text="Free Spotify" VerticalAlignment="Center"/>
+                <Image  Margin="5,5,2,5" Source="/Assets/Square44x44Logo.altform-unplated_targetsize-32.png"/>
+                <Label Margin="3, 0, 0, 0" Grid.Column="1" Foreground="White" Content="Free Spotify" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"/>
                 <Grid Grid.Column="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
@@ -69,7 +72,7 @@
                         <Label Margin="5,0,0,0" x:Name="songTitle" Foreground="White" Content="" Padding="0" FontSize="12" VerticalContentAlignment="Bottom" Style="{StaticResource fontLabelMontserrat}"/>
                         <Label Margin="5,0,0,0" x:Name="songAuthor" Grid.Row="1" Foreground="LightGray" Content="" Padding="0" FontSize="12" Style="{StaticResource fontLabelMontserrat}"/>
                     </Grid>
-                    <fa:FontAwesome Cursor="Hand" x:Name="favoriteSongButton" Grid.Column="2" Icon="HeartOutline" FontSize="16" Foreground="Gray" VerticalAlignment="Center"/>
+                    <fa:FontAwesome Cursor="Hand" x:Name="favoriteSongButton" Visibility="Hidden" Grid.Column="2" Icon="HeartOutline" FontSize="16" Foreground="Gray" VerticalAlignment="Center"/>
                 </Grid>
                 <Grid Grid.Column="1">
                     <Grid.RowDefinitions>

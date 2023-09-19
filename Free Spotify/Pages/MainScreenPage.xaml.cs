@@ -6,20 +6,20 @@ namespace Free_Spotify.Pages
 {
     public partial class MainScreenPage : Page
     {
-        private HomeViewPage? homePage = new();
-        private SearchViewPage? searchPage = new();
+        public static MainScreenPage? instance;
+        public HomeViewPage homePage = new();
+        public SearchViewPage searchPage = new();
 
         public MainScreenPage()
         {
             InitializeComponent();
+            instance = this;    
         }
 
         private async void buttonHomePage_MouseDown(object sender, MouseButtonEventArgs e)
         {
             await Dispatcher.InvokeAsync(() =>
             {
-                searchPage = null;
-                homePage = new();
                 GC.Collect();
                 LoadPageMainView.Navigate(homePage);
             });
@@ -29,8 +29,6 @@ namespace Free_Spotify.Pages
         {
             await Dispatcher.InvokeAsync(() =>
             {
-                searchPage = new();
-                homePage = null;
                 GC.Collect();
                 LoadPageMainView.Navigate(searchPage);
             });
