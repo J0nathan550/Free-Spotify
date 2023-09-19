@@ -49,7 +49,7 @@
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 Padding="10"
                                 BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="0,6,0,0">
+                                CornerRadius="0,0,0,0">
                             <!-- Adjust the CornerRadius as needed -->
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
