@@ -85,7 +85,8 @@ namespace Free_Spotify.Pages
                     }
                     if (mediaFoundationReader != null)
                     {
-
+                        MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressState = TaskbarItemProgressState.Paused;
+                        MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressValue = MainWindow.GetMainWindow(null).musicProgress.Value / track.DurationMs;
                         if (mediaFoundationReader.CurrentTime.Hours > 0)
                         {
                             MainWindow.GetMainWindow(null).startOfSong.Content = new TimeSpan(0, 0, 0, 0, (int)MainWindow.GetMainWindow(null).musicProgress.Value).ToString(@"h\:m\:ss");
