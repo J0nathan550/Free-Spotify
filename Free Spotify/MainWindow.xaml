@@ -28,7 +28,16 @@
                     <ColumnDefinition/>
                     <ColumnDefinition Width="100"/>
                 </Grid.ColumnDefinitions>
-                <Image  Margin="5,5,2,5" Source="/Assets/Square44x44Logo.altform-unplated_targetsize-32.png"/>
+                <Menu Background="Transparent" WindowChrome.IsHitTestVisibleInChrome="True" Grid.ColumnSpan="2">
+                    <MenuItem Width="33" Height="30">
+                        <MenuItem Header="Настройки..."/>
+                        <Separator/>
+                        <MenuItem Header="О Программе..."/>
+                        <Separator/>
+                        <MenuItem Header="Выйти..."/>
+                    </MenuItem>
+                </Menu>
+                <Image Panel.ZIndex="-1" Margin="5,5,2,5" Source="/Assets/Square44x44Logo.altform-unplated_targetsize-32.png"/>
                 <Label Margin="3, 0, 0, 0" Grid.Column="1" Foreground="White" Content="Free Spotify" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"/>
                 <Grid Grid.Column="2">
                     <Grid.ColumnDefinitions>

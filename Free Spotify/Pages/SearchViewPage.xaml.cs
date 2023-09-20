@@ -576,10 +576,19 @@ namespace Free_Spotify.Pages
             {
                 if (isSongPlaying)
                 {
+                    if (IsSongRepeat)
+                    {
+                        RepeatSongBehavior();
+                    }
                     StopSound();
                     return;
                 }
                 isSongPlaying = true;
+                await Dispatcher.BeginInvoke(() =>
+                {
+                    MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressState = TaskbarItemProgressState.Indeterminate;
+                    MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressValue = 0;
+                });
                 SpotifyClient spotifyYouTubeRetrive = new SpotifyClient();
                 string? youtubeID = await spotifyYouTubeRetrive.Tracks.GetYoutubeIdAsync(track.Url);
                 YoutubeClient? youtube = new YoutubeClient();
@@ -596,11 +605,6 @@ namespace Free_Spotify.Pages
                         {
                             if (waveOut != null)
                             {
-                                await Dispatcher.BeginInvoke(() =>
-                                {
-                                    MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressState = TaskbarItemProgressState.Indeterminate;
-                                    MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressValue = 0;
-                                });
                                 waveOut.Init(blockAlignedStream);
                                 waveOut.Play();
                                 countTimer.Start();
@@ -644,6 +648,8 @@ namespace Free_Spotify.Pages
             }
             catch (ArgumentException)
             {
+                MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressState = TaskbarItemProgressState.Error;
+                MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressValue = 0;
                 MessageBox.Show(@"К сожалению, эта песня не существует на YouTube чтобы её можно было проиграть. Поищите другую песню ¯\_(ツ)_/¯", "☹", MessageBoxButton.OK);
                 StopSound();
             }
