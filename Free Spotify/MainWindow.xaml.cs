@@ -79,11 +79,13 @@ namespace Free_Spotify
                 {
                     iconMaximizedDefault.Visibility = Visibility.Visible;
                     iconMaximizedSelected.Visibility = Visibility.Hidden;
+                    windowBackground.Padding = new Thickness(0);
                 }
                 else
                 {
                     iconMaximizedDefault.Visibility = Visibility.Hidden;
                     iconMaximizedSelected.Visibility = Visibility.Visible;
+                    windowBackground.Padding = new Thickness(3);
                 }
             });
         }

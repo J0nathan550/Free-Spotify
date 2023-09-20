@@ -25,11 +25,11 @@ namespace Free_Spotify.Pages
         public CancellationTokenSource cancelTimer = new CancellationTokenSource();
         private TrackSearchResult track = new TrackSearchResult(); // a track info to prevent stacking songs.
         private MediaFoundationReader? mediaFoundationReader = null; // used to render precise position of song and length.  
-        private WaveStream? blockAlignedStream = null; // stream of sound to prevent stacking
         private WaveOut waveOut = new WaveOut(); // current song to handle pause system and volume.
         private SearchFilter filter = SearchFilter.Track; // used to search something certain in Search Engine.
         private bool isTextErased = false; // used to remove the tip
         private bool isSongPlaying = false; // nice little boolean to stop song when you change song. 
+        private Border playingBorder = new Border();
         private DateTime lastClick = DateTime.MinValue; // a penalty if you try to spam, used to remove stacking songs.
         private string githubLink = string.Empty; // later will add the link to the public repository (IF EVER!)
         private bool IsSongRepeat = false;
@@ -292,70 +292,6 @@ namespace Free_Spotify.Pages
                                             Border background = new Border();
                                             background.CornerRadius = new CornerRadius(6);
                                             background.Cursor = Cursors.Hand;
-                                            background.MouseDown += new MouseButtonEventHandler(async (o, i) =>
-                                            {
-                                                DateTime now = DateTime.Now;
-                                                if ((now - lastClick).TotalMilliseconds < 1500)
-                                                {
-                                                    lastClick = now;
-                                                    return;
-                                                }
-                                                lastClick = now;
-                                                if (isSongPlaying)
-                                                {
-                                                    if (IsSongRepeat)
-                                                    {
-                                                        RepeatSongBehavior();
-                                                    }
-                                                    StopSound();
-                                                    return;
-                                                }
-                                                await Task.Run(async () =>
-                                                {
-                                                    try
-                                                    {
-
-                                                        this.track = track;
-                                                        PlaySound();
-                                                        await Dispatcher.BeginInvoke(() =>
-                                                        {
-                                                            MainWindow.GetMainWindow(null).musicToggle.Icon = FontAwesomeIcon.Pause;
-                                                            MainWindow.GetMainWindow(null).songTitle.Content = track.Title;
-                                                            MainWindow.GetMainWindow(null).songAuthor.Content = track.Artists[0].Name;
-
-                                                            MainWindow.GetMainWindow(null).favoriteSongButton.Visibility = Visibility.Visible;
-
-                                                            BitmapImage sourceImageOfTrack = new BitmapImage();
-                                                            sourceImageOfTrack.BeginInit();
-                                                            sourceImageOfTrack.CreateOptions = BitmapCreateOptions.None;
-                                                            sourceImageOfTrack.CacheOption = BitmapCacheOption.None;
-                                                            sourceImageOfTrack.UriSource = new Uri(track.Album.Images[0].Url);
-                                                            sourceImageOfTrack.EndInit();
-
-                                                            MainWindow.GetMainWindow(null).iconTrack.Source = sourceImageOfTrack;
-
-                                                            uint hourMillisecond = 3600000;
-                                                            if (track.DurationMs > hourMillisecond)
-                                                            {
-                                                                MainWindow.GetMainWindow(null).endOfSong.Content = $"{TimeSpan.FromMilliseconds(track.DurationMs).ToString(@"h\:m\:ss")}";
-                                                            }
-                                                            else
-                                                            {
-                                                                MainWindow.GetMainWindow(null).endOfSong.Content = $"{TimeSpan.FromMilliseconds(track.DurationMs).ToString(@"m\:ss")}";
-                                                            }
-                                                        });
-                                                    }
-                                                    catch (Exception ex)
-                                                    {
-                                                        MessageBox.Show(ex.GetType().Name);
-                                                        MessageBox.Show(ex.Message);
-                                                        waveOut?.Stop();
-                                                        isSongPlaying = false;
-                                                        countTimer.Stop();
-                                                        GC.Collect();
-                                                    }
-                                                });
-                                            });
                                             background.Background = new SolidColorBrush(Color.FromArgb(0x00, 0x21, 0x21, 0x21));
                                             background.Width = 256;
                                             background.Height = 256;
@@ -414,6 +350,80 @@ namespace Free_Spotify.Pages
                                             Grid.SetRow(captionBorder, 1);
                                             Grid.SetRow(DescriptionOfTrack, 1);
                                             wrapPanelVisual.Children.Add(background);
+
+                                            background.MouseDown += new MouseButtonEventHandler(async (o, i) =>
+                                            {
+                                                DateTime now = DateTime.Now;
+                                                if ((now - lastClick).TotalMilliseconds < 1500)
+                                                {
+                                                    lastClick = now;
+                                                    return;
+                                                }
+                                                lastClick = now;
+                                                if (isSongPlaying)
+                                                {
+                                                    if (IsSongRepeat)
+                                                    {
+                                                        RepeatSongBehavior();
+                                                    }
+                                                    StopSound();
+                                                    return;
+                                                }
+                                                await Task.Run(async () =>
+                                                {
+                                                    try
+                                                    {
+
+                                                        this.track = track;
+                                                        PlaySound();
+                                                        await Dispatcher.BeginInvoke(() =>
+                                                        {
+                                                            MainWindow.GetMainWindow(null).musicToggle.Icon = FontAwesomeIcon.Pause;
+                                                            MainWindow.GetMainWindow(null).songTitle.Content = track.Title;
+                                                            MainWindow.GetMainWindow(null).songAuthor.Content = track.Artists[0].Name;
+
+                                                            MainWindow.GetMainWindow(null).favoriteSongButton.Visibility = Visibility.Visible;
+                                                            captionBorder.BorderThickness = new Thickness(1);
+                                                            captionBorder.BorderBrush = new SolidColorBrush(Color.FromArgb(0xFF, 0x00, 0xFF, 0x00));
+                                                            if (playingBorder != null)
+                                                            {
+                                                                playingBorder.BorderThickness = new Thickness(0);
+                                                            }
+                                                            playingBorder = captionBorder;
+
+                                                            BitmapImage sourceImageOfTrack = new BitmapImage();
+                                                            sourceImageOfTrack.BeginInit();
+                                                            sourceImageOfTrack.CreateOptions = BitmapCreateOptions.None;
+                                                            sourceImageOfTrack.CacheOption = BitmapCacheOption.None;
+                                                            sourceImageOfTrack.UriSource = new Uri(track.Album.Images[0].Url);
+                                                            sourceImageOfTrack.EndInit();
+
+                                                            MainWindow.GetMainWindow(null).iconTrack.Source = sourceImageOfTrack;
+                                                            MainWindow.GetMainWindow(null).iconTrack.Source = sourceImageOfTrack;
+
+
+                                                            uint hourMillisecond = 3600000;
+                                                            if (track.DurationMs > hourMillisecond)
+                                                            {
+                                                                MainWindow.GetMainWindow(null).endOfSong.Content = $"{TimeSpan.FromMilliseconds(track.DurationMs).ToString(@"h\:m\:ss")}";
+                                                            }
+                                                            else
+                                                            {
+                                                                MainWindow.GetMainWindow(null).endOfSong.Content = $"{TimeSpan.FromMilliseconds(track.DurationMs).ToString(@"m\:ss")}";
+                                                            }
+                                                        });
+                                                    }
+                                                    catch (Exception ex)
+                                                    {
+                                                        MessageBox.Show(ex.GetType().Name);
+                                                        MessageBox.Show(ex.Message);
+                                                        waveOut?.Stop();
+                                                        isSongPlaying = false;
+                                                        countTimer.Stop();
+                                                        GC.Collect();
+                                                    }
+                                                });
+                                            });
                                         });
                                         break;
                                     }
@@ -537,14 +547,13 @@ namespace Free_Spotify.Pages
         {
             try
             {
+                await Dispatcher.BeginInvoke(() =>
+                {
+                    playingBorder.BorderThickness = new Thickness(0);
+                });
                 if (waveOut != null)
                 {
                     waveOut.Stop();
-                }
-                if (blockAlignedStream != null)
-                {
-                    blockAlignedStream.Flush();
-                    blockAlignedStream.Close();
                 }
                 countTimer.Stop();
                 isSongPlaying = false;
@@ -594,7 +603,7 @@ namespace Free_Spotify.Pages
                 var video = youtube.Videos.GetAsync($"https://youtube.com/watch?v={youtubeID}");
                 var streamManifest = youtube.Videos.Streams.GetManifestAsync($"https://youtube.com/watch?v={youtubeID}");
                 var streamInfo = streamManifest.Result.GetAudioStreams().GetWithHighestBitrate();
-                using (blockAlignedStream = new BlockAlignReductionStream(
+                using (var blockAlignedStream = new BlockAlignReductionStream(
                         WaveFormatConversionStream.CreatePcmStream(mediaFoundationReader =
                         new MediaFoundationReader(streamInfo.Url))))
                 {
@@ -622,8 +631,18 @@ namespace Free_Spotify.Pages
                                         MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressState = TaskbarItemProgressState.Indeterminate;
                                         MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressValue = 0;
                                     });
+                                    if (waveOut != null && IsSongRepeat && waveOut.PlaybackState == PlaybackState.Stopped)
+                                    {
+                                        await Dispatcher.BeginInvoke(() =>
+                                        {
+                                            MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressState = TaskbarItemProgressState.Indeterminate;
+                                            MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressValue = 0;
+                                        });
+                                        StopSound();
+                                        PlaySound();
+                                        return;
+                                    }
                                     StopSound();
-                                    PlaySound();
                                     return;
                                 }
                                 StopSound();

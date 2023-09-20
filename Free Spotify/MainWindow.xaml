@@ -15,7 +15,7 @@
     <Window.TaskbarItemInfo>
         <TaskbarItemInfo x:Name="progressSongTaskBar" />
     </Window.TaskbarItemInfo>
-    <Border Background="Black"  BorderThickness="1" BorderBrush="Gray">
+    <Border Name="windowBackground" Background="Black"  BorderThickness="1" BorderBrush="Gray">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
@@ -62,17 +62,17 @@
             <Frame Name="LoadingPagesFrame" NavigationUIVisibility="Hidden" Grid.Row="1" Source="/Pages/MainScreenPage.xaml"/>
             <Grid x:Name="mp3PlayerHolder" Visibility="Visible" Grid.Row="2">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="210"/>
                     <ColumnDefinition/>
-                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="1.57*"/>
+                    <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <Grid Grid.Column="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="70"/>
+                        <ColumnDefinition Width="6*"/>
                         <ColumnDefinition/>
-                        <ColumnDefinition Width="25"/>
                     </Grid.ColumnDefinitions>
-                    <Image Name="iconTrack" Margin="10"/>
+                    <Image Name="iconTrack"  Margin="10"/>
                     <Grid Grid.Column="1">
                         <Grid.RowDefinitions>
                             <RowDefinition/>
@@ -124,7 +124,7 @@
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="50"/>
-                            <ColumnDefinition />
+                            <ColumnDefinition/>
                             <ColumnDefinition Width="50"/>
                         </Grid.ColumnDefinitions>
                         <Label Padding="3" Name="startOfSong" Content="0:00" Foreground="White" Style="{StaticResource fontLabelMontserrat}" HorizontalContentAlignment="Center" VerticalContentAlignment="Top"></Label>
