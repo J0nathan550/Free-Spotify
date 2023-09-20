@@ -58,6 +58,7 @@
 
   <ItemGroup>
     <PackageReference Include="Autoupdater.NET.Official" Version="1.8.4" />
+    <PackageReference Include="DiscordRichPresence" Version="1.2.1.24" />
     <PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" />
     <PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="SpotifyExplode" Version="1.0.7" />
@@ -85,12 +86,6 @@
     <Resource Include="Assets\Square44x44Logo.altform-unplated_targetsize-16.png" />
     <Resource Include="Assets\Square44x44Logo.altform-unplated_targetsize-32.png" />
     <Resource Include="Assets\Square44x44Logo.altform-unplated_targetsize-48.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="discord_game_sdk.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>
