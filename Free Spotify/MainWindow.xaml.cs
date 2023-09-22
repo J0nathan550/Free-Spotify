@@ -1,6 +1,6 @@
-﻿using Free_Spotify.Pages;
+﻿using DiscordRPC;
+using Free_Spotify.Pages;
 using System.Windows;
-using System.Windows.Input;
 
 namespace Free_Spotify
 {
@@ -10,10 +10,21 @@ namespace Free_Spotify
     public partial class MainWindow : Window
     {
         public static MainWindow? window;
-
+        public DiscordRpcClient discordClient = new DiscordRpcClient("1154023388805873744");
         public MainWindow()
         {
             InitializeComponent();
+            discordClient.Initialize();
+            discordClient.SetPresence(new RichPresence()
+            {
+                Details = "Ничего не делает...",
+                Assets = new Assets()
+                {
+                    LargeImageKey = "logo",
+                    LargeImageText = "Free Spotify",
+                },
+                Timestamps = Timestamps.Now
+            });
             GetMainWindow(this);
         }
 
@@ -41,7 +52,8 @@ namespace Free_Spotify
         /// </summary>
         private async void MaximizedIcon_Click(object sender, RoutedEventArgs e)
         {
-            await Dispatcher.BeginInvoke(() => {
+            await Dispatcher.BeginInvoke(() =>
+            {
                 if (WindowState != WindowState.Maximized)
                 {
                     WindowState = WindowState.Maximized;

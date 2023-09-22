@@ -10,7 +10,6 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="60"/>
-            <RowDefinition Height="50"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Border CornerRadius="20" Background="#242424" BorderThickness="2" BorderBrush="White">
@@ -25,22 +24,6 @@
                 <fa:FontAwesome MouseDown="removeEverythingFromSearchBoxButton_MouseDown" Cursor="Hand" Visibility="Hidden" Grid.Column="2" x:Name="removeEverythingFromSearchBoxButton" Icon="Remove" FontSize="24" Foreground="White" VerticalAlignment="Center"/>
             </Grid>
         </Border>
-        <ScrollViewer Margin="12,10,0,0" Grid.Row="1" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden">
-            <WrapPanel>
-                <Border x:Name="artistsTag" MouseDown="ArtistsTag_MouseDown" Cursor="Hand" Margin="5,0,0,0" Background="#232323" Padding="7" CornerRadius="10">
-                    <TextBlock x:Name="artistsTagText" Style="{StaticResource fontMontserrat}" FontWeight="Medium" Text="Исполнители" Foreground="White"/>
-                </Border>
-                <Border x:Name="playlistTag" MouseDown="PlaylistTag_MouseDown" Cursor="Hand" Margin="5,0,0,0" Background="#232323" Padding="7" CornerRadius="10">
-                    <TextBlock x:Name="playlistTagText" Style="{StaticResource fontMontserrat}" FontWeight="Medium" Text="Плейлисты" Foreground="White"/>
-                </Border>
-                <Border x:Name="trackTag" MouseDown="TrackTag_MouseDown" Cursor="Hand" Margin="5,0,0,0" Background="White" Padding="7" CornerRadius="10">
-                    <TextBlock x:Name="trackTagText" Style="{StaticResource fontMontserrat}" FontWeight="Medium" Text="Треки" Foreground="Black"/>
-                </Border>
-                <Border x:Name="albumsTag" MouseDown="AlbumsTag_MouseDown" Cursor="Hand" Margin="5,0,0,0" Background="#232323" Padding="7" CornerRadius="10">
-                    <TextBlock x:Name="albumsTagText" Style="{StaticResource fontMontserrat}" FontWeight="Medium" Text="Альбомы" Foreground="White"/>
-                </Border>
-            </WrapPanel>
-        </ScrollViewer>
         <ScrollViewer Grid.Row="2" Margin="5" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
             <Grid x:Name="searchVisual">
             </Grid>

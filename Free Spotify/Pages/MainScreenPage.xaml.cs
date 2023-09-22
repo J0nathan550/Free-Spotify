@@ -13,7 +13,7 @@ namespace Free_Spotify.Pages
         public MainScreenPage()
         {
             InitializeComponent();
-            instance = this;    
+            instance = this;
         }
 
         private async void buttonHomePage_MouseDown(object sender, MouseButtonEventArgs e)
