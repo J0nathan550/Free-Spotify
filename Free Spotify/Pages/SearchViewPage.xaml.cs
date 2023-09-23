@@ -49,32 +49,32 @@ namespace Free_Spotify.Pages
                 {
                     if (mediaFoundationReader != null)
                     {
-                        MainWindow.GetMainWindow(null).musicProgress.Value = mediaFoundationReader.CurrentTime.TotalMilliseconds;
-                        MainWindow.GetMainWindow(null).musicProgress.Maximum = track.DurationMs;
+                        MainWindow.window.musicProgress.Value = mediaFoundationReader.CurrentTime.TotalMilliseconds;
+                        MainWindow.window.musicProgress.Maximum = track.DurationMs;
 
-                        MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressState = TaskbarItemProgressState.Normal;
-                        MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressValue = mediaFoundationReader.CurrentTime.TotalMilliseconds / track.DurationMs;
+                        MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Normal;
+                        MainWindow.window.progressSongTaskBar.ProgressValue = mediaFoundationReader.CurrentTime.TotalMilliseconds / track.DurationMs;
 
                         if (mediaFoundationReader.CurrentTime.Hours > 0)
                         {
-                            MainWindow.GetMainWindow(null).startOfSong.Content = mediaFoundationReader.CurrentTime.ToString(@"h\:m\:ss");
+                            MainWindow.window.startOfSong.Content = mediaFoundationReader.CurrentTime.ToString(@"h\:m\:ss");
                         }
                         else
                         {
-                            MainWindow.GetMainWindow(null).startOfSong.Content = mediaFoundationReader.CurrentTime.ToString(@"m\:ss");
+                            MainWindow.window.startOfSong.Content = mediaFoundationReader.CurrentTime.ToString(@"m\:ss");
                         }
                     }
                 });
             });
 
             // pause button, switches the sprite of playing (pausing) song.
-            MainWindow.GetMainWindow(null).musicToggle.MouseDown += new MouseButtonEventHandler((o, i) =>
+            MainWindow.window.musicToggle.MouseDown += new MouseButtonEventHandler((o, i) =>
             {
                 PausingSong();
             });
 
             // Handler that if you press on thumb of the slider, it will change the position of the song. Also pauses the song to prevent sound buffer to break.
-            MainWindow.GetMainWindow(null).musicProgress.AddHandler(Thumb.DragDeltaEvent, new DragDeltaEventHandler(async (sender, e) =>
+            MainWindow.window.musicProgress.AddHandler(Thumb.DragDeltaEvent, new DragDeltaEventHandler(async (sender, e) =>
             {
                 await Dispatcher.BeginInvoke(() =>
                 {
@@ -87,22 +87,22 @@ namespace Free_Spotify.Pages
                     {
                         if (mediaFoundationReader.CurrentTime.Hours > 0)
                         {
-                            MainWindow.GetMainWindow(null).startOfSong.Content = new TimeSpan(0, 0, 0, 0, (int)MainWindow.GetMainWindow(null).musicProgress.Value).ToString(@"h\:m\:ss");
+                            MainWindow.window.startOfSong.Content = new TimeSpan(0, 0, 0, 0, (int)MainWindow.window.musicProgress.Value).ToString(@"h\:m\:ss");
                         }
                         else
                         {
-                            MainWindow.GetMainWindow(null).startOfSong.Content = new TimeSpan(0, 0, 0, 0, (int)MainWindow.GetMainWindow(null).musicProgress.Value).ToString(@"m\:ss");
+                            MainWindow.window.startOfSong.Content = new TimeSpan(0, 0, 0, 0, (int)MainWindow.window.musicProgress.Value).ToString(@"m\:ss");
                         }
                     }
                 });
             }));
 
             // unpauses the song and renders once again the player when you release the thumb button.
-            MainWindow.GetMainWindow(null).musicProgress.AddHandler(Thumb.DragCompletedEvent, new DragCompletedEventHandler((sender, e) =>
+            MainWindow.window.musicProgress.AddHandler(Thumb.DragCompletedEvent, new DragCompletedEventHandler((sender, e) =>
             {
                 if (mediaFoundationReader != null)
                 {
-                    MainWindow.GetMainWindow(null).discordClient.SetPresence(new RichPresence()
+                    MainWindow.window.discordClient.SetPresence(new RichPresence()
                     {
                         Details = "Слушает музыку...",
                         State = $"{track.Artists[0].Name} - {track.Title}",
@@ -113,8 +113,8 @@ namespace Free_Spotify.Pages
                         },
                         Timestamps = new Timestamps()
                         {
-                            Start = Timestamps.Now.Start,
-                            End = Timestamps.FromTimeSpan(TimeSpan.FromMilliseconds(track.DurationMs)).End
+                            Start = DateTime.UtcNow.AddMilliseconds(-MainWindow.window.musicProgress.Value),
+                            End = DateTime.UtcNow.AddMilliseconds(MainWindow.window.musicProgress.Maximum - MainWindow.window.musicProgress.Value)
                         },
                         Buttons = new DiscordRPC.Button[]
                         {
@@ -130,13 +130,14 @@ namespace Free_Spotify.Pages
                             }
                         }
                     });
-                    mediaFoundationReader.CurrentTime = new TimeSpan(0, 0, 0, 0, (int)MainWindow.GetMainWindow(null).musicProgress.Value);
+                    
+                    mediaFoundationReader.CurrentTime = new TimeSpan(0, 0, 0, 0, (int)MainWindow.window.musicProgress.Value);
                 }
                 PausingSong();
             }));
 
             // volume slider, manages the volume of all songs. Later will be stored in saving system.
-            MainWindow.GetMainWindow(null).volumeSlider.AddHandler(Thumb.DragDeltaEvent, new DragDeltaEventHandler(async (sender, e) =>
+            MainWindow.window.volumeSlider.AddHandler(Thumb.DragDeltaEvent, new DragDeltaEventHandler(async (sender, e) =>
             {
                 await Dispatcher.BeginInvoke(() =>
                 {
@@ -144,7 +145,7 @@ namespace Free_Spotify.Pages
                     {
                         if (waveOut != null)
                         {
-                            waveOut.Volume = (float)MainWindow.GetMainWindow(null).volumeSlider.Value;
+                            waveOut.Volume = (float)MainWindow.window.volumeSlider.Value;
                         }
                     }
                     catch { }
@@ -152,7 +153,7 @@ namespace Free_Spotify.Pages
             }));
 
             // repeat song button, repeats the song.
-            MainWindow.GetMainWindow(null).repeatSong.MouseDown += (sender, e) =>
+            MainWindow.window.repeatSong.MouseDown += (sender, e) =>
             {
                 RepeatSongBehavior();
             };
@@ -168,14 +169,14 @@ namespace Free_Spotify.Pages
             {
                 await Dispatcher.BeginInvoke(() =>
                 {
-                    MainWindow.GetMainWindow(null).repeatSong.Foreground = new SolidColorBrush(Colors.Lime);
+                    MainWindow.window.repeatSong.Foreground = new SolidColorBrush(Colors.Lime);
                 });
             }
             else
             {
                 await Dispatcher.BeginInvoke(() =>
                 {
-                    MainWindow.GetMainWindow(null).repeatSong.Foreground = new SolidColorBrush(Colors.White);
+                    MainWindow.window.repeatSong.Foreground = new SolidColorBrush(Colors.White);
                 });
             }
         }
@@ -208,7 +209,8 @@ namespace Free_Spotify.Pages
                     if (waveOut.PlaybackState == PlaybackState.Paused)
                     {
                         waveOut.Resume();
-                        MainWindow.GetMainWindow(null).discordClient.SetPresence(new RichPresence()
+                        countTimer.Start();
+                        MainWindow.window.discordClient.SetPresence(new RichPresence()
                         {
                             Details = "Слушает музыку...",
                             State = $"{track.Artists[0].Name} - {track.Title}",
@@ -219,37 +221,36 @@ namespace Free_Spotify.Pages
                             },
                             Timestamps = new Timestamps()
                             {
-                                Start = Timestamps.Now.Start,
-                                End = Timestamps.FromTimeSpan(TimeSpan.FromMilliseconds(track.DurationMs)).End
+                                Start = DateTime.UtcNow.AddMilliseconds(-MainWindow.window.musicProgress.Value),
+                                End = DateTime.UtcNow.AddMilliseconds(MainWindow.window.musicProgress.Maximum - MainWindow.window.musicProgress.Value)
                             },
                             Buttons = new DiscordRPC.Button[]
+    {
+                            new DiscordRPC.Button()
                             {
-                                new DiscordRPC.Button()
-                                {
-                                    Label = "Послушать трек...",
-                                    Url = track.Url,
-                                },
-                                new DiscordRPC.Button()
-                                {
-                                    Label = "Free Spotify...",
-                                    Url = githubLink
-                                }
+                                Label = "Послушать трек...",
+                                Url = track.Url,
+                            },
+                            new DiscordRPC.Button()
+                            {
+                                Label = "Free Spotify...",
+                                Url = githubLink
                             }
+    }
                         });
-                        countTimer.Start();
-                        MainWindow.GetMainWindow(null).musicToggle.Icon = FontAwesomeIcon.Pause;
+                        MainWindow.window.musicToggle.Icon = FontAwesomeIcon.Pause;
                         if (mediaFoundationReader != null)
                         {
-                            MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressState = TaskbarItemProgressState.Normal;
-                            MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressValue = mediaFoundationReader.CurrentTime.TotalMilliseconds / track.DurationMs;
+                            MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Normal;
+                            MainWindow.window.progressSongTaskBar.ProgressValue = mediaFoundationReader.CurrentTime.TotalMilliseconds / track.DurationMs;
                         }
                         else
                         {
-                            MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressState = TaskbarItemProgressState.Error;
+                            MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Error;
                         }
                         return;
                     }
-                    MainWindow.GetMainWindow(null).discordClient.SetPresence(new RichPresence()
+                    MainWindow.window.discordClient.SetPresence(new RichPresence()
                     {
                         Details = "Поставил музыку на паузу...",
                         State = $"{track.Artists[0].Name} - {track.Title}",
@@ -262,21 +263,21 @@ namespace Free_Spotify.Pages
                     });
                     waveOut.Pause();
                     countTimer.Stop();
-                    MainWindow.GetMainWindow(null).musicToggle.Icon = FontAwesomeIcon.Play;
+                    MainWindow.window.musicToggle.Icon = FontAwesomeIcon.Play;
                     if (mediaFoundationReader != null)
                     {
-                        MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressState = TaskbarItemProgressState.Paused;
-                        MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressValue = mediaFoundationReader.CurrentTime.TotalMilliseconds / track.DurationMs;
+                        MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Paused;
+                        MainWindow.window.progressSongTaskBar.ProgressValue = mediaFoundationReader.CurrentTime.TotalMilliseconds / track.DurationMs;
                     }
                     else
                     {
-                        MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressState = TaskbarItemProgressState.Error;
+                        MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Error;
                     }
                 }
                 else
                 {
-                    MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressState = TaskbarItemProgressState.None;
-                    MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressValue = 0;
+                    MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.None;
+                    MainWindow.window.progressSongTaskBar.ProgressValue = 0;
                 }
             });
         }
@@ -445,11 +446,11 @@ namespace Free_Spotify.Pages
                                                             PlaySound();
                                                             await Dispatcher.BeginInvoke(() =>
                                                             {
-                                                                MainWindow.GetMainWindow(null).musicToggle.Icon = FontAwesomeIcon.Pause;
-                                                                MainWindow.GetMainWindow(null).songTitle.Content = track.Title;
-                                                                MainWindow.GetMainWindow(null).songAuthor.Content = track.Artists[0].Name;
+                                                                MainWindow.window.musicToggle.Icon = FontAwesomeIcon.Pause;
+                                                                MainWindow.window.songTitle.Content = track.Title;
+                                                                MainWindow.window.songAuthor.Content = track.Artists[0].Name;
 
-                                                                MainWindow.GetMainWindow(null).favoriteSongButton.Visibility = Visibility.Visible;
+                                                                MainWindow.window.favoriteSongButton.Visibility = Visibility.Visible;
                                                                 captionBorder.BorderThickness = new Thickness(1);
                                                                 captionBorder.BorderBrush = new SolidColorBrush(Color.FromArgb(0xFF, 0x00, 0xFF, 0x00));
                                                                 if (playingBorder != null)
@@ -465,18 +466,18 @@ namespace Free_Spotify.Pages
                                                                 sourceImageOfTrack.UriSource = new Uri(track.Album.Images[0].Url);
                                                                 sourceImageOfTrack.EndInit();
 
-                                                                MainWindow.GetMainWindow(null).iconTrack.Source = sourceImageOfTrack;
-                                                                MainWindow.GetMainWindow(null).iconTrack.Source = sourceImageOfTrack;
+                                                                MainWindow.window.iconTrack.Source = sourceImageOfTrack;
+                                                                MainWindow.window.iconTrack.Source = sourceImageOfTrack;
 
 
                                                                 uint hourMillisecond = 3600000;
                                                                 if (track.DurationMs > hourMillisecond)
                                                                 {
-                                                                    MainWindow.GetMainWindow(null).endOfSong.Content = $"{TimeSpan.FromMilliseconds(track.DurationMs).ToString(@"h\:m\:ss")}";
+                                                                    MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(track.DurationMs).ToString(@"h\:m\:ss")}";
                                                                 }
                                                                 else
                                                                 {
-                                                                    MainWindow.GetMainWindow(null).endOfSong.Content = $"{TimeSpan.FromMilliseconds(track.DurationMs).ToString(@"m\:ss")}";
+                                                                    MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(track.DurationMs).ToString(@"m\:ss")}";
                                                                 }
                                                             });
                                                         }
@@ -618,7 +619,7 @@ namespace Free_Spotify.Pages
         {
             try
             {
-                MainWindow.GetMainWindow(null).discordClient.SetPresence(new RichPresence()
+                MainWindow.window.discordClient.SetPresence(new RichPresence()
                 {
                     Details = "Ничего не делает...",
                     Assets = new Assets()
@@ -643,8 +644,8 @@ namespace Free_Spotify.Pages
                 countTimer.Stop();
                 await Dispatcher.BeginInvoke(() =>
                 {
-                    MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressState = TaskbarItemProgressState.None;
-                    MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressValue = 0;
+                    MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.None;
+                    MainWindow.window.progressSongTaskBar.ProgressValue = 0;
                 });
                 GC.Collect();
             }
@@ -666,7 +667,7 @@ namespace Free_Spotify.Pages
         {
             try
             {
-                MainWindow.GetMainWindow(null).discordClient.SetPresence(new RichPresence()
+                MainWindow.window.discordClient.SetPresence(new RichPresence()
                 {
                     Details = "Ничего не делает...",
                     Assets = new Assets()
@@ -687,8 +688,8 @@ namespace Free_Spotify.Pages
                 countTimer.Stop();
                 await Dispatcher.BeginInvoke(() =>
                 {
-                    MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressState = TaskbarItemProgressState.None;
-                    MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressValue = 0;
+                    MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.None;
+                    MainWindow.window.progressSongTaskBar.ProgressValue = 0;
                 });
                 GC.Collect();
             }
@@ -718,8 +719,8 @@ namespace Free_Spotify.Pages
                 isSongPlaying = true;
                 await Dispatcher.BeginInvoke(() =>
                 {
-                    MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressState = TaskbarItemProgressState.Indeterminate;
-                    MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressValue = 0;
+                    MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Indeterminate;
+                    MainWindow.window.progressSongTaskBar.ProgressValue = 0;
                 });
                 SpotifyClient spotifyYouTubeRetrive = new SpotifyClient();
                 string? youtubeID = await spotifyYouTubeRetrive.Tracks.GetYoutubeIdAsync(track.Url);
@@ -740,67 +741,73 @@ namespace Free_Spotify.Pages
                                 waveOut.Init(blockAlignedStream);
                                 waveOut.Play();
                                 countTimer.Start();
-                                MainWindow.GetMainWindow(null).discordClient.SetPresence(new RichPresence()
+                                await Dispatcher.BeginInvoke(() =>
                                 {
-                                    Details = "Слушает музыку...",
-                                    State = $"{track.Artists[0].Name} - {track.Title}",
-                                    Assets = new Assets()
+                                    MainWindow.window.discordClient.SetPresence(new RichPresence()
                                     {
-                                        LargeImageKey = "logo",
-                                        LargeImageText = "Free Spotify",
-                                    },
-                                    Timestamps = new Timestamps()
-                                    {
-                                        Start = Timestamps.Now.Start,
-                                        End = Timestamps.FromTimeSpan(TimeSpan.FromMilliseconds(track.DurationMs)).End
-                                    },
-                                    Buttons = new DiscordRPC.Button[]
-                                    {
-                                        new DiscordRPC.Button()
+                                        Details = "Слушает музыку...",
+                                        State = $"{track.Artists[0].Name} - {track.Title}",
+                                        Assets = new Assets()
                                         {
-                                            Label = "Послушать трек...",
-                                            Url = track.Url,
+                                            LargeImageKey = "logo",
+                                            LargeImageText = "Free Spotify",
                                         },
-                                        new DiscordRPC.Button()
+                                        Timestamps = new Timestamps()
                                         {
-                                            Label = "Free Spotify...",
-                                            Url = githubLink
+                                            Start = Timestamps.Now.Start,
+                                            End = Timestamps.FromTimeSpan(TimeSpan.FromMilliseconds(track.DurationMs)).End
+                                        },
+                                        Buttons = new DiscordRPC.Button[]
+                                        {
+                                            new DiscordRPC.Button()
+                                            {
+                                                Label = "Послушать трек...",
+                                                Url = track.Url,
+                                            },
+                                            new DiscordRPC.Button()
+                                            {
+                                                Label = "Free Spotify...",
+                                                Url = githubLink
+                                            }
                                         }
-                                    }
+                                    });
                                 });
-                                waveOut.PlaybackStopped += new EventHandler<StoppedEventArgs>((o,i) =>
+                                waveOut.PlaybackStopped += new EventHandler<StoppedEventArgs>(async (o,i) =>
                                 {
                                     if (waveOut != null && IsSongRepeat)
                                     {
                                         isSongPlaying= true;
                                         mediaFoundationReader.Position = 0;
-                                        MainWindow.GetMainWindow(null).discordClient.SetPresence(new RichPresence()
+                                        await Dispatcher.BeginInvoke(() =>
                                         {
-                                            Details = "Слушает музыку...",
-                                            State = $"{track.Artists[0].Name} - {track.Title}",
-                                            Assets = new Assets()
+                                            MainWindow.window.discordClient.SetPresence(new RichPresence()
                                             {
-                                                LargeImageKey = "logo",
-                                                LargeImageText = "Free Spotify",
-                                            },
-                                            Timestamps = new Timestamps()
-                                            {
-                                                Start = Timestamps.Now.Start,
-                                                End = Timestamps.FromTimeSpan(TimeSpan.FromMilliseconds(track.DurationMs)).End
-                                            },
-                                            Buttons = new DiscordRPC.Button[]
-                                            {
-                                                new DiscordRPC.Button()
+                                                Details = "Слушает музыку...",
+                                                State = $"{track.Artists[0].Name} - {track.Title}",
+                                                Assets = new Assets()
                                                 {
-                                                    Label = "Послушать трек...",
-                                                    Url = track.Url,
+                                                    LargeImageKey = "logo",
+                                                    LargeImageText = "Free Spotify",
                                                 },
-                                                new DiscordRPC.Button()
+                                                Timestamps = new Timestamps()
                                                 {
-                                                    Label = "Free Spotify...",
-                                                    Url = githubLink
-                                                }
+                                                    Start = Timestamps.Now.Start,
+                                                    End = Timestamps.FromTimeSpan(TimeSpan.FromMilliseconds(track.DurationMs)).End
+                                                },
+                                                Buttons = new DiscordRPC.Button[]
+                                                {
+                                            new DiscordRPC.Button()
+                                            {
+                                                Label = "Послушать трек...",
+                                                Url = track.Url,
+                                            },
+                                            new DiscordRPC.Button()
+                                            {
+                                                Label = "Free Spotify...",
+                                                Url = githubLink
                                             }
+                                                }
+                                            });
                                         });
                                         waveOut.Play();
                                         return;
@@ -824,8 +831,8 @@ namespace Free_Spotify.Pages
                         }
                         catch (Exception ex)
                         {
-                            MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressState = TaskbarItemProgressState.Error;
-                            MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressValue = 0;
+                            MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Error;
+                            MainWindow.window.progressSongTaskBar.ProgressValue = 0;
                             MessageBox.Show(ex.GetType().ToString());
                             MessageBox.Show(ex.Message);
                             StopSoundInLoop();
@@ -838,8 +845,8 @@ namespace Free_Spotify.Pages
             {
                 await Dispatcher.BeginInvoke(() =>
                 {
-                    MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressState = TaskbarItemProgressState.Error;
-                    MainWindow.GetMainWindow(null).progressSongTaskBar.ProgressValue = 0;
+                    MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Error;
+                    MainWindow.window.progressSongTaskBar.ProgressValue = 0;
                 });
                 MessageBox.Show(@"К сожалению, эта песня не существует на YouTube чтобы её можно было проиграть. Поищите другую песню ¯\_(ツ)_/¯", "☹", MessageBoxButton.OK);
                 StopSound();

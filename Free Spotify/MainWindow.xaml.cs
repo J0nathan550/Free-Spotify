@@ -9,7 +9,7 @@ namespace Free_Spotify
     /// </summary>
     public partial class MainWindow : Window
     {
-        public static MainWindow? window;
+        public static MainWindow window;
         public DiscordRpcClient discordClient = new DiscordRpcClient("1154023388805873744");
         public MainWindow()
         {
@@ -25,18 +25,7 @@ namespace Free_Spotify
                 },
                 Timestamps = Timestamps.Now
             });
-            GetMainWindow(this);
-        }
-
-        public static MainWindow GetMainWindow(MainWindow? mainWindow)
-        {
-            if (window == null)
-            {
-                window = mainWindow;
-            }
-#pragma warning disable CS8603 // Possible null reference return.
-            return window;
-#pragma warning restore CS8603 // Possible null reference return.
+            window = this;
         }
 
         /// <summary>
