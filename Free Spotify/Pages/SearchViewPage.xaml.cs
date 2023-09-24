@@ -27,8 +27,7 @@ namespace Free_Spotify.Pages
         public System.Timers.Timer searchEngineTimerExecuter = new System.Timers.Timer() { Interval = 200 }; // used to render every single millisecond the progress bar of player.
         public CancellationTokenSource cancelSearchEngineTimerExecuter = new CancellationTokenSource();
 
-        private List<TrackSearchResult> bufferTrackList = new List<TrackSearchResult>();
-        private List<TrackSearchResult> actualTrackList = new List<TrackSearchResult>();
+        private List<TrackSearchResult> trackList = new List<TrackSearchResult>();
         private int currentSongIndex = 0;
 
         private SearchFilter filter = SearchFilter.Track;    // used to search something certain in Search Engine.
@@ -55,10 +54,10 @@ namespace Free_Spotify.Pages
                         if (mediaPlayer.NaturalDuration.HasTimeSpan)
                         {
                             MainWindow.window.musicProgress.Value = mediaPlayer.Position.TotalMilliseconds;
-                            MainWindow.window.musicProgress.Maximum = actualTrackList[currentSongIndex].DurationMs;
+                            MainWindow.window.musicProgress.Maximum = trackList[currentSongIndex].DurationMs;
 
                             MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Normal;
-                            MainWindow.window.progressSongTaskBar.ProgressValue = mediaPlayer.Position.TotalMilliseconds / actualTrackList[currentSongIndex].DurationMs;
+                            MainWindow.window.progressSongTaskBar.ProgressValue = mediaPlayer.Position.TotalMilliseconds / trackList[currentSongIndex].DurationMs;
 
                             if (mediaPlayer.Position.Hours > 0)
                             {
@@ -121,7 +120,7 @@ namespace Free_Spotify.Pages
             {
                 if (mediaPlayer.Source != null)
                 {
-                    Utils.ContinueDiscordPresence(actualTrackList[currentSongIndex]);
+                    Utils.ContinueDiscordPresence(trackList[currentSongIndex]);
                     if (mediaPlayer.NaturalDuration.HasTimeSpan)
                     {
                         mediaPlayer.Position = new TimeSpan(0, 0, 0, 0, (int)MainWindow.window.musicProgress.Value);
@@ -148,7 +147,7 @@ namespace Free_Spotify.Pages
             MainWindow.window.rightSong.MouseDown += async (sender, e) =>
             {
                 currentSongIndex++;
-                if (currentSongIndex > actualTrackList.Count - 1) currentSongIndex = 0;
+                if (currentSongIndex > trackList.Count - 1) currentSongIndex = 0;
                 await Task.Run(() =>
                 {
                     PlaySound();
@@ -159,7 +158,7 @@ namespace Free_Spotify.Pages
             MainWindow.window.leftSong.MouseDown += async (sender, e) =>
             {
                 currentSongIndex--;
-                if (currentSongIndex < 0) currentSongIndex = actualTrackList.Count - 1;
+                if (currentSongIndex < 0) currentSongIndex = trackList.Count - 1;
                 await Task.Run(() =>
                 {
                     PlaySound();
@@ -182,13 +181,13 @@ namespace Free_Spotify.Pages
                     if (IsSongRepeat)
                     {
                         mediaPlayer.Position = TimeSpan.Zero;
-                        Utils.ContinueDiscordPresence(actualTrackList[currentSongIndex]);
+                        Utils.ContinueDiscordPresence(trackList[currentSongIndex]);
                         return;
                     }
                     await Task.Run(() =>
                     {
                         currentSongIndex++;
-                        if (currentSongIndex > actualTrackList.Count - 1) currentSongIndex = 0;
+                        if (currentSongIndex > trackList.Count - 1) currentSongIndex = 0;
                         PlaySound();
                         UpdateStatusPlayerBar();
                     });
@@ -248,14 +247,14 @@ namespace Free_Spotify.Pages
                         IsSongPaused = false;
                         mediaPlayer.Play();
                         progressSongTimer.Start();
-                        Utils.ContinueDiscordPresence(actualTrackList[currentSongIndex]);
+                        Utils.ContinueDiscordPresence(trackList[currentSongIndex]);
                         MainWindow.window.musicToggle.Icon = FontAwesomeIcon.Pause;
                         if (mediaPlayer.Source != null)
                         {
                             MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Normal;
                             if (mediaPlayer.NaturalDuration.HasTimeSpan)
                             {
-                                MainWindow.window.progressSongTaskBar.ProgressValue = mediaPlayer.Position.TotalMilliseconds / actualTrackList[currentSongIndex].DurationMs;
+                                MainWindow.window.progressSongTaskBar.ProgressValue = mediaPlayer.Position.TotalMilliseconds / trackList[currentSongIndex].DurationMs;
                             }
                         }
                         else
@@ -264,7 +263,7 @@ namespace Free_Spotify.Pages
                         }
                         return;
                     }
-                    Utils.PauseDiscordPresence(actualTrackList[currentSongIndex]);
+                    Utils.PauseDiscordPresence(trackList[currentSongIndex]);
                     IsSongPaused = true;
                     mediaPlayer.Pause();
                     progressSongTimer.Stop();
@@ -274,7 +273,7 @@ namespace Free_Spotify.Pages
                         MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Paused;
                         if (mediaPlayer.NaturalDuration.HasTimeSpan)
                         {
-                            MainWindow.window.progressSongTaskBar.ProgressValue = mediaPlayer.Position.TotalMilliseconds / actualTrackList[currentSongIndex].DurationMs;
+                            MainWindow.window.progressSongTaskBar.ProgressValue = mediaPlayer.Position.TotalMilliseconds / trackList[currentSongIndex].DurationMs;
                         }
                     }
                     else
@@ -354,7 +353,7 @@ namespace Free_Spotify.Pages
                     int indexLoop = 0;
                     var spotifyClient = new SpotifyClient();
                     List<ISearchResult> searchMatches = await spotifyClient.Search.GetResultsAsync(SearchBarTextBox.Text, filter);
-                    bufferTrackList.Clear();
+                    trackList.Clear();
                     if (searchMatches.Count != 0)
                     {
                         foreach (var result in searchMatches)
@@ -368,7 +367,7 @@ namespace Free_Spotify.Pages
                                     {
                                         try
                                         {
-                                            bufferTrackList.Add(track);
+                                            trackList.Add(track);
                                             Border background = new Border();
                                             background.Name = $"i{indexLoop}";
                                             background.CornerRadius = new CornerRadius(6);
@@ -445,8 +444,6 @@ namespace Free_Spotify.Pages
                                                         StopSound();
                                                     }
                                                 });
-                                                actualTrackList.Clear();
-                                                actualTrackList = bufferTrackList;
                                                 await Task.Run(async () =>
                                                 {
                                                     try
@@ -577,8 +574,8 @@ namespace Free_Spotify.Pages
             await Dispatcher.BeginInvoke(() =>
             {
                 MainWindow.window.musicToggle.Icon = FontAwesomeIcon.Pause;
-                MainWindow.window.songTitle.Content = actualTrackList[currentSongIndex].Title;
-                MainWindow.window.songAuthor.Content = actualTrackList[currentSongIndex].Artists[0].Name;
+                MainWindow.window.songTitle.Content = trackList[currentSongIndex].Title;
+                MainWindow.window.songAuthor.Content = trackList[currentSongIndex].Artists[0].Name;
 
                 MainWindow.window.favoriteSongButton.Visibility = Visibility.Visible;
 
@@ -586,19 +583,19 @@ namespace Free_Spotify.Pages
                 sourceImageOfTrack.BeginInit();
                 sourceImageOfTrack.CreateOptions = BitmapCreateOptions.None;
                 sourceImageOfTrack.CacheOption = BitmapCacheOption.None;
-                sourceImageOfTrack.UriSource = new Uri(actualTrackList[currentSongIndex].Album.Images[0].Url);
+                sourceImageOfTrack.UriSource = new Uri(trackList[currentSongIndex].Album.Images[0].Url);
                 sourceImageOfTrack.EndInit();
 
                 MainWindow.window.iconTrack.Source = sourceImageOfTrack;
 
                 uint hourMillisecond = 3600000;
-                if (actualTrackList[currentSongIndex].DurationMs > hourMillisecond)
+                if (trackList[currentSongIndex].DurationMs > hourMillisecond)
                 {
-                    MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(actualTrackList[currentSongIndex].DurationMs).ToString(@"h\:m\:ss")}";
+                    MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(trackList[currentSongIndex].DurationMs).ToString(@"h\:m\:ss")}";
                 }
                 else
                 {
-                    MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(actualTrackList[currentSongIndex].DurationMs).ToString(@"m\:ss")}";
+                    MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(trackList[currentSongIndex].DurationMs).ToString(@"m\:ss")}";
                 }
             });
         }
@@ -664,7 +661,7 @@ namespace Free_Spotify.Pages
                     MainWindow.window.progressSongTaskBar.ProgressValue = 0;
                 });
                 SpotifyClient spotifyYouTubeRetrive = new SpotifyClient();
-                string? youtubeID = await spotifyYouTubeRetrive.Tracks.GetYoutubeIdAsync(actualTrackList[currentSongIndex].Url);
+                string? youtubeID = await spotifyYouTubeRetrive.Tracks.GetYoutubeIdAsync(trackList[currentSongIndex].Url);
                 YoutubeClient? youtube = new YoutubeClient();
                 var video = youtube.Videos.GetAsync($"https://youtube.com/watch?v={youtubeID}");
                 var streamManifest = youtube.Videos.Streams.GetManifestAsync($"https://youtube.com/watch?v={youtubeID}");
@@ -675,7 +672,7 @@ namespace Free_Spotify.Pages
                     mediaPlayer.Play();
                     progressSongTimer.Start();
                     mediaPlayer.Volume = (float)MainWindow.window.volumeSlider.Value;
-                    Utils.StartDiscordPresence(actualTrackList[currentSongIndex]);
+                    Utils.StartDiscordPresence(trackList[currentSongIndex]);
                 });
             }
             catch (ArgumentException)
