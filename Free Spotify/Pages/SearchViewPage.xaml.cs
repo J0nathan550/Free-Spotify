@@ -21,10 +21,10 @@ namespace Free_Spotify.Pages
 {
     public partial class SearchViewPage : Page
     {
-        public System.Timers.Timer progressSongTimer = new System.Timers.Timer() { Interval = 1 }; // used to render every single millisecond the progress bar of player.
+        public System.Timers.Timer progressSongTimer = new System.Timers.Timer() { Interval = 1000 / 60 }; // used to render every single millisecond the progress bar of player.
         public CancellationTokenSource cancelProgressSongTimer = new CancellationTokenSource();
 
-        public System.Timers.Timer searchEngineTimerExecuter = new System.Timers.Timer() { Interval = 200 }; // used to render every single millisecond the progress bar of player.
+        public System.Timers.Timer searchEngineTimerExecuter = new System.Timers.Timer() { Interval = 500 }; // used to render every single millisecond the progress bar of player.
         public CancellationTokenSource cancelSearchEngineTimerExecuter = new CancellationTokenSource();
 
         private List<TrackSearchResult> trackList = new List<TrackSearchResult>();
@@ -54,10 +54,11 @@ namespace Free_Spotify.Pages
                         if (mediaPlayer.NaturalDuration.HasTimeSpan)
                         {
                             MainWindow.window.musicProgress.Value = mediaPlayer.Position.TotalMilliseconds;
-                            MainWindow.window.musicProgress.Maximum = trackList[currentSongIndex].DurationMs;
 
-                            MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Normal;
-                            MainWindow.window.progressSongTaskBar.ProgressValue = mediaPlayer.Position.TotalMilliseconds / trackList[currentSongIndex].DurationMs;
+                                MainWindow.window.musicProgress.Maximum = trackList[currentSongIndex].DurationMs;
+
+                                MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Normal;
+                                MainWindow.window.progressSongTaskBar.ProgressValue = mediaPlayer.Position.TotalMilliseconds / trackList[currentSongIndex].DurationMs;
 
                             if (mediaPlayer.Position.Hours > 0)
                             {
@@ -147,7 +148,7 @@ namespace Free_Spotify.Pages
             MainWindow.window.rightSong.MouseDown += async (sender, e) =>
             {
                 currentSongIndex++;
-                if (currentSongIndex > trackList.Count - 1) currentSongIndex = 0;
+                if (currentSongIndex >= trackList.Count) currentSongIndex = 0;
                 await Task.Run(() =>
                 {
                     PlaySound();
@@ -187,7 +188,7 @@ namespace Free_Spotify.Pages
                     await Task.Run(() =>
                     {
                         currentSongIndex++;
-                        if (currentSongIndex > trackList.Count - 1) currentSongIndex = 0;
+                        if (currentSongIndex >= trackList.Count ) currentSongIndex = 0;
                         PlaySound();
                         UpdateStatusPlayerBar();
                     });
@@ -353,7 +354,8 @@ namespace Free_Spotify.Pages
                     int indexLoop = 0;
                     var spotifyClient = new SpotifyClient();
                     List<ISearchResult> searchMatches = await spotifyClient.Search.GetResultsAsync(SearchBarTextBox.Text, filter);
-                    trackList.Clear();
+                    List<TrackSearchResult> newSongs = new();
+
                     if (searchMatches.Count != 0)
                     {
                         foreach (var result in searchMatches)
@@ -363,11 +365,11 @@ namespace Free_Spotify.Pages
                             {
                                 case TrackSearchResult track:
                                 {
+                                        newSongs.Add(track);
                                     await Dispatcher.BeginInvoke(() =>
                                     {
                                         try
                                         {
-                                            trackList.Add(track);
                                             Border background = new Border();
                                             background.Name = $"i{indexLoop}";
                                             background.CornerRadius = new CornerRadius(6);
@@ -492,6 +494,11 @@ namespace Free_Spotify.Pages
                             }
                             indexLoop++;
                         }
+
+
+                        trackList.Clear();
+                        trackList.AddRange(newSongs);
+
                     }
                     else
                     {
