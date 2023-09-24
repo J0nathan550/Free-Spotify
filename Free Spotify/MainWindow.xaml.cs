@@ -1,4 +1,5 @@
 ﻿using DiscordRPC;
+using Free_Spotify.Classes;
 using Free_Spotify.Pages;
 using System.Windows;
 
@@ -14,18 +15,9 @@ namespace Free_Spotify
         public MainWindow()
         {
             InitializeComponent();
-            discordClient.Initialize();
-            discordClient.SetPresence(new RichPresence()
-            {
-                Details = "Ничего не делает...",
-                Assets = new Assets()
-                {
-                    LargeImageKey = "logo",
-                    LargeImageText = "Free Spotify",
-                },
-                Timestamps = Timestamps.Now
-            });
             window = this;
+            discordClient.Initialize();
+            Utils.IdleDiscordPresence();
         }
 
         /// <summary>
@@ -67,8 +59,8 @@ namespace Free_Spotify
         {
             if (MainScreenPage.instance != null)
             {
-                MainScreenPage.instance.searchPage.cancelTimer.Cancel();
-                MainScreenPage.instance.searchPage.countTimer.Stop();
+                MainScreenPage.instance.searchPage.cancelProgressSongTimer.Cancel();
+                MainScreenPage.instance.searchPage.progressSongTimer.Stop();
             }
         }
 

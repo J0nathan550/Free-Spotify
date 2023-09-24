@@ -1,5 +1,5 @@
-﻿using DiscordRPC;
-using FontAwesome.WPF;
+﻿using FontAwesome.WPF;
+using Free_Spotify.Classes;
 using SpotifyExplode;
 using SpotifyExplode.Search;
 using System;
@@ -21,24 +21,29 @@ namespace Free_Spotify.Pages
 {
     public partial class SearchViewPage : Page
     {
-        public System.Timers.Timer countTimer = new System.Timers.Timer() { Interval = 1 }; // used to render every single millisecond the progress bar of player.
-        public CancellationTokenSource cancelTimer = new CancellationTokenSource();
-        private TrackSearchResult track = new TrackSearchResult(); // a track info to prevent stacking songs.
-        private SearchFilter filter = SearchFilter.Track; // used to search something certain in Search Engine.
-        private bool isTextErased = false; // used to remove the tip
-        private string githubLink = "https://github.com/J0nathan550"; // later will add the link to the public repository (IF EVER!)s
-        private MediaPlayer mediaPlayer = new MediaPlayer();
-        private bool IsSongRepeat = false; // boolean to define if we are repeating sound
-        private bool IsSongPaused = false;
+        public System.Timers.Timer progressSongTimer = new System.Timers.Timer() { Interval = 1 }; // used to render every single millisecond the progress bar of player.
+        public CancellationTokenSource cancelProgressSongTimer = new CancellationTokenSource();
+
+        public System.Timers.Timer searchEngineTimerExecuter = new System.Timers.Timer() { Interval = 200 }; // used to render every single millisecond the progress bar of player.
+        public CancellationTokenSource cancelSearchEngineTimerExecuter = new CancellationTokenSource();
+
+        private List<TrackSearchResult> trackList = new List<TrackSearchResult>();
+        private int currentSongIndex = 0;
+
+        private SearchFilter filter = SearchFilter.Track;    // used to search something certain in Search Engine.
+        private bool isTextErased = false;                   // used to remove the tip
+        private MediaPlayer mediaPlayer = new();             // new feature to play sounds, removes many rookie booleans, and prevents spamming the song
+        private bool IsSongRepeat = false;                   // boolean to define if we are repeating sound
+        private bool IsSongPaused = false;                   // since we do not use NAudio anymore we need just one boolean to track if we paused. 
 
         public SearchViewPage()
         {
             InitializeComponent();
-            // lambda render timer, inside you can see the updating player visual.
             mediaPlayer.MediaEnded += MediaPlayer_MediaEnded;
-            countTimer.Elapsed += new System.Timers.ElapsedEventHandler(async (o, i) =>
+            // lambda render timer, inside you can see the updating player visual.
+            progressSongTimer.Elapsed += new System.Timers.ElapsedEventHandler(async (o, i) =>
             {
-                if (cancelTimer.IsCancellationRequested)
+                if (cancelProgressSongTimer.IsCancellationRequested)
                 {
                     return;
                 }
@@ -49,10 +54,10 @@ namespace Free_Spotify.Pages
                         if (mediaPlayer.NaturalDuration.HasTimeSpan)
                         {
                             MainWindow.window.musicProgress.Value = mediaPlayer.Position.TotalMilliseconds;
-                            MainWindow.window.musicProgress.Maximum = track.DurationMs;
+                            MainWindow.window.musicProgress.Maximum = trackList[currentSongIndex].DurationMs;
 
                             MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Normal;
-                            MainWindow.window.progressSongTaskBar.ProgressValue = mediaPlayer.Position.TotalMilliseconds / track.DurationMs;
+                            MainWindow.window.progressSongTaskBar.ProgressValue = mediaPlayer.Position.TotalMilliseconds / trackList[currentSongIndex].DurationMs;
 
                             if (mediaPlayer.Position.Hours > 0)
                             {
@@ -66,6 +71,16 @@ namespace Free_Spotify.Pages
                     }
                 });
             });
+
+             searchEngineTimerExecuter.Elapsed += new System.Timers.ElapsedEventHandler((o, i) =>
+             {
+                 if (cancelSearchEngineTimerExecuter.IsCancellationRequested)
+                 {
+                     return;
+                 }
+                 SearchingSystem();
+                 searchEngineTimerExecuter.Stop();
+             });
 
             // pause button, switches the sprite of playing (pausing) song.
             MainWindow.window.musicToggle.MouseDown += new MouseButtonEventHandler((o, i) =>
@@ -105,34 +120,7 @@ namespace Free_Spotify.Pages
             {
                 if (mediaPlayer.Source != null)
                 {
-                    MainWindow.window.discordClient.SetPresence(new RichPresence()
-                    {
-                        Details = "Слушает музыку...",
-                        State = $"{track.Artists[0].Name} - {track.Title}",
-                        Assets = new Assets()
-                        {
-                            LargeImageKey = "logo",
-                            LargeImageText = "Free Spotify",
-                        },
-                        Timestamps = new Timestamps()
-                        {
-                            Start = DateTime.UtcNow.AddMilliseconds(-MainWindow.window.musicProgress.Value),
-                            End = DateTime.UtcNow.AddMilliseconds(MainWindow.window.musicProgress.Maximum - MainWindow.window.musicProgress.Value)
-                        },
-                        Buttons = new DiscordRPC.Button[]
-                        {
-                            new DiscordRPC.Button()
-                            {
-                                Label = "Послушать трек...",
-                                Url = track.Url,
-                            },
-                            new DiscordRPC.Button()
-                            {
-                                Label = "Free Spotify...",
-                                Url = githubLink
-                            }
-                        }
-                    });
+                    Utils.ContinueDiscordPresence(trackList[currentSongIndex]);
                     if (mediaPlayer.NaturalDuration.HasTimeSpan)
                     {
                         mediaPlayer.Position = new TimeSpan(0, 0, 0, 0, (int)MainWindow.window.musicProgress.Value);
@@ -155,20 +143,54 @@ namespace Free_Spotify.Pages
             {
                 RepeatSongBehavior();
             };
+
+            MainWindow.window.rightSong.MouseDown += async (sender, e) =>
+            {
+                currentSongIndex++;
+                if (currentSongIndex > trackList.Count - 1) currentSongIndex = 0;
+                await Task.Run(() =>
+                {
+                    PlaySound();
+                    UpdateStatusPlayerBar();
+                });
+            };
+
+            MainWindow.window.leftSong.MouseDown += async (sender, e) =>
+            {
+                currentSongIndex--;
+                if (currentSongIndex < 0) currentSongIndex = trackList.Count - 1;
+                await Task.Run(() =>
+                {
+                    PlaySound();
+                    UpdateStatusPlayerBar();
+                });
+            };
         }
 
+        /// <summary>
+        /// An event that if the mediaplayer reaches the end of the song it will fire this event. Can repeat the song, or stop it.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void MediaPlayer_MediaEnded(object? sender, EventArgs e)
         {
-            await Dispatcher.BeginInvoke(() =>
+            await Dispatcher.BeginInvoke(async () =>
             {
                 if (mediaPlayer.Source != null)
                 {
                     if (IsSongRepeat)
                     {
                         mediaPlayer.Position = TimeSpan.Zero;
+                        Utils.ContinueDiscordPresence(trackList[currentSongIndex]);
                         return;
                     }
-                    StopSound();
+                    await Task.Run(() =>
+                    {
+                        currentSongIndex++;
+                        if (currentSongIndex > trackList.Count - 1) currentSongIndex = 0;
+                        PlaySound();
+                        UpdateStatusPlayerBar();
+                    });
                 }
             });
         }
@@ -224,42 +246,15 @@ namespace Free_Spotify.Pages
                     {
                         IsSongPaused = false;
                         mediaPlayer.Play();
-                        countTimer.Start();
-                        MainWindow.window.discordClient.SetPresence(new RichPresence()
-                        {
-                            Details = "Слушает музыку...",
-                            State = $"{track.Artists[0].Name} - {track.Title}",
-                            Assets = new Assets()
-                            {
-                                LargeImageKey = "logo",
-                                LargeImageText = "Free Spotify",
-                            },
-                            Timestamps = new Timestamps()
-                            {
-                                Start = DateTime.UtcNow.AddMilliseconds(-MainWindow.window.musicProgress.Value),
-                                End = DateTime.UtcNow.AddMilliseconds(MainWindow.window.musicProgress.Maximum - MainWindow.window.musicProgress.Value)
-                            },
-                            Buttons = new DiscordRPC.Button[]
-    {
-                            new DiscordRPC.Button()
-                            {
-                                Label = "Послушать трек...",
-                                Url = track.Url,
-                            },
-                            new DiscordRPC.Button()
-                            {
-                                Label = "Free Spotify...",
-                                Url = githubLink
-                            }
-    }
-                        });
+                        progressSongTimer.Start();
+                        Utils.ContinueDiscordPresence(trackList[currentSongIndex]);
                         MainWindow.window.musicToggle.Icon = FontAwesomeIcon.Pause;
                         if (mediaPlayer.Source != null)
                         {
                             MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Normal;
                             if (mediaPlayer.NaturalDuration.HasTimeSpan)
                             {
-                                MainWindow.window.progressSongTaskBar.ProgressValue = mediaPlayer.Position.TotalMilliseconds / track.DurationMs;
+                                MainWindow.window.progressSongTaskBar.ProgressValue = mediaPlayer.Position.TotalMilliseconds / trackList[currentSongIndex].DurationMs;
                             }
                         }
                         else
@@ -268,27 +263,17 @@ namespace Free_Spotify.Pages
                         }
                         return;
                     }
-                    MainWindow.window.discordClient.SetPresence(new RichPresence()
-                    {
-                        Details = "Поставил музыку на паузу...",
-                        State = $"{track.Artists[0].Name} - {track.Title}",
-                        Assets = new Assets()
-                        {
-                            LargeImageKey = "logo",
-                            LargeImageText = "Free Spotify",
-                        },
-                        Timestamps = Timestamps.Now
-                    });
+                    Utils.PauseDiscordPresence(trackList[currentSongIndex]);
                     IsSongPaused = true;
                     mediaPlayer.Pause();
-                    countTimer.Stop();
+                    progressSongTimer.Stop();
                     MainWindow.window.musicToggle.Icon = FontAwesomeIcon.Play;
                     if (mediaPlayer.Source != null)
                     {
                         MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Paused;
                         if (mediaPlayer.NaturalDuration.HasTimeSpan)
                         {
-                            MainWindow.window.progressSongTaskBar.ProgressValue = mediaPlayer.Position.TotalMilliseconds / track.DurationMs;
+                            MainWindow.window.progressSongTaskBar.ProgressValue = mediaPlayer.Position.TotalMilliseconds / trackList[currentSongIndex].DurationMs;
                         }
                     }
                     else
@@ -327,7 +312,8 @@ namespace Free_Spotify.Pages
         {
             await Dispatcher.BeginInvoke(() =>
             {
-                SearchingSystem();
+                searchEngineTimerExecuter.Stop();
+                searchEngineTimerExecuter.Start();
             });
         }
 
@@ -363,9 +349,11 @@ namespace Free_Spotify.Pages
                 }
                 try
                 {
-                    var spotifyClient = new SpotifyClient();
                     /// searching for the song or else.
+                    int indexLoop = 0;
+                    var spotifyClient = new SpotifyClient();
                     List<ISearchResult> searchMatches = await spotifyClient.Search.GetResultsAsync(SearchBarTextBox.Text, filter);
+                    trackList.Clear();
                     if (searchMatches.Count != 0)
                     {
                         foreach (var result in searchMatches)
@@ -374,137 +362,116 @@ namespace Free_Spotify.Pages
                             switch (result)
                             {
                                 case TrackSearchResult track:
+                                {
+                                    await Dispatcher.BeginInvoke(() =>
                                     {
-
-                                        await Dispatcher.BeginInvoke(() =>
+                                        try
                                         {
-                                            try
+                                            trackList.Add(track);
+                                            Border background = new Border();
+                                            background.Name = $"i{indexLoop}";
+                                            background.CornerRadius = new CornerRadius(6);
+                                            background.Cursor = Cursors.Hand;
+                                            background.Background = new SolidColorBrush(Color.FromArgb(0x00, 0x21, 0x21, 0x21));
+                                            background.Width = 256;
+                                            background.Height = 256;
+
+                                            Grid mainVisualGrid = new Grid();
+
+                                            background.Child = mainVisualGrid;
+
+                                            RowDefinition rowDefinition = new RowDefinition();
+                                            rowDefinition.Height = new GridLength(3, GridUnitType.Star);
+                                            mainVisualGrid.RowDefinitions.Add(rowDefinition);
+
+                                            RowDefinition textDefinition = new RowDefinition();
+                                            textDefinition.Height = new GridLength(1, GridUnitType.Star);
+                                            mainVisualGrid.RowDefinitions.Add(textDefinition);
+
+                                            BitmapImage sourceImageOfTrack = new BitmapImage();
+                                            sourceImageOfTrack.BeginInit();
+                                            sourceImageOfTrack.CreateOptions = BitmapCreateOptions.None;
+                                            sourceImageOfTrack.CacheOption = BitmapCacheOption.None;
+                                            sourceImageOfTrack.UriSource = new Uri(track.Album.Images[0].Url);
+                                            sourceImageOfTrack.EndInit();
+
+                                            Image actualImageOfTrack = new Image();
+                                            actualImageOfTrack.Source = sourceImageOfTrack;
+                                            actualImageOfTrack.HorizontalAlignment = HorizontalAlignment.Center;
+                                            actualImageOfTrack.VerticalAlignment = VerticalAlignment.Center;
+                                            //actualImageOfTrack.Stretch = Stretch.Fill; later option
+                                            actualImageOfTrack.CacheMode = null;
+                                            mainVisualGrid.Children.Add(actualImageOfTrack);
+
+                                            Grid.SetZIndex(actualImageOfTrack, -2);
+
+                                            Grid.SetRow(actualImageOfTrack, 0);
+                                            Grid.SetRowSpan(actualImageOfTrack, 2);
+
+                                            Border captionBorder = new Border();
+                                            captionBorder.Background = new SolidColorBrush(Color.FromArgb(180, 0x00, 0x00, 0x00));
+
+                                            TextBlock DescriptionOfTrack = new TextBlock();
+                                            DescriptionOfTrack.Text = $"Artist: {track.Artists[0].Name}\n" +
+                                            $"Track: {track.Title}\n";
+                                            DescriptionOfTrack.Foreground = new SolidColorBrush(Colors.White);
+                                            DescriptionOfTrack.Style = (Style)DescriptionOfTrack.FindResource("fontMontserrat");
+                                            DescriptionOfTrack.FontSize = 14;
+                                            DescriptionOfTrack.TextWrapping = TextWrapping.WrapWithOverflow;
+                                            DescriptionOfTrack.VerticalAlignment = VerticalAlignment.Center;
+                                            DescriptionOfTrack.HorizontalAlignment = HorizontalAlignment.Center;
+                                            DescriptionOfTrack.Padding = new Thickness(0, 10, 0, 0);
+
+                                            Grid.SetZIndex(captionBorder, -1);
+                                            Grid.SetZIndex(DescriptionOfTrack, 1);
+
+                                            mainVisualGrid.Children.Add(captionBorder);
+                                            mainVisualGrid.Children.Add(DescriptionOfTrack);
+                                            Grid.SetRow(captionBorder, 1);
+                                            Grid.SetRow(DescriptionOfTrack, 1);
+                                            wrapPanelVisual.Children.Add(background);
+
+                                            background.MouseDown += new MouseButtonEventHandler(async (o, i) =>
                                             {
-                                                Border background = new Border();
-                                                background.CornerRadius = new CornerRadius(6);
-                                                background.Cursor = Cursors.Hand;
-                                                background.Background = new SolidColorBrush(Color.FromArgb(0x00, 0x21, 0x21, 0x21));
-                                                background.Width = 256;
-                                                background.Height = 256;
-
-                                                Grid mainVisualGrid = new Grid();
-
-                                                background.Child = mainVisualGrid;
-
-                                                RowDefinition rowDefinition = new RowDefinition();
-                                                rowDefinition.Height = new GridLength(3, GridUnitType.Star);
-                                                mainVisualGrid.RowDefinitions.Add(rowDefinition);
-
-                                                RowDefinition textDefinition = new RowDefinition();
-                                                textDefinition.Height = new GridLength(1, GridUnitType.Star);
-                                                mainVisualGrid.RowDefinitions.Add(textDefinition);
-
-                                                BitmapImage sourceImageOfTrack = new BitmapImage();
-                                                sourceImageOfTrack.BeginInit();
-                                                sourceImageOfTrack.CreateOptions = BitmapCreateOptions.None;
-                                                sourceImageOfTrack.CacheOption = BitmapCacheOption.None;
-                                                sourceImageOfTrack.UriSource = new Uri(track.Album.Images[0].Url);
-                                                sourceImageOfTrack.EndInit();
-
-                                                Image actualImageOfTrack = new Image();
-                                                actualImageOfTrack.Source = sourceImageOfTrack;
-                                                actualImageOfTrack.HorizontalAlignment = HorizontalAlignment.Center;
-                                                actualImageOfTrack.VerticalAlignment = VerticalAlignment.Center;
-                                                //actualImageOfTrack.Stretch = Stretch.Fill; later option
-                                                actualImageOfTrack.CacheMode = null;
-                                                mainVisualGrid.Children.Add(actualImageOfTrack);
-
-                                                Grid.SetZIndex(actualImageOfTrack, -2);
-
-                                                Grid.SetRow(actualImageOfTrack, 0);
-                                                Grid.SetRowSpan(actualImageOfTrack, 2);
-
-                                                Border captionBorder = new Border();
-                                                captionBorder.Background = new SolidColorBrush(Color.FromArgb(180, 0x00, 0x00, 0x00));
-
-                                                TextBlock DescriptionOfTrack = new TextBlock();
-                                                DescriptionOfTrack.Text = $"Artist: {track.Artists[0].Name}\n" +
-                                                $"Track: {track.Title}\n";
-                                                DescriptionOfTrack.Foreground = new SolidColorBrush(Colors.White);
-                                                DescriptionOfTrack.Style = (Style)DescriptionOfTrack.FindResource("fontMontserrat");
-                                                DescriptionOfTrack.FontSize = 14;
-                                                DescriptionOfTrack.TextWrapping = TextWrapping.WrapWithOverflow;
-                                                DescriptionOfTrack.VerticalAlignment = VerticalAlignment.Center;
-                                                DescriptionOfTrack.HorizontalAlignment = HorizontalAlignment.Center;
-                                                DescriptionOfTrack.Padding = new Thickness(0, 10, 0, 0);
-
-                                                Grid.SetZIndex(captionBorder, -1);
-                                                Grid.SetZIndex(DescriptionOfTrack, 1);
-
-                                                mainVisualGrid.Children.Add(captionBorder);
-                                                mainVisualGrid.Children.Add(DescriptionOfTrack);
-                                                Grid.SetRow(captionBorder, 1);
-                                                Grid.SetRow(DescriptionOfTrack, 1);
-                                                wrapPanelVisual.Children.Add(background);
-
-                                                background.MouseDown += new MouseButtonEventHandler(async (o, i) =>
+                                                await Dispatcher.BeginInvoke(() =>
                                                 {
-                                                    await Dispatcher.BeginInvoke(() =>
+                                                    if (mediaPlayer.Source != null)
                                                     {
-                                                        if (mediaPlayer.Source != null)
+                                                        if (IsSongRepeat)
                                                         {
-                                                            if (IsSongRepeat)
-                                                            {
-                                                                RepeatSongBehavior();
-                                                            }
-                                                            StopSound();
+                                                            RepeatSongBehavior();
                                                         }
-                                                    });
-                                                    await Task.Run(async () =>
-                                                    {
-                                                        try
-                                                        {
-                                                            this.track = track;
-                                                            PlaySound();
-                                                            await Dispatcher.BeginInvoke(() =>
-                                                            {
-                                                                MainWindow.window.musicToggle.Icon = FontAwesomeIcon.Pause;
-                                                                MainWindow.window.songTitle.Content = track.Title;
-                                                                MainWindow.window.songAuthor.Content = track.Artists[0].Name;
-
-                                                                MainWindow.window.favoriteSongButton.Visibility = Visibility.Visible;
-
-                                                                BitmapImage sourceImageOfTrack = new BitmapImage();
-                                                                sourceImageOfTrack.BeginInit();
-                                                                sourceImageOfTrack.CreateOptions = BitmapCreateOptions.None;
-                                                                sourceImageOfTrack.CacheOption = BitmapCacheOption.None;
-                                                                sourceImageOfTrack.UriSource = new Uri(track.Album.Images[0].Url);
-                                                                sourceImageOfTrack.EndInit();
-
-                                                                MainWindow.window.iconTrack.Source = sourceImageOfTrack;
-
-                                                                uint hourMillisecond = 3600000;
-                                                                if (track.DurationMs > hourMillisecond)
-                                                                {
-                                                                    MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(track.DurationMs).ToString(@"h\:m\:ss")}";
-                                                                }
-                                                                else
-                                                                {
-                                                                    MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(track.DurationMs).ToString(@"m\:ss")}";
-                                                                }
-                                                            });
-                                                        }
-                                                        catch (Exception ex)
-                                                        {
-                                                            StopSound();
-                                                            MessageBox.Show(ex.GetType().Name);
-                                                            MessageBox.Show(ex.Message);
-                                                        }
-                                                    });
+                                                        StopSound();
+                                                    }
                                                 });
-                                            }
-                                            catch
-                                            {
-                                            }
-                                        });
-                                        break;
-                                    }
-                            default:
+                                                await Task.Run(async () =>
+                                                {
+                                                    try
+                                                    {
+                                                        int symbolToRemove = 1;
+                                                        await Dispatcher.BeginInvoke(() =>
+                                                        {
+                                                            currentSongIndex = int.Parse(background.Name.Substring(symbolToRemove));
+                                                        });
+                                                        PlaySound();
+                                                        UpdateStatusPlayerBar();
+                                                    }
+                                                    catch (Exception ex)
+                                                    {
+                                                        StopSound();
+                                                        MessageBox.Show(ex.GetType().Name);
+                                                        MessageBox.Show(ex.Message);
+                                                    }
+                                                });
+                                            });
+                                        }
+                                        catch
+                                        {
+                                        }
+                                    });
+                                    break;
+                                }
+                                default:
                                 {
                                     await Dispatcher.InvokeAsync(() =>
                                     {
@@ -523,6 +490,7 @@ namespace Free_Spotify.Pages
                                     break;
                                 }
                             }
+                            indexLoop++;
                         }
                     }
                     else
@@ -591,8 +559,43 @@ namespace Free_Spotify.Pages
                 }
                 catch (Exception e)
                 {
+                    StopSound();
                     MessageBox.Show(e.GetType().Name);
                     MessageBox.Show(e.Message);
+                }
+            });
+        }
+
+        /// <summary>
+        /// Updates the images, the length of song of mp3player.
+        /// </summary>
+        private async void UpdateStatusPlayerBar()
+        {
+            await Dispatcher.BeginInvoke(() =>
+            {
+                MainWindow.window.musicToggle.Icon = FontAwesomeIcon.Pause;
+                MainWindow.window.songTitle.Content = trackList[currentSongIndex].Title;
+                MainWindow.window.songAuthor.Content = trackList[currentSongIndex].Artists[0].Name;
+
+                MainWindow.window.favoriteSongButton.Visibility = Visibility.Visible;
+
+                BitmapImage sourceImageOfTrack = new BitmapImage();
+                sourceImageOfTrack.BeginInit();
+                sourceImageOfTrack.CreateOptions = BitmapCreateOptions.None;
+                sourceImageOfTrack.CacheOption = BitmapCacheOption.None;
+                sourceImageOfTrack.UriSource = new Uri(trackList[currentSongIndex].Album.Images[0].Url);
+                sourceImageOfTrack.EndInit();
+
+                MainWindow.window.iconTrack.Source = sourceImageOfTrack;
+
+                uint hourMillisecond = 3600000;
+                if (trackList[currentSongIndex].DurationMs > hourMillisecond)
+                {
+                    MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(trackList[currentSongIndex].DurationMs).ToString(@"h\:m\:ss")}";
+                }
+                else
+                {
+                    MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(trackList[currentSongIndex].DurationMs).ToString(@"m\:ss")}";
                 }
             });
         }
@@ -604,16 +607,7 @@ namespace Free_Spotify.Pages
         {
             try
             {
-                MainWindow.window.discordClient.SetPresence(new RichPresence()
-                {
-                    Details = "Ничего не делает...",
-                    Assets = new Assets()
-                    {
-                        LargeImageKey = "logo",
-                        LargeImageText = "Free Spotify",
-                    },
-                    Timestamps = Timestamps.Now
-                });
+                Utils.IdleDiscordPresence();
                 IsSongPaused = true;
                 PausingSong();
                 await Dispatcher.BeginInvoke(() =>
@@ -624,7 +618,7 @@ namespace Free_Spotify.Pages
                         mediaPlayer.Stop();
                         mediaPlayer.Close();
                     }
-                    countTimer.Stop();
+                    progressSongTimer.Stop();
                 });
                 await Dispatcher.BeginInvoke(() =>
                 {
@@ -637,7 +631,7 @@ namespace Free_Spotify.Pages
             {
                 mediaPlayer.Stop();
                 mediaPlayer.Close();
-                countTimer.Stop();
+                progressSongTimer.Stop();
                 IsSongPaused = true;
                 PausingSong();
                 MessageBox.Show(ex.GetType().ToString());
@@ -667,7 +661,7 @@ namespace Free_Spotify.Pages
                     MainWindow.window.progressSongTaskBar.ProgressValue = 0;
                 });
                 SpotifyClient spotifyYouTubeRetrive = new SpotifyClient();
-                string? youtubeID = await spotifyYouTubeRetrive.Tracks.GetYoutubeIdAsync(track.Url);
+                string? youtubeID = await spotifyYouTubeRetrive.Tracks.GetYoutubeIdAsync(trackList[currentSongIndex].Url);
                 YoutubeClient? youtube = new YoutubeClient();
                 var video = youtube.Videos.GetAsync($"https://youtube.com/watch?v={youtubeID}");
                 var streamManifest = youtube.Videos.Streams.GetManifestAsync($"https://youtube.com/watch?v={youtubeID}");
@@ -676,35 +670,9 @@ namespace Free_Spotify.Pages
                 {
                     mediaPlayer.Open(new Uri(streamInfo.Url));
                     mediaPlayer.Play();
-                    countTimer.Start();
-                    MainWindow.window.discordClient.SetPresence(new RichPresence()
-                    {
-                        Details = "Слушает музыку...",
-                        State = $"{track.Artists[0].Name} - {track.Title}",
-                        Assets = new Assets()
-                        {
-                            LargeImageKey = "logo",
-                            LargeImageText = "Free Spotify",
-                        },
-                        Timestamps = new Timestamps()
-                        {
-                            Start = Timestamps.Now.Start,
-                            End = Timestamps.FromTimeSpan(TimeSpan.FromMilliseconds(track.DurationMs)).End
-                        },
-                        Buttons = new DiscordRPC.Button[]
-                        {
-                            new DiscordRPC.Button()
-                            {
-                                Label = "Послушать трек...",
-                                Url = track.Url,
-                            },
-                            new DiscordRPC.Button()
-                            {
-                                Label = "Free Spotify...",
-                                Url = githubLink
-                            }
-                        }
-                    });
+                    progressSongTimer.Start();
+                    mediaPlayer.Volume = (float)MainWindow.window.volumeSlider.Value;
+                    Utils.StartDiscordPresence(trackList[currentSongIndex]);
                 });
             }
             catch (ArgumentException)
@@ -761,7 +729,7 @@ namespace Free_Spotify.Pages
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"ERROR: {ex.GetType()},\n Message: {ex.Message},\n Please screenshot this error, and send me in github!\nLINK: {githubLink}");
+                MessageBox.Show($"ERROR: {ex.GetType()},\n Message: {ex.Message},\n Please screenshot this error, and send me in github!\nLINK: {Utils.githubLink}");
                 StopSound();
             }
         }
