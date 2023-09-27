@@ -20,8 +20,8 @@ namespace Free_Spotify.Classes
                     State = $"{track.Artists[0].Name} - {track.Title}",
                     Assets = new Assets()
                     {
-                        LargeImageKey = "logo",
-                        LargeImageText = "Free Spotify",
+                        LargeImageKey = track.Album.Images[0].Url,
+                        LargeImageText = $"{track.Artists[0].Name} - {track.Title}",
                     },
                     Timestamps = new Timestamps()
                     {
@@ -88,11 +88,11 @@ namespace Free_Spotify.Classes
                     State = $"{track.Artists[0].Name} - {track.Title}",
                     Assets = new Assets()
                     {
-                        LargeImageKey = "logo",
-                        LargeImageText = "Free Spotify",
+                        LargeImageKey = track.Album.Images[0].Url,
+                        LargeImageText = $"{track.Artists[0].Name} - {track.Title}",
                     },
                     Timestamps = Timestamps.Now,
-                    Buttons = new DiscordRPC.Button[]
+                    Buttons = new Button[]
                     {
                         new Button()
                         {
@@ -123,8 +123,8 @@ namespace Free_Spotify.Classes
                     State = $"{track.Artists[0].Name} - {track.Title}",
                     Assets = new Assets()
                     {
-                        LargeImageKey = "logo",
-                        LargeImageText = "Free Spotify",
+                        LargeImageKey = track.Album.Images[0].Url,
+                        LargeImageText = $"{track.Artists[0].Name} - {track.Title}",
                     },
                     Timestamps = new Timestamps()
                     {

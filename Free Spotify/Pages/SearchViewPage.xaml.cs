@@ -24,7 +24,7 @@ namespace Free_Spotify.Pages
         public System.Timers.Timer progressSongTimer = new System.Timers.Timer() { Interval = 1000 / 60 }; // used to render every single millisecond the progress bar of player.
         public CancellationTokenSource cancelProgressSongTimer = new CancellationTokenSource();
 
-        public System.Timers.Timer searchEngineTimerExecuter = new System.Timers.Timer() { Interval = 500 }; // used to render every single millisecond the progress bar of player.
+        public System.Timers.Timer searchEngineTimerExecuter = new System.Timers.Timer() { Interval = 250 }; // used to execute the query when user doesn't type anything
         public CancellationTokenSource cancelSearchEngineTimerExecuter = new CancellationTokenSource();
 
         private List<TrackSearchResult> trackList = new List<TrackSearchResult>();
@@ -55,10 +55,10 @@ namespace Free_Spotify.Pages
                         {
                             MainWindow.window.musicProgress.Value = mediaPlayer.Position.TotalMilliseconds;
 
-                                MainWindow.window.musicProgress.Maximum = trackList[currentSongIndex].DurationMs;
+                            MainWindow.window.musicProgress.Maximum = trackList[currentSongIndex].DurationMs;
 
-                                MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Normal;
-                                MainWindow.window.progressSongTaskBar.ProgressValue = mediaPlayer.Position.TotalMilliseconds / trackList[currentSongIndex].DurationMs;
+                            MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Normal;
+                            MainWindow.window.progressSongTaskBar.ProgressValue = mediaPlayer.Position.TotalMilliseconds / trackList[currentSongIndex].DurationMs;
 
                             if (mediaPlayer.Position.Hours > 0)
                             {
@@ -682,15 +682,15 @@ namespace Free_Spotify.Pages
                     Utils.StartDiscordPresence(trackList[currentSongIndex]);
                 });
             }
-            catch (ArgumentException)
+            catch (ArgumentException) // exception that arrives when song doesn't exist in YouTube and it simply tries to switch to another one. 
             {
-                await Dispatcher.BeginInvoke(() =>
+                currentSongIndex++;
+                if (currentSongIndex >= trackList.Count) currentSongIndex = 0;
+                await Task.Run(() =>
                 {
-                    MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Error;
-                    MainWindow.window.progressSongTaskBar.ProgressValue = 0;
+                    PlaySound();
+                    UpdateStatusPlayerBar();
                 });
-                StopSound();
-                MessageBox.Show(@"К сожалению, эта песня не существует на YouTube чтобы её можно было проиграть. Поищите другую песню ¯\_(ツ)_/¯", "☹", MessageBoxButton.OK);
             }
             catch (HttpRequestException request)
             {
