@@ -151,6 +151,7 @@ namespace Free_Spotify.Pages
                 if (currentSongIndex >= trackList.Count) currentSongIndex = 0;
                 await Task.Run(() =>
                 {
+                    Utils.ContinueDiscordPresence(trackList[currentSongIndex]);
                     PlaySound();
                     UpdateStatusPlayerBar();
                 });
@@ -162,6 +163,7 @@ namespace Free_Spotify.Pages
                 if (currentSongIndex < 0) currentSongIndex = trackList.Count - 1;
                 await Task.Run(() =>
                 {
+                    Utils.ContinueDiscordPresence(trackList[currentSongIndex]);
                     PlaySound();
                     UpdateStatusPlayerBar();
                 });
