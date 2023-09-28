@@ -56,12 +56,30 @@
                         </Grid.ColumnDefinitions>
                         <fa:FontAwesome Margin="3,0,0,0" Icon="List" Foreground="Gray" FontSize="14" VerticalAlignment="Center"/>
                         <TextBlock Style="{StaticResource fontMontserrat}" Grid.Column="1" Text="Мои плейлисты" Foreground="Gray" VerticalAlignment="Center" FontWeight="Medium" Margin="5,0,0,1"/>
-                        <TextBlock Style="{StaticResource fontMontserrat}" Cursor="Hand" Grid.Column="2" Text="+" Foreground="Gray" FontSize="18" FontWeight="Medium" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <TextBlock Name="addPlaylistButton" Style="{StaticResource fontMontserrat}" Cursor="Hand" Grid.Column="2" Text="+" Foreground="Gray" FontSize="18" FontWeight="Medium" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,5,0" MouseDown="CreatePlaylistVisual"/>
                     </Grid>
                     <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden" Grid.Row="1">
-                        <Grid Name="playListLoader">
-
-                        </Grid>
+                        <StackPanel Name="playListLoader">
+                            <!--<Border Background="#232323" CornerRadius="6" Padding="5">
+                                <Grid Height="40">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="50"/>
+                                        <ColumnDefinition Width="4*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Background="#303030" CornerRadius="6" Padding="5">
+                                        <Image Source="/Assets/Spotify_icon.png"/>
+                                    </Border>
+                                    <Grid Margin="5,0,0,0" Grid.Column="1">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <Label VerticalContentAlignment="Center" Padding="0" Style="{StaticResource fontLabelMontserrat}" FontSize="10" FontWeight="Medium" Foreground="White" Content="Мой плейлист"/>
+                                        <Label VerticalContentAlignment="Top" Padding="0"  Grid.Row="1" Style="{StaticResource fontLabelMontserrat}" FontSize="10" FontWeight="Medium" Foreground="Gray" Content="Количество треков: 0"/>
+                                    </Grid>
+                                </Grid>
+                            </Border>-->
+                        </StackPanel>
                     </ScrollViewer>
                 </Grid>
             </Border>

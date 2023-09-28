@@ -1,0 +1,75 @@
+﻿<Page x:Class="Free_Spotify.Pages.PlaylistPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      mc:Ignorable="d" 
+      xmlns:fa="http://schemas.fontawesome.io/icons/"
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="PlaylistPage">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="125"/>
+            <RowDefinition Height="80"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Border Grid.Row="0" Background="#212121" Padding="10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="128"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Border Background="#353535" CornerRadius="6" Padding="10">
+                    <Image Source="/Assets/Spotify_icon.png"/>
+                </Border>
+                <Grid Margin="5,0,0,0" Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Label Foreground="White" FontWeight="Bold" FontSize="24" VerticalContentAlignment="Center" Content="Мой плейлист #1" Style="{StaticResource fontLabelMontserrat}"></Label>
+                    <Label Grid.Row="1" Foreground="White" FontWeight="Bold" FontSize="18" VerticalContentAlignment="Top" Content="Количество треков: 34, 1 ч. 37 мин" Style="{StaticResource fontLabelMontserrat}"></Label>
+                </Grid>
+            </Grid>
+        </Border>
+        <Grid Margin="10" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="60"/>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Border Background="#4BD759" CornerRadius="30">
+                <fa:FontAwesome Icon="Play" FontSize="24" Foreground="Black" VerticalAlignment="Center" Margin="5,0,0,0"/>
+            </Border>
+            <Border Margin="10,0,0,0" Grid.Column="1" CornerRadius="30" BorderThickness="1" BorderBrush="DarkGray">
+                <Label Style="{StaticResource fontLabelMontserrat}" Foreground="White" FontWeight="Bold" Content="Добавить" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+            </Border>
+            <Menu Padding="0" Grid.Column="2" Background="Transparent">
+                <MenuItem VerticalContentAlignment="Center" HorizontalContentAlignment="Center">
+                    <MenuItem.Header>
+                        <Label FontSize="36" Style="{StaticResource fontLabelMontserrat}" Content="..." FontWeight="Bold" Foreground="DarkGray"></Label>
+                    </MenuItem.Header>
+                    <MenuItem Header="Удалить"/>
+                </MenuItem>
+            </Menu>
+            <Grid Grid.Column="3">
+                <Border CornerRadius="20" Background="#242424" BorderThickness="2" BorderBrush="White">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="50"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="50"/>
+                        </Grid.ColumnDefinitions>
+                        <fa:FontAwesome Icon="Search" FontSize="24" Foreground="White" VerticalAlignment="Center"/>
+                        <TextBox x:Name="SearchBarTextBox" Style="{StaticResource fontTextBoxMontserrat}" Text="Что хотите послушать?" Foreground="Gray" Grid.Column="1" BorderThickness="0" Background="Transparent" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" FontSize="18" FontWeight="Medium" BorderBrush="#00000000" SelectionBrush="White" SelectionTextBrush="#00000000" Margin="0,0,22,0" CaretBrush="#FF00FF04"/>
+                        <fa:FontAwesome Cursor="Hand" Visibility="Hidden" Grid.Column="2" x:Name="removeEverythingFromSearchBoxButton" Icon="Remove" FontSize="24" Foreground="White" VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+        <Grid Grid.Row="2">
+
+        </Grid>
+    </Grid>
+</Page>

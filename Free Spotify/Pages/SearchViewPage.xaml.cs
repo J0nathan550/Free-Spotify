@@ -25,7 +25,6 @@ namespace Free_Spotify.Pages
         public CancellationTokenSource cancelProgressSongTimer = new CancellationTokenSource();
 
         public System.Timers.Timer searchEngineTimerExecuter = new System.Timers.Timer() { Interval = 250 }; // used to execute the query when user doesn't type anything
-        public CancellationTokenSource cancelSearchEngineTimerExecuter = new CancellationTokenSource();
 
         private List<TrackSearchResult> trackList = new List<TrackSearchResult>();
         private int currentSongIndex = 0;
@@ -75,10 +74,6 @@ namespace Free_Spotify.Pages
 
              searchEngineTimerExecuter.Elapsed += new System.Timers.ElapsedEventHandler((o, i) =>
              {
-                 if (cancelSearchEngineTimerExecuter.IsCancellationRequested)
-                 {
-                     return;
-                 }
                  SearchingSystem();
                  searchEngineTimerExecuter.Stop();
              });
@@ -145,6 +140,8 @@ namespace Free_Spotify.Pages
                 RepeatSongBehavior();
             };
 
+
+            // right button switches to the next music
             MainWindow.window.rightSong.MouseDown += async (sender, e) =>
             {
                 currentSongIndex++;
@@ -157,6 +154,7 @@ namespace Free_Spotify.Pages
                 });
             };
 
+            // left button switches to the previous music
             MainWindow.window.leftSong.MouseDown += async (sender, e) =>
             {
                 currentSongIndex--;
@@ -177,6 +175,7 @@ namespace Free_Spotify.Pages
         /// <param name="e"></param>
         private async void MediaPlayer_MediaEnded(object? sender, EventArgs e)
         {
+            Utils.ContinueDiscordPresence(trackList[currentSongIndex]);
             await Dispatcher.BeginInvoke(async () =>
             {
                 if (mediaPlayer.Source != null)
@@ -184,7 +183,6 @@ namespace Free_Spotify.Pages
                     if (IsSongRepeat)
                     {
                         mediaPlayer.Position = TimeSpan.Zero;
-                        Utils.ContinueDiscordPresence(trackList[currentSongIndex]);
                         return;
                     }
                     await Task.Run(() =>
@@ -367,7 +365,7 @@ namespace Free_Spotify.Pages
                             {
                                 case TrackSearchResult track:
                                 {
-                                        newSongs.Add(track);
+                                    newSongs.Add(track);
                                     await Dispatcher.BeginInvoke(() =>
                                     {
                                         try
@@ -452,6 +450,9 @@ namespace Free_Spotify.Pages
                                                 {
                                                     try
                                                     {
+
+                                                        trackList.Clear();
+                                                        trackList.AddRange(newSongs);
                                                         int symbolToRemove = 1;
                                                         await Dispatcher.BeginInvoke(() =>
                                                         {
@@ -496,10 +497,6 @@ namespace Free_Spotify.Pages
                             }
                             indexLoop++;
                         }
-
-
-                        trackList.Clear();
-                        trackList.AddRange(newSongs);
 
                     }
                     else
