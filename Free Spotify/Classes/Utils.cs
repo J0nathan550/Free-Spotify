@@ -11,8 +11,11 @@ namespace Free_Spotify.Classes
     {
         public static Settings settings = new Settings();
         public static string savePath = "settings.json";
-        public static string githubLink { get; private set; } = "https://github.com/J0nathan550/Free-Spotify"; // later will add the link to the public repository (IF EVER!)
-        /// <summary>
+        public static string GithubLink { get; private set; } = "https://github.com/J0nathan550/Free-Spotify"; // later will add the link to the public repository (IF EVER!)
+        public static string DownloadAutoUpdateLinkX64 { get; private set; } = "https://raw.githubusercontent.com/J0nathan550/Free-Spotify/master/AutoUpdateX64.xml";
+        public static string DownloadAutoUpdateLinkX86 { get; private set; } = "https://raw.githubusercontent.com/J0nathan550/Free-Spotify/master/AutoUpdateX86.xml";
+
+;        /// <summary>
         /// If progress of the song is changed, it changes the progress to current position
         /// </summary>
         public static void ContinueDiscordPresence(TrackSearchResult track)
@@ -43,7 +46,7 @@ namespace Free_Spotify.Classes
                         new Button()
                         {
                             Label = "Free Spotify...",
-                            Url = githubLink
+                            Url = GithubLink
                         }
                     },
                     Party = new Party()
@@ -78,7 +81,7 @@ namespace Free_Spotify.Classes
                         new Button()
                         {
                             Label = "Free Spotify...",
-                            Url = githubLink
+                            Url = GithubLink
                         }
                     }
                 });
@@ -113,7 +116,7 @@ namespace Free_Spotify.Classes
                         new Button()
                         {
                             Label = "Free Spotify...",
-                            Url = githubLink
+                            Url = GithubLink
                         }
                     }
                 });
@@ -152,7 +155,7 @@ namespace Free_Spotify.Classes
                         new Button()
                         {
                             Label = "Free Spotify...",
-                            Url = githubLink
+                            Url = GithubLink
                         }
                     }
                 });

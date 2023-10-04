@@ -837,7 +837,7 @@ namespace Free_Spotify.Pages
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"ERROR: {ex.GetType()},\n Message: {ex.Message},\n Please screenshot this error, and send me in github!\nLINK: {Utils.githubLink}");
+                MessageBox.Show($"ERROR: {ex.GetType()},\n Message: {ex.Message},\n Please screenshot this error, and send me in github!\nLINK: {Utils.GithubLink}");
                 StopSound();
             }
         }
