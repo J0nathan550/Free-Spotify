@@ -2,8 +2,11 @@
 using Free_Spotify.Classes;
 using Free_Spotify.Pages;
 using System.Windows;
-using System.Windows.Media;
-using System.Windows.Shell;
+using AutoUpdaterDotNET;
+using System.Reflection;
+using System.Windows.Threading;
+using System;
+using System.Diagnostics;
 
 namespace Free_Spotify
 {
@@ -17,9 +20,16 @@ namespace Free_Spotify
         public MainWindow()
         {
             InitializeComponent();
+            var assembly = Assembly.GetEntryAssembly();
+            currentVersion_Item.Header = $"Current Version : {assembly?.GetName().Version}";
+            CheckForUpdates();
+            var timer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(2) };
+            timer.Tick += delegate { CheckForUpdates(); };
+            timer.Start();
             window = this;
             discordClient.Initialize();
             Utils.IdleDiscordPresence();
+            CheckForUpdates();
         }
 
         /// <summary>
@@ -81,5 +91,30 @@ namespace Free_Spotify
             SearchViewPage.instance.cancelProgressSongTimer.Cancel();
             Utils.SaveSettings();
         }
+
+        private void CheckForUpdates_Click(object sender, RoutedEventArgs e)
+        {
+            CheckForUpdates();
+        }
+
+        private void currentVersion_Item_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo()
+            {
+                FileName = Utils.githubLink,
+                UseShellExecute = true
+            });
+        }
+
+        private void CheckForUpdates()
+        {
+            AutoUpdater.ShowSkipButton = false;
+            AutoUpdater.ShowRemindLaterButton = false;
+            AutoUpdater.Mandatory = true;
+            AutoUpdater.UpdateMode = Mode.Forced;
+            AutoUpdater.RunUpdateAsAdmin = false;
+            AutoUpdater.Icon = new System.Drawing.Bitmap("Assets/spotify-icon-png-15398-Windows.ico");
+        }
+
     }
 }

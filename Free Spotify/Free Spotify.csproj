@@ -8,7 +8,7 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Assets\spotify-icon-png-15398-Windows.ico</ApplicationIcon>
     <Company>J0nathan550</Company>
-    <Version>1.0.0.0</Version>
+    <Version>1.0.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -51,7 +51,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Assets\spotify-icon-png-15398-Windows.ico" />
+    <Content Include="Assets\spotify-icon-png-15398-Windows.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -60,6 +62,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autoupdater.NET.Official" Version="1.8.4" />
     <PackageReference Include="DiscordRichPresence" Version="1.2.1.24" />
     <PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />

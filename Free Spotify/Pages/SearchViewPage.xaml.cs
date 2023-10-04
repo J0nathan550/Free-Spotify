@@ -1,11 +1,9 @@
 ﻿using FontAwesome.WPF;
 using Free_Spotify.Classes;
-using Newtonsoft.Json;
 using SpotifyExplode;
 using SpotifyExplode.Search;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -47,34 +45,50 @@ namespace Free_Spotify.Pages
 
             mediaPlayer.MediaEnded += MediaPlayer_MediaEnded;
             // lambda render timer, inside you can see the updating player visual.
+
             progressSongTimer.Elapsed += new System.Timers.ElapsedEventHandler(async (o, i) =>
             {
-                if (cancelProgressSongTimer.IsCancellationRequested)
+                try
                 {
-                    return;
+                    if (cancelProgressSongTimer.IsCancellationRequested)
+                    {
+                        return;
+                    }
+                }
+                catch
+                {
+                    cancelProgressSongTimer.Cancel();
                 }
                 await Dispatcher.BeginInvoke(() =>
                 {
-                    if (mediaPlayer.Source != null)
+                    try
                     {
-                        if (mediaPlayer.NaturalDuration.HasTimeSpan)
+                        if (mediaPlayer.Source != null)
                         {
-                            MainWindow.window.musicProgress.Value = mediaPlayer.Position.TotalMilliseconds;
-
-                            MainWindow.window.musicProgress.Maximum = trackList[currentSongIndex].DurationMs;
-
-                            MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Normal;
-                            MainWindow.window.progressSongTaskBar.ProgressValue = mediaPlayer.Position.TotalMilliseconds / trackList[currentSongIndex].DurationMs;
-
-                            if (mediaPlayer.Position.Hours > 0)
+                            if (mediaPlayer.NaturalDuration.HasTimeSpan)
                             {
-                                MainWindow.window.startOfSong.Content = mediaPlayer.Position.ToString(@"h\:m\:ss");
-                            }
-                            else
-                            {
-                                MainWindow.window.startOfSong.Content = mediaPlayer.Position.ToString(@"m\:ss");
+                                Utils.ContinueDiscordPresence(trackList[currentSongIndex]);
+                                MainWindow.window.musicProgress.Value = mediaPlayer.Position.TotalMilliseconds;
+
+                                MainWindow.window.musicProgress.Maximum = trackList[currentSongIndex].DurationMs;
+
+                                MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Normal;
+                                MainWindow.window.progressSongTaskBar.ProgressValue = mediaPlayer.Position.TotalMilliseconds / mediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds;
+
+                                if (mediaPlayer.Position.Hours > 0)
+                                {
+                                    MainWindow.window.startOfSong.Content = mediaPlayer.Position.ToString(@"h\:m\:ss");
+                                }
+                                else
+                                {
+                                    MainWindow.window.startOfSong.Content = mediaPlayer.Position.ToString(@"m\:ss");
+                                }
                             }
                         }
+                    }
+                    catch
+                    {
+                        StopSound();
                     }
                 });
             });
@@ -90,24 +104,31 @@ namespace Free_Spotify.Pages
             {
                 await Dispatcher.BeginInvoke(() =>
                 {
-                    if (!IsSongPaused)
+                    try
                     {
-                        PausingSong();
-                        return;
-                    }
-                    if (mediaPlayer.Source != null)
-                    {
-                        if (mediaPlayer.NaturalDuration.HasTimeSpan)
+                        if (!IsSongPaused)
                         {
-                            if (mediaPlayer.Position.Hours > 0)
+                            PausingSong();
+                            return;
+                        }
+                        if (mediaPlayer.Source != null)
+                        {
+                            if (mediaPlayer.NaturalDuration.HasTimeSpan)
                             {
-                                MainWindow.window.startOfSong.Content = new TimeSpan(0, 0, 0, 0, (int)MainWindow.window.musicProgress.Value).ToString(@"h\:m\:ss");
-                            }
-                            else
-                            {
-                                MainWindow.window.startOfSong.Content = new TimeSpan(0, 0, 0, 0, (int)MainWindow.window.musicProgress.Value).ToString(@"m\:ss");
+                                if (mediaPlayer.Position.Hours > 0)
+                                {
+                                    MainWindow.window.startOfSong.Content = new TimeSpan(0, 0, 0, 0, (int)MainWindow.window.musicProgress.Value).ToString(@"h\:m\:ss");
+                                }
+                                else
+                                {
+                                    MainWindow.window.startOfSong.Content = new TimeSpan(0, 0, 0, 0, (int)MainWindow.window.musicProgress.Value).ToString(@"m\:ss");
+                                }
                             }
                         }
+                    }
+                    catch
+                    {
+                        StopSound();
                     }
                 });
             }));
@@ -115,15 +136,22 @@ namespace Free_Spotify.Pages
             // unpauses the song and renders once again the player when you release the thumb button.
             MainWindow.window.musicProgress.AddHandler(Thumb.DragCompletedEvent, new DragCompletedEventHandler((sender, e) =>
             {
-                if (mediaPlayer.Source != null)
+                try
                 {
-                    Utils.ContinueDiscordPresence(trackList[currentSongIndex]);
-                    if (mediaPlayer.NaturalDuration.HasTimeSpan)
+                    if (mediaPlayer.Source != null)
                     {
-                        mediaPlayer.Position = new TimeSpan(0, 0, 0, 0, (int)MainWindow.window.musicProgress.Value);
+                        Utils.ContinueDiscordPresence(trackList[currentSongIndex]);
+                        if (mediaPlayer.NaturalDuration.HasTimeSpan)
+                        {
+                            mediaPlayer.Position = new TimeSpan(0, 0, 0, 0, (int)MainWindow.window.musicProgress.Value);
+                        }
                     }
+                    PausingSong();
                 }
-                PausingSong();
+                catch
+                {
+                    StopSound();
+                }
             }));
 
             // volume slider, manages the volume of all songs. Later will be stored in saving system.
@@ -182,18 +210,25 @@ namespace Free_Spotify.Pages
             {
                 if (mediaPlayer.Source != null)
                 {
-                    if (IsSongRepeat)
+                    try
                     {
-                        mediaPlayer.Position = TimeSpan.Zero;
-                        return;
+                        if (IsSongRepeat)
+                        {
+                            mediaPlayer.Position = TimeSpan.Zero;
+                            return;
+                        }
+                        await Task.Run(() =>
+                        {
+                            currentSongIndex++;
+                            if (currentSongIndex >= trackList.Count) currentSongIndex = 0;
+                            PlaySound();
+                            UpdateStatusPlayerBar();
+                        });
                     }
-                    await Task.Run(() =>
+                    catch
                     {
-                        currentSongIndex++;
-                        if (currentSongIndex >= trackList.Count ) currentSongIndex = 0;
-                        PlaySound();
-                        UpdateStatusPlayerBar();
-                    });
+                        StopSound();
+                    }
                 }
             });
         }
@@ -229,51 +264,79 @@ namespace Free_Spotify.Pages
         {
             await Dispatcher.BeginInvoke(() =>
             {
-                if (mediaPlayer.Source != null)
+                try
                 {
-                    if (IsSongPaused)
-                    {
-                        IsSongPaused = false;
-                        mediaPlayer.Play();
-                        progressSongTimer.Start();
-                        Utils.ContinueDiscordPresence(trackList[currentSongIndex]);
-                        MainWindow.window.musicToggle.Icon = FontAwesomeIcon.Pause;
-                        if (mediaPlayer.Source != null)
-                        {
-                            MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Normal;
-                            if (mediaPlayer.NaturalDuration.HasTimeSpan)
-                            {
-                                MainWindow.window.progressSongTaskBar.ProgressValue = mediaPlayer.Position.TotalMilliseconds / trackList[currentSongIndex].DurationMs;
-                            }
-                        }
-                        else
-                        {
-                            MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Error;
-                        }
-                        return;
-                    }
-                    Utils.PauseDiscordPresence(trackList[currentSongIndex]);
-                    IsSongPaused = true;
-                    mediaPlayer.Pause();
-                    progressSongTimer.Stop();
-                    MainWindow.window.musicToggle.Icon = FontAwesomeIcon.Play;
                     if (mediaPlayer.Source != null)
                     {
-                        MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Paused;
-                        if (mediaPlayer.NaturalDuration.HasTimeSpan)
+                        try
                         {
-                            MainWindow.window.progressSongTaskBar.ProgressValue = mediaPlayer.Position.TotalMilliseconds / trackList[currentSongIndex].DurationMs;
+                            if (IsSongPaused)
+                            {
+                                try
+                                {
+                                    IsSongPaused = false;
+                                    mediaPlayer.Play();
+                                    progressSongTimer.Start();
+                                    Utils.ContinueDiscordPresence(trackList[currentSongIndex]);
+                                    MainWindow.window.musicToggle.Icon = FontAwesomeIcon.Pause;
+                                    if (mediaPlayer.Source != null)
+                                    {
+                                        MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Normal;
+                                        if (mediaPlayer.NaturalDuration.HasTimeSpan)
+                                        {
+                                            MainWindow.window.progressSongTaskBar.ProgressValue = mediaPlayer.Position.TotalMilliseconds / mediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Error;
+                                    }
+                                }
+                                catch
+                                {
+                                    StopSound();
+                                }
+                                return;
+                            }
+                            try
+                            {
+                                Utils.PauseDiscordPresence(trackList[currentSongIndex]);
+                                IsSongPaused = true;
+                                mediaPlayer.Pause();
+                                progressSongTimer.Stop();
+                                MainWindow.window.musicToggle.Icon = FontAwesomeIcon.Play;
+                                if (mediaPlayer.Source != null)
+                                {
+                                    MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Paused;
+                                    if (mediaPlayer.NaturalDuration.HasTimeSpan)
+                                    {
+                                        MainWindow.window.progressSongTaskBar.ProgressValue = mediaPlayer.Position.TotalMilliseconds / mediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds;
+                                    }
+                                }
+                                else
+                                {
+                                    MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Error;
+                                }
+                            }
+                            catch
+                            {
+                                StopSound();
+                            }
+                        }
+                        catch
+                        {
+                            StopSound();
                         }
                     }
                     else
                     {
-                        MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Error;
+                        MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.None;
+                        MainWindow.window.progressSongTaskBar.ProgressValue = 0;
                     }
                 }
-                else
+                catch
                 {
-                    MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.None;
-                    MainWindow.window.progressSongTaskBar.ProgressValue = 0;
+                    StopSound();
                 }
             });
         }
@@ -330,28 +393,36 @@ namespace Free_Spotify.Pages
             await Dispatcher.InvokeAsync(async () =>
             {
                 WrapPanel wrapPanelVisual = new WrapPanel();
-                wrapPanelVisual.Orientation = Orientation.Horizontal;
+                try
+                {
+                    wrapPanelVisual.Orientation = Orientation.Horizontal;
 
-                if (searchVisual.Children.Count != 0)
+                    if (searchVisual.Children.Count != 0)
+                    {
+                        GC.Collect();
+                        searchVisual.Children.Clear();
+                        searchVisual.Children.Add(wrapPanelVisual);
+                    }
+
+                    if (!isTextErased)
+                    {
+                        return;
+                    }
+
+                    if (SearchBarTextBox.Text.Length != 0)
+                    {
+                        removeEverythingFromSearchBoxButton.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        removeEverythingFromSearchBoxButton.Visibility = Visibility.Hidden;
+                    }
+                }
+                catch
                 {
-                    GC.Collect();
-                    searchVisual.Children.Clear();
-                    searchVisual.Children.Add(wrapPanelVisual);
+                    StopSound();
                 }
 
-                if (!isTextErased)
-                {
-                    return;
-                }
-
-                if (SearchBarTextBox.Text.Length != 0)
-                {
-                    removeEverythingFromSearchBoxButton.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    removeEverythingFromSearchBoxButton.Visibility = Visibility.Hidden;
-                }
                 try
                 {
                     /// searching for the song or else.
@@ -441,12 +512,19 @@ namespace Free_Spotify.Pages
                                                 {
                                                     await Dispatcher.BeginInvoke(() =>
                                                     {
-                                                        if (mediaPlayer.Source != null)
+                                                        try
                                                         {
-                                                            if (IsSongRepeat)
+                                                            if (mediaPlayer.Source != null)
                                                             {
-                                                                RepeatSongBehavior();
+                                                                if (IsSongRepeat)
+                                                                {
+                                                                    RepeatSongBehavior();
+                                                                }
+                                                                StopSound();
                                                             }
+                                                        }
+                                                        catch
+                                                        {
                                                             StopSound();
                                                         }
                                                     });
@@ -583,28 +661,35 @@ namespace Free_Spotify.Pages
         {
             await Dispatcher.BeginInvoke(() =>
             {
-                MainWindow.window.musicToggle.Icon = FontAwesomeIcon.Pause;
-                MainWindow.window.songTitle.Content = trackList[currentSongIndex].Title;
-                MainWindow.window.songAuthor.Content = trackList[currentSongIndex].Artists[0].Name;
-
-
-                BitmapImage sourceImageOfTrack = new BitmapImage();
-                sourceImageOfTrack.BeginInit();
-                sourceImageOfTrack.CreateOptions = BitmapCreateOptions.None;
-                sourceImageOfTrack.CacheOption = BitmapCacheOption.None;
-                sourceImageOfTrack.UriSource = new Uri(trackList[currentSongIndex].Album.Images[0].Url);
-                sourceImageOfTrack.EndInit();
-
-                MainWindow.window.iconTrack.Source = sourceImageOfTrack;
-
-                uint hourMillisecond = 3600000;
-                if (trackList[currentSongIndex].DurationMs > hourMillisecond)
+                try
                 {
-                    MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(trackList[currentSongIndex].DurationMs).ToString(@"h\:m\:ss")}";
+                    MainWindow.window.musicToggle.Icon = FontAwesomeIcon.Pause;
+                    MainWindow.window.songTitle.Content = trackList[currentSongIndex].Title;
+                    MainWindow.window.songAuthor.Content = trackList[currentSongIndex].Artists[0].Name;
+
+
+                    BitmapImage sourceImageOfTrack = new BitmapImage();
+                    sourceImageOfTrack.BeginInit();
+                    sourceImageOfTrack.CreateOptions = BitmapCreateOptions.None;
+                    sourceImageOfTrack.CacheOption = BitmapCacheOption.None;
+                    sourceImageOfTrack.UriSource = new Uri(trackList[currentSongIndex].Album.Images[0].Url);
+                    sourceImageOfTrack.EndInit();
+
+                    MainWindow.window.iconTrack.Source = sourceImageOfTrack;
+
+                    uint hourMillisecond = 3600000;
+                    if (trackList[currentSongIndex].DurationMs > hourMillisecond)
+                    {
+                        MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(trackList[currentSongIndex].DurationMs).ToString(@"h\:m\:ss")}";
+                    }
+                    else
+                    {
+                        MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(trackList[currentSongIndex].DurationMs).ToString(@"m\:ss")}";
+                    }
                 }
-                else
+                catch
                 {
-                    MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(trackList[currentSongIndex].DurationMs).ToString(@"m\:ss")}";
+                    StopSound();
                 }
             });
         }
@@ -677,22 +762,36 @@ namespace Free_Spotify.Pages
                 var streamInfo = streamManifest.Result.GetAudioStreams().GetWithHighestBitrate();
                 await Dispatcher.BeginInvoke(() =>
                 {
-                    mediaPlayer.Open(new Uri(streamInfo.Url));
-                    mediaPlayer.Play();
-                    progressSongTimer.Start();
-                    mediaPlayer.Volume = (float)MainWindow.window.volumeSlider.Value;
-                    Utils.StartDiscordPresence(trackList[currentSongIndex]);
+                    try
+                    {
+                        mediaPlayer.Open(new Uri(streamInfo.Url));
+                        mediaPlayer.Play();
+                        progressSongTimer.Start();
+                        mediaPlayer.Volume = (float)MainWindow.window.volumeSlider.Value;
+                        Utils.StartDiscordPresence(trackList[currentSongIndex]);
+                    }
+                    catch
+                    {
+                        StopSound();
+                    }
                 });
             }
             catch (ArgumentException) // exception that arrives when song doesn't exist in YouTube and it simply tries to switch to another one. 
             {
-                currentSongIndex++;
-                if (currentSongIndex >= trackList.Count) currentSongIndex = 0;
-                await Task.Run(() =>
+                try
                 {
-                    PlaySound();
-                    UpdateStatusPlayerBar();
-                });
+                    currentSongIndex++;
+                    if (currentSongIndex >= trackList.Count) currentSongIndex = 0;
+                    await Task.Run(() =>
+                    {
+                        PlaySound();
+                        UpdateStatusPlayerBar();
+                    });
+                }
+                catch
+                {
+                    StopSound();
+                }
             }
             catch (HttpRequestException request)
             {
