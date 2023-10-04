@@ -1,11 +1,20 @@
 ﻿using DiscordRPC;
+using FontAwesome.WPF;
+using Newtonsoft.Json;
 using SpotifyExplode.Search;
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Shell;
 
 namespace Free_Spotify.Classes
 {
     public static class Utils
     {
+        public static Settings settings = new Settings();
+        public static string savePath = "settings.json";
         public static string githubLink { get; private set; } = "https://github.com/J0nathan550"; // later will add the link to the public repository (IF EVER!)
         /// <summary>
         /// If progress of the song is changed, it changes the progress to current position
@@ -42,6 +51,7 @@ namespace Free_Spotify.Classes
                         }
                     }
                 });
+
             }
             catch { /* Sometimes buttons can crash whole application because URL inside of button can be null. */ }
         }
@@ -147,6 +157,44 @@ namespace Free_Spotify.Classes
                 });
             }
             catch { /* Sometimes buttons can crash whole application because URL inside of button can be null. */ }
+        }
+
+        public static void LoadSettings()
+        {
+            if (!File.Exists(savePath))
+            {
+                File.WriteAllText(savePath, JsonConvert.SerializeObject(settings));
+                return;
+            }
+            string jsonInfo = File.ReadAllText(savePath);
+            if (!string.IsNullOrEmpty(jsonInfo))
+            {
+                try
+                {
+                    settings = JsonConvert.DeserializeObject<Settings>(jsonInfo);
+                }
+                catch
+                {
+                    MessageBox.Show("Файл с настройками был повреждён, настройки сброшены по умолчанию.", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+                    File.Delete(savePath);
+                    File.WriteAllText(savePath, JsonConvert.SerializeObject(settings));
+                }
+            }
+            else
+            {
+                File.Delete(savePath);
+                File.WriteAllText(savePath, JsonConvert.SerializeObject(settings));
+            }
+        }
+
+        public static void SaveSettings()
+        {
+            File.WriteAllText(savePath, JsonConvert.SerializeObject(settings));
+        }
+
+        public class Settings
+        {
+            public double volume = 0.5f;
         }
     }
 }

@@ -1,9 +1,11 @@
 ﻿using FontAwesome.WPF;
 using Free_Spotify.Classes;
+using Newtonsoft.Json;
 using SpotifyExplode;
 using SpotifyExplode.Search;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,10 +23,10 @@ namespace Free_Spotify.Pages
 {
     public partial class SearchViewPage : Page
     {
-        public System.Timers.Timer progressSongTimer = new System.Timers.Timer() { Interval = 1000 / 60 }; // used to render every single millisecond the progress bar of player.
-        public CancellationTokenSource cancelProgressSongTimer = new CancellationTokenSource();
+        public static SearchViewPage instance;
 
-        public System.Timers.Timer searchEngineTimerExecuter = new System.Timers.Timer() { Interval = 250 }; // used to execute the query when user doesn't type anything
+        public System.Timers.Timer progressSongTimer = new System.Timers.Timer() { Interval = 1000 }; // used to render every single millisecond the progress bar of player.
+        public CancellationTokenSource cancelProgressSongTimer = new CancellationTokenSource();
 
         private List<TrackSearchResult> trackList = new List<TrackSearchResult>();
         private int currentSongIndex = 0;
@@ -38,6 +40,11 @@ namespace Free_Spotify.Pages
         public SearchViewPage()
         {
             InitializeComponent();
+            instance = this;
+            Utils.LoadSettings();
+            mediaPlayer.Volume = Utils.settings.volume;
+            MainWindow.window.volumeSlider.Value = mediaPlayer.Volume;
+
             mediaPlayer.MediaEnded += MediaPlayer_MediaEnded;
             // lambda render timer, inside you can see the updating player visual.
             progressSongTimer.Elapsed += new System.Timers.ElapsedEventHandler(async (o, i) =>
@@ -71,12 +78,6 @@ namespace Free_Spotify.Pages
                     }
                 });
             });
-
-             searchEngineTimerExecuter.Elapsed += new System.Timers.ElapsedEventHandler((o, i) =>
-             {
-                 SearchingSystem();
-                 searchEngineTimerExecuter.Stop();
-             });
 
             // pause button, switches the sprite of playing (pausing) song.
             MainWindow.window.musicToggle.MouseDown += new MouseButtonEventHandler((o, i) =>
@@ -130,7 +131,8 @@ namespace Free_Spotify.Pages
             {
                 await Dispatcher.BeginInvoke(() =>
                 {
-                    mediaPlayer.Volume = (float)MainWindow.window.volumeSlider.Value;    
+                    mediaPlayer.Volume = (float)MainWindow.window.volumeSlider.Value;
+                    Utils.settings.volume = mediaPlayer.Volume;
                 });
             }));
 
@@ -218,21 +220,7 @@ namespace Free_Spotify.Pages
             }
         }
 
-        /// <summary>
-        /// An a event that is used in search bar to represent if you are clicked it, if you have no text inside, it will remove the tip.
-        /// </summary>
-        private async void SearchTextBox_Focus(object sender, RoutedEventArgs e)
-        {
-            await Dispatcher.InvokeAsync(() =>
-            {
-                if (!isTextErased)
-                {
-                    SearchBarTextBox.Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
-                    SearchBarTextBox.Text = string.Empty;
-                    isTextErased = true;
-                }
-            });
-        }
+
 
         /// <summary>
         /// Function that pauses the song.
@@ -313,10 +301,26 @@ namespace Free_Spotify.Pages
         {
             await Dispatcher.BeginInvoke(() =>
             {
-                searchEngineTimerExecuter.Stop();
-                searchEngineTimerExecuter.Start();
+                SearchingSystem();
             });
         }
+
+        /// <summary>
+        /// An a event that is used in search bar to represent if you are clicked it, if you have no text inside, it will remove the tip.
+        /// </summary>
+        private async void SearchTextBox_Focus(object sender, RoutedEventArgs e)
+        {
+            await Dispatcher.InvokeAsync(() =>
+            {
+                if (!isTextErased)
+                {
+                    SearchBarTextBox.Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+                    SearchBarTextBox.Text = string.Empty;
+                    isTextErased = true;
+                }
+            });
+        }
+
 
         /// <summary>
         /// A system, that when you type returns you the possible songs that you can listen in spotify.
@@ -364,136 +368,136 @@ namespace Free_Spotify.Pages
                             switch (result)
                             {
                                 case TrackSearchResult track:
-                                {
-                                    newSongs.Add(track);
-                                    await Dispatcher.BeginInvoke(() =>
                                     {
-                                        try
+                                        newSongs.Add(track);
+                                        await Dispatcher.BeginInvoke(() =>
                                         {
-                                            Border background = new Border();
-                                            background.Name = $"i{indexLoop}";
-                                            background.CornerRadius = new CornerRadius(6);
-                                            background.Cursor = Cursors.Hand;
-                                            background.Background = new SolidColorBrush(Color.FromArgb(0x00, 0x21, 0x21, 0x21));
-                                            background.Width = 256;
-                                            background.Height = 256;
-
-                                            Grid mainVisualGrid = new Grid();
-
-                                            background.Child = mainVisualGrid;
-
-                                            RowDefinition rowDefinition = new RowDefinition();
-                                            rowDefinition.Height = new GridLength(3, GridUnitType.Star);
-                                            mainVisualGrid.RowDefinitions.Add(rowDefinition);
-
-                                            RowDefinition textDefinition = new RowDefinition();
-                                            textDefinition.Height = new GridLength(1, GridUnitType.Star);
-                                            mainVisualGrid.RowDefinitions.Add(textDefinition);
-
-                                            BitmapImage sourceImageOfTrack = new BitmapImage();
-                                            sourceImageOfTrack.BeginInit();
-                                            sourceImageOfTrack.CreateOptions = BitmapCreateOptions.None;
-                                            sourceImageOfTrack.CacheOption = BitmapCacheOption.None;
-                                            sourceImageOfTrack.UriSource = new Uri(track.Album.Images[0].Url);
-                                            sourceImageOfTrack.EndInit();
-
-                                            Image actualImageOfTrack = new Image();
-                                            actualImageOfTrack.Source = sourceImageOfTrack;
-                                            actualImageOfTrack.HorizontalAlignment = HorizontalAlignment.Center;
-                                            actualImageOfTrack.VerticalAlignment = VerticalAlignment.Center;
-                                            //actualImageOfTrack.Stretch = Stretch.Fill; later option
-                                            actualImageOfTrack.CacheMode = null;
-                                            mainVisualGrid.Children.Add(actualImageOfTrack);
-
-                                            Grid.SetZIndex(actualImageOfTrack, -2);
-
-                                            Grid.SetRow(actualImageOfTrack, 0);
-                                            Grid.SetRowSpan(actualImageOfTrack, 2);
-
-                                            Border captionBorder = new Border();
-                                            captionBorder.Background = new SolidColorBrush(Color.FromArgb(180, 0x00, 0x00, 0x00));
-
-                                            TextBlock DescriptionOfTrack = new TextBlock();
-                                            DescriptionOfTrack.Text = $"Artist: {track.Artists[0].Name}\n" +
-                                            $"Track: {track.Title}\n";
-                                            DescriptionOfTrack.Foreground = new SolidColorBrush(Colors.White);
-                                            DescriptionOfTrack.Style = (Style)DescriptionOfTrack.FindResource("fontMontserrat");
-                                            DescriptionOfTrack.FontSize = 14;
-                                            DescriptionOfTrack.TextWrapping = TextWrapping.WrapWithOverflow;
-                                            DescriptionOfTrack.VerticalAlignment = VerticalAlignment.Center;
-                                            DescriptionOfTrack.HorizontalAlignment = HorizontalAlignment.Center;
-                                            DescriptionOfTrack.Padding = new Thickness(0, 10, 0, 0);
-
-                                            Grid.SetZIndex(captionBorder, -1);
-                                            Grid.SetZIndex(DescriptionOfTrack, 1);
-
-                                            mainVisualGrid.Children.Add(captionBorder);
-                                            mainVisualGrid.Children.Add(DescriptionOfTrack);
-                                            Grid.SetRow(captionBorder, 1);
-                                            Grid.SetRow(DescriptionOfTrack, 1);
-                                            wrapPanelVisual.Children.Add(background);
-
-                                            background.MouseDown += new MouseButtonEventHandler(async (o, i) =>
+                                            try
                                             {
-                                                await Dispatcher.BeginInvoke(() =>
-                                                {
-                                                    if (mediaPlayer.Source != null)
-                                                    {
-                                                        if (IsSongRepeat)
-                                                        {
-                                                            RepeatSongBehavior();
-                                                        }
-                                                        StopSound();
-                                                    }
-                                                });
-                                                await Task.Run(async () =>
-                                                {
-                                                    try
-                                                    {
+                                                Border background = new Border();
+                                                background.Name = $"i{indexLoop}";
+                                                background.CornerRadius = new CornerRadius(6);
+                                                background.Cursor = Cursors.Hand;
+                                                background.Background = new SolidColorBrush(Color.FromArgb(0x00, 0x21, 0x21, 0x21));
+                                                background.Width = 256;
+                                                background.Height = 256;
 
-                                                        trackList.Clear();
-                                                        trackList.AddRange(newSongs);
-                                                        int symbolToRemove = 1;
-                                                        await Dispatcher.BeginInvoke(() =>
-                                                        {
-                                                            currentSongIndex = int.Parse(background.Name.Substring(symbolToRemove));
-                                                        });
-                                                        PlaySound();
-                                                        UpdateStatusPlayerBar();
-                                                    }
-                                                    catch (Exception ex)
+                                                Grid mainVisualGrid = new Grid();
+
+                                                background.Child = mainVisualGrid;
+
+                                                RowDefinition rowDefinition = new RowDefinition();
+                                                rowDefinition.Height = new GridLength(3, GridUnitType.Star);
+                                                mainVisualGrid.RowDefinitions.Add(rowDefinition);
+
+                                                RowDefinition textDefinition = new RowDefinition();
+                                                textDefinition.Height = new GridLength(1, GridUnitType.Star);
+                                                mainVisualGrid.RowDefinitions.Add(textDefinition);
+
+                                                BitmapImage sourceImageOfTrack = new BitmapImage();
+                                                sourceImageOfTrack.BeginInit();
+                                                sourceImageOfTrack.CreateOptions = BitmapCreateOptions.None;
+                                                sourceImageOfTrack.CacheOption = BitmapCacheOption.None;
+                                                sourceImageOfTrack.UriSource = new Uri(track.Album.Images[0].Url);
+                                                sourceImageOfTrack.EndInit();
+
+                                                Image actualImageOfTrack = new Image();
+                                                actualImageOfTrack.Source = sourceImageOfTrack;
+                                                actualImageOfTrack.HorizontalAlignment = HorizontalAlignment.Center;
+                                                actualImageOfTrack.VerticalAlignment = VerticalAlignment.Center;
+                                                //actualImageOfTrack.Stretch = Stretch.Fill; later option
+                                                actualImageOfTrack.CacheMode = null;
+                                                mainVisualGrid.Children.Add(actualImageOfTrack);
+
+                                                Grid.SetZIndex(actualImageOfTrack, -2);
+
+                                                Grid.SetRow(actualImageOfTrack, 0);
+                                                Grid.SetRowSpan(actualImageOfTrack, 2);
+
+                                                Border captionBorder = new Border();
+                                                captionBorder.Background = new SolidColorBrush(Color.FromArgb(180, 0x00, 0x00, 0x00));
+
+                                                TextBlock DescriptionOfTrack = new TextBlock();
+                                                DescriptionOfTrack.Text = $"Artist: {track.Artists[0].Name}\n" +
+                                                $"Track: {track.Title}\n";
+                                                DescriptionOfTrack.Foreground = new SolidColorBrush(Colors.White);
+                                                DescriptionOfTrack.Style = (Style)DescriptionOfTrack.FindResource("fontMontserrat");
+                                                DescriptionOfTrack.FontSize = 14;
+                                                DescriptionOfTrack.TextWrapping = TextWrapping.WrapWithOverflow;
+                                                DescriptionOfTrack.VerticalAlignment = VerticalAlignment.Center;
+                                                DescriptionOfTrack.HorizontalAlignment = HorizontalAlignment.Center;
+                                                DescriptionOfTrack.Padding = new Thickness(0, 10, 0, 0);
+
+                                                Grid.SetZIndex(captionBorder, -1);
+                                                Grid.SetZIndex(DescriptionOfTrack, 1);
+
+                                                mainVisualGrid.Children.Add(captionBorder);
+                                                mainVisualGrid.Children.Add(DescriptionOfTrack);
+                                                Grid.SetRow(captionBorder, 1);
+                                                Grid.SetRow(DescriptionOfTrack, 1);
+                                                wrapPanelVisual.Children.Add(background);
+
+                                                background.MouseDown += new MouseButtonEventHandler(async (o, i) =>
+                                                {
+                                                    await Dispatcher.BeginInvoke(() =>
                                                     {
-                                                        StopSound();
-                                                        MessageBox.Show(ex.GetType().Name);
-                                                        MessageBox.Show(ex.Message);
-                                                    }
+                                                        if (mediaPlayer.Source != null)
+                                                        {
+                                                            if (IsSongRepeat)
+                                                            {
+                                                                RepeatSongBehavior();
+                                                            }
+                                                            StopSound();
+                                                        }
+                                                    });
+                                                    await Task.Run(async () =>
+                                                    {
+                                                        try
+                                                        {
+
+                                                            trackList.Clear();
+                                                            trackList.AddRange(newSongs);
+                                                            int symbolToRemove = 1;
+                                                            await Dispatcher.BeginInvoke(() =>
+                                                            {
+                                                                currentSongIndex = int.Parse(background.Name.Substring(symbolToRemove));
+                                                            });
+                                                            PlaySound();
+                                                            UpdateStatusPlayerBar();
+                                                        }
+                                                        catch (Exception ex)
+                                                        {
+                                                            StopSound();
+                                                            MessageBox.Show(ex.GetType().Name);
+                                                            MessageBox.Show(ex.Message);
+                                                        }
+                                                    });
                                                 });
-                                            });
-                                        }
-                                        catch
-                                        {
-                                        }
-                                    });
-                                    break;
-                                }
+                                            }
+                                            catch
+                                            {
+                                            }
+                                        });
+                                        break;
+                                    }
                                 default:
-                                {
-                                    await Dispatcher.InvokeAsync(() =>
                                     {
-                                        GC.Collect();
-                                        searchVisual.Children.Clear();
-                                        TextBlock resultTextBlock = new TextBlock();
-                                        resultTextBlock.Text = $"По запросу: \"{SearchBarTextBox.Text}\" ничего не найдено.";
-                                        resultTextBlock.FontSize = 14;
-                                        resultTextBlock.HorizontalAlignment = HorizontalAlignment.Center;
-                                        resultTextBlock.VerticalAlignment = VerticalAlignment.Center;
-                                        resultTextBlock.Foreground = new SolidColorBrush(Colors.White);
-                                        resultTextBlock.TextWrapping = TextWrapping.Wrap;
-                                        resultTextBlock.Style = (Style)FindResource("fontMontserrat");
-                                        searchVisual.Children.Add(resultTextBlock);
-                                    });
-                                    break;
-                                }
+                                        await Dispatcher.InvokeAsync(() =>
+                                        {
+                                            GC.Collect();
+                                            searchVisual.Children.Clear();
+                                            TextBlock resultTextBlock = new TextBlock();
+                                            resultTextBlock.Text = $"По запросу: \"{SearchBarTextBox.Text}\" ничего не найдено.";
+                                            resultTextBlock.FontSize = 14;
+                                            resultTextBlock.HorizontalAlignment = HorizontalAlignment.Center;
+                                            resultTextBlock.VerticalAlignment = VerticalAlignment.Center;
+                                            resultTextBlock.Foreground = new SolidColorBrush(Colors.White);
+                                            resultTextBlock.TextWrapping = TextWrapping.Wrap;
+                                            resultTextBlock.Style = (Style)FindResource("fontMontserrat");
+                                            searchVisual.Children.Add(resultTextBlock);
+                                        });
+                                        break;
+                                    }
                             }
                             indexLoop++;
                         }
@@ -583,7 +587,6 @@ namespace Free_Spotify.Pages
                 MainWindow.window.songTitle.Content = trackList[currentSongIndex].Title;
                 MainWindow.window.songAuthor.Content = trackList[currentSongIndex].Artists[0].Name;
 
-                MainWindow.window.favoriteSongButton.Visibility = Visibility.Visible;
 
                 BitmapImage sourceImageOfTrack = new BitmapImage();
                 sourceImageOfTrack.BeginInit();

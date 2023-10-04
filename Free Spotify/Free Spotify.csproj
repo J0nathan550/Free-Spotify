@@ -14,6 +14,8 @@
   <ItemGroup>
     <None Remove="Assets\close-icon.png" />
     <None Remove="Assets\discord_game_sdk.dll" />
+    <None Remove="Assets\music-icon-sign-symbol-design-free-png.png" />
+    <None Remove="Assets\music-icon-sign-symbol-design-free-png.webp" />
     <None Remove="Assets\SplashScreen.scale-100.png" />
     <None Remove="Assets\SplashScreen.scale-200.png" />
     <None Remove="Assets\SplashScreen.scale-400.png" />
@@ -53,13 +55,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Assets\music-icon-sign-symbol-design-free-png.png" />
     <Resource Include="Assets\SmallTile.scale-100.ico" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autoupdater.NET.Official" Version="1.8.4" />
     <PackageReference Include="DiscordRichPresence" Version="1.2.1.24" />
     <PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="SpotifyExplode" Version="1.0.7" />
     <PackageReference Include="YoutubeExplode" Version="6.3.4" />
   </ItemGroup>

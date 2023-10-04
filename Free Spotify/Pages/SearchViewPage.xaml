@@ -12,7 +12,7 @@
             <RowDefinition Height="60"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Border CornerRadius="20" Background="#242424" BorderThickness="2" BorderBrush="White">
+        <Border Background="#242424" BorderThickness="2" BorderBrush="White">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="50"/>

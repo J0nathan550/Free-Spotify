@@ -2,6 +2,8 @@
 using Free_Spotify.Classes;
 using Free_Spotify.Pages;
 using System.Windows;
+using System.Windows.Media;
+using System.Windows.Shell;
 
 namespace Free_Spotify
 {
@@ -55,15 +57,6 @@ namespace Free_Spotify
             Application.Current.Shutdown();
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            if (MainScreenPage.instance != null)
-            {
-                MainScreenPage.instance.searchPage.cancelProgressSongTimer.Cancel();
-                MainScreenPage.instance.searchPage.progressSongTimer.Stop();
-            }
-        }
-
         private async void WindowProcedure(object sender, System.EventArgs e)
         {
             await Dispatcher.BeginInvoke(() =>
@@ -81,6 +74,12 @@ namespace Free_Spotify
                     windowBackground.Padding = new Thickness(3);
                 }
             });
+        }
+
+        private void Closing_Window(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            SearchViewPage.instance.cancelProgressSongTimer.Cancel();
+            Utils.SaveSettings();
         }
     }
 }
