@@ -15,7 +15,7 @@ namespace Free_Spotify.Classes
         public static string DownloadAutoUpdateLinkX64 { get; private set; } = "https://raw.githubusercontent.com/J0nathan550/Free-Spotify/master/AutoUpdateX64.xml";
         public static string DownloadAutoUpdateLinkX86 { get; private set; } = "https://raw.githubusercontent.com/J0nathan550/Free-Spotify/master/AutoUpdateX86.xml";
 
-;        /// <summary>
+        /// <summary>
         /// If progress of the song is changed, it changes the progress to current position
         /// </summary>
         public static void ContinueDiscordPresence(TrackSearchResult track)
