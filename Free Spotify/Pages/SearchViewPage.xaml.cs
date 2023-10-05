@@ -31,15 +31,17 @@ namespace Free_Spotify.Pages
 
         private SearchFilter filter = SearchFilter.Track;    // used to search something certain in Search Engine.
         private bool isTextErased = false;                   // used to remove the tip
-        private MediaPlayer mediaPlayer = new();             // new feature to play sounds, removes many rookie booleans, and prevents spamming the song
+        public MediaPlayer mediaPlayer { get; private set; } = new();             // new feature to play sounds, removes many rookie booleans, and prevents spamming the song
         private bool IsSongRepeat = false;                   // boolean to define if we are repeating sound
         private bool IsSongPaused = false;                   // since we do not use NAudio anymore we need just one boolean to track if we paused. 
 
         public SearchViewPage()
         {
-            InitializeComponent();
-            instance = this;
             Utils.LoadSettings();
+            Utils.UpdateLanguage();
+            InitializeComponent();
+            SearchBarTextBox.Text = Utils.GetLocalizationString("SearchBarTextBoxDefaultText");
+            instance = this;
             mediaPlayer.Volume = Utils.settings.volume;
             MainWindow.window.volumeSlider.Value = mediaPlayer.Volume;
 
@@ -351,7 +353,7 @@ namespace Free_Spotify.Pages
                 if (SearchBarTextBox.Text.Length == 0)
                 {
                     SearchBarTextBox.Foreground = new SolidColorBrush(Color.FromArgb(255, 0x80, 0x80, 0x80));
-                    SearchBarTextBox.Text = "Что хочешь послушать?";
+                    SearchBarTextBox.Text = Utils.GetLocalizationString("SearchBarTextBoxDefaultText");
                     isTextErased = false;
                 }
             });
@@ -465,32 +467,35 @@ namespace Free_Spotify.Pages
                                                 textDefinition.Height = new GridLength(1, GridUnitType.Star);
                                                 mainVisualGrid.RowDefinitions.Add(textDefinition);
 
-                                                BitmapImage sourceImageOfTrack = new BitmapImage();
-                                                sourceImageOfTrack.BeginInit();
-                                                sourceImageOfTrack.CreateOptions = BitmapCreateOptions.None;
-                                                sourceImageOfTrack.CacheOption = BitmapCacheOption.None;
-                                                sourceImageOfTrack.UriSource = new Uri(track.Album.Images[0].Url);
-                                                sourceImageOfTrack.EndInit();
+                                                if (!Utils.settings.economTraffic)
+                                                {
+                                                    BitmapImage sourceImageOfTrack = new BitmapImage();
+                                                    sourceImageOfTrack.BeginInit();
+                                                    sourceImageOfTrack.CreateOptions = BitmapCreateOptions.None;
+                                                    sourceImageOfTrack.CacheOption = BitmapCacheOption.None;
+                                                    sourceImageOfTrack.UriSource = new Uri(track.Album.Images[0].Url);
+                                                    sourceImageOfTrack.EndInit();
 
-                                                Image actualImageOfTrack = new Image();
-                                                actualImageOfTrack.Source = sourceImageOfTrack;
-                                                actualImageOfTrack.HorizontalAlignment = HorizontalAlignment.Center;
-                                                actualImageOfTrack.VerticalAlignment = VerticalAlignment.Center;
-                                                //actualImageOfTrack.Stretch = Stretch.Fill; later option
-                                                actualImageOfTrack.CacheMode = null;
-                                                mainVisualGrid.Children.Add(actualImageOfTrack);
+                                                    Image actualImageOfTrack = new Image();
+                                                    actualImageOfTrack.Source = sourceImageOfTrack;
+                                                    actualImageOfTrack.HorizontalAlignment = HorizontalAlignment.Center;
+                                                    actualImageOfTrack.VerticalAlignment = VerticalAlignment.Center;
+                                                    //actualImageOfTrack.Stretch = Stretch.Fill; later option
+                                                    actualImageOfTrack.CacheMode = null;
+                                                    mainVisualGrid.Children.Add(actualImageOfTrack);
 
-                                                Grid.SetZIndex(actualImageOfTrack, -2);
+                                                    Grid.SetZIndex(actualImageOfTrack, -2);
 
-                                                Grid.SetRow(actualImageOfTrack, 0);
-                                                Grid.SetRowSpan(actualImageOfTrack, 2);
+                                                    Grid.SetRow(actualImageOfTrack, 0);
+                                                    Grid.SetRowSpan(actualImageOfTrack, 2);
+                                                }
 
                                                 Border captionBorder = new Border();
                                                 captionBorder.Background = new SolidColorBrush(Color.FromArgb(180, 0x00, 0x00, 0x00));
 
                                                 TextBlock DescriptionOfTrack = new TextBlock();
-                                                DescriptionOfTrack.Text = $"Artist: {track.Artists[0].Name}\n" +
-                                                $"Track: {track.Title}\n";
+                                                DescriptionOfTrack.Text = $"{Utils.GetLocalizationString("ArtistDefaultText")} {track.Artists[0].Name}\n" +
+                                                $"{Utils.GetLocalizationString("TrackDefaultText")} {track.Title}\n";
                                                 DescriptionOfTrack.Foreground = new SolidColorBrush(Colors.White);
                                                 DescriptionOfTrack.Style = (Style)DescriptionOfTrack.FindResource("fontMontserrat");
                                                 DescriptionOfTrack.FontSize = 14;
@@ -565,7 +570,7 @@ namespace Free_Spotify.Pages
                                             GC.Collect();
                                             searchVisual.Children.Clear();
                                             TextBlock resultTextBlock = new TextBlock();
-                                            resultTextBlock.Text = $"По запросу: \"{SearchBarTextBox.Text}\" ничего не найдено.";
+                                            resultTextBlock.Text = $"{Utils.GetLocalizationString("ErrorNothingFoundText")} \"{SearchBarTextBox.Text}\" {Utils.GetLocalizationString("ErrorNothingFoundText1")}";
                                             resultTextBlock.FontSize = 14;
                                             resultTextBlock.HorizontalAlignment = HorizontalAlignment.Center;
                                             resultTextBlock.VerticalAlignment = VerticalAlignment.Center;
@@ -588,7 +593,7 @@ namespace Free_Spotify.Pages
                             GC.Collect();
                             searchVisual.Children.Clear();
                             TextBlock resultTextBlock = new TextBlock();
-                            resultTextBlock.Text = $"По запросу: \"{SearchBarTextBox.Text}\" ничего не найдено.";
+                            resultTextBlock.Text = $"{Utils.GetLocalizationString("ErrorNothingFoundText")} \"{SearchBarTextBox.Text}\" {Utils.GetLocalizationString("ErrorNothingFoundText1")}";
                             resultTextBlock.FontSize = 14;
                             resultTextBlock.HorizontalAlignment = HorizontalAlignment.Center;
                             resultTextBlock.VerticalAlignment = VerticalAlignment.Center;
@@ -609,7 +614,7 @@ namespace Free_Spotify.Pages
                             GC.Collect();
                             searchVisual.Children.Clear();
                             TextBlock resultTextBlock = new TextBlock();
-                            resultTextBlock.Text = $"Начните печатать что-то, чтобы насладится приятной музыкой!";
+                            resultTextBlock.Text = Utils.GetLocalizationString("TipStartWrittingText");
                             resultTextBlock.FontSize = 14;
                             resultTextBlock.HorizontalAlignment = HorizontalAlignment.Center;
                             resultTextBlock.VerticalAlignment = VerticalAlignment.Center;
@@ -626,7 +631,7 @@ namespace Free_Spotify.Pages
                             GC.Collect();
                             searchVisual.Children.Clear();
                             TextBlock resultTextBlock = new TextBlock();
-                            resultTextBlock.Text = $"Похоже у вас проблемы с интернетом!";
+                            resultTextBlock.Text = Utils.GetLocalizationString("ErrorNoInternetText");
                             resultTextBlock.FontSize = 14;
                             resultTextBlock.HorizontalAlignment = HorizontalAlignment.Center;
                             resultTextBlock.VerticalAlignment = VerticalAlignment.Center;
@@ -667,15 +672,17 @@ namespace Free_Spotify.Pages
                     MainWindow.window.songTitle.Content = trackList[currentSongIndex].Title;
                     MainWindow.window.songAuthor.Content = trackList[currentSongIndex].Artists[0].Name;
 
+                    if (!Utils.settings.economTraffic)
+                    {
+                        BitmapImage sourceImageOfTrack = new BitmapImage();
+                        sourceImageOfTrack.BeginInit();
+                        sourceImageOfTrack.CreateOptions = BitmapCreateOptions.None;
+                        sourceImageOfTrack.CacheOption = BitmapCacheOption.None;
+                        sourceImageOfTrack.UriSource = new Uri(trackList[currentSongIndex].Album.Images[0].Url);
+                        sourceImageOfTrack.EndInit();
 
-                    BitmapImage sourceImageOfTrack = new BitmapImage();
-                    sourceImageOfTrack.BeginInit();
-                    sourceImageOfTrack.CreateOptions = BitmapCreateOptions.None;
-                    sourceImageOfTrack.CacheOption = BitmapCacheOption.None;
-                    sourceImageOfTrack.UriSource = new Uri(trackList[currentSongIndex].Album.Images[0].Url);
-                    sourceImageOfTrack.EndInit();
-
-                    MainWindow.window.iconTrack.Source = sourceImageOfTrack;
+                        MainWindow.window.iconTrack.Source = sourceImageOfTrack;
+                    }
 
                     uint hourMillisecond = 3600000;
                     if (trackList[currentSongIndex].DurationMs > hourMillisecond)
@@ -802,7 +809,7 @@ namespace Free_Spotify.Pages
                         GC.Collect();
                         searchVisual.Children.Clear();
                         TextBlock resultTextBlock = new TextBlock();
-                        resultTextBlock.Text = $"Начните печатать что-то, чтобы насладится приятной музыкой!";
+                        resultTextBlock.Text = Utils.GetLocalizationString("TipStartWrittingText");
                         resultTextBlock.FontSize = 14;
                         resultTextBlock.HorizontalAlignment = HorizontalAlignment.Center;
                         resultTextBlock.VerticalAlignment = VerticalAlignment.Center;
@@ -819,7 +826,7 @@ namespace Free_Spotify.Pages
                         GC.Collect();
                         searchVisual.Children.Clear();
                         TextBlock resultTextBlock = new TextBlock();
-                        resultTextBlock.Text = $"Похоже у вас проблемы с интернетом!";
+                        resultTextBlock.Text = Utils.GetLocalizationString("ErrorNoInternetText");
                         resultTextBlock.FontSize = 14;
                         resultTextBlock.HorizontalAlignment = HorizontalAlignment.Center;
                         resultTextBlock.VerticalAlignment = VerticalAlignment.Center;

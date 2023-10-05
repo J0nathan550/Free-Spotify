@@ -19,14 +19,20 @@ namespace Free_Spotify
         public DiscordRpcClient discordClient = new DiscordRpcClient("1154023388805873744");
         public MainWindow()
         {
+            window = this;
+            Utils.LoadSettings();
+            Utils.UpdateLanguage();
             InitializeComponent();
             var assembly = Assembly.GetEntryAssembly();
-            currentVersion_Item.Header = $"Current Version : {assembly?.GetName().Version}";
+            currentVersion_Item.Header = $"{Utils.GetLocalizationString("AppCurrentVersionDefaultText")} {assembly?.GetName().Version}";
+            songTitle.Content = Utils.GetLocalizationString("SongTitleDefaultText");
+            songAuthor.Content = Utils.GetLocalizationString("SongAuthorDefaultText");
+            settingsMenuItem.Header = Utils.GetLocalizationString("SettingsMenuItemHeader");
+            checkUpdatesMenuItem.Header = Utils.GetLocalizationString("CheckUpdatesMenuItemHeader");
             CheckForUpdates();
             var timer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(2) };
             timer.Tick += delegate { CheckForUpdates(); };
             timer.Start();
-            window = this;
             discordClient.Initialize();
             Utils.IdleDiscordPresence();
             CheckForUpdates();
@@ -125,5 +131,10 @@ namespace Free_Spotify
             }
         }
 
+        private SettingsPage settingsPage = new SettingsPage(); 
+        private void Settings_Click(object sender, RoutedEventArgs e)
+        {
+            LoadingPagesFrame.Navigate(settingsPage);
+        }
     }
 }

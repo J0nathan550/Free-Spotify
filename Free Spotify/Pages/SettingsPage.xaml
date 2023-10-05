@@ -1,0 +1,60 @@
+﻿<Page x:Class="Free_Spotify.Pages.SettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:fa="http://schemas.fontawesome.io/icons/"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="SettingsPage">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <fa:FontAwesome MouseDown="backToSearchPage_Click" Icon="LongArrowLeft" Foreground="White" FontSize="28"></fa:FontAwesome>
+            <Label Name="settingsLabel" VerticalContentAlignment="Center" Style="{StaticResource fontLabelMontserrat}" Content="Настройки" Foreground="White" FontWeight="Medium" Grid.Column="1" HorizontalContentAlignment="Center" FontSize="24" Padding="0"/>
+        </Grid>
+        <StackPanel Grid.Row="1">
+            <Grid Margin="10,10,10,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Label Name="languageLabel" Foreground="White" Content="Язык: " Style="{StaticResource fontLabelMontserrat}" FontWeight="Medium"/>
+                <ComboBox Name="languageComboBox" SelectionChanged="LanguageChanged_ComboBox" HorizontalAlignment="Left" Grid.Column="1" SelectedIndex="1">
+                    <ComboBoxItem Content="English"/>
+                    <ComboBoxItem Content="Русский"/>
+                    <ComboBoxItem Content="Український"/>
+                </ComboBox>
+            </Grid>
+            <Grid Margin="10,0,10,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Label Foreground="White" Content="Discord RPC: " Style="{StaticResource fontLabelMontserrat}" FontWeight="Medium"/>
+                <CheckBox Name="discordRPCCheckBox" Grid.Column="1" VerticalContentAlignment="Center" IsChecked="True" Click="DiscordRPC_Option"/>
+            </Grid>
+            <Grid Margin="10,0,10,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Label Name="trafficEconomic" Foreground="White" Content="Экономия трафика: " Style="{StaticResource fontLabelMontserrat}" FontWeight="Medium"/>
+                <CheckBox Click="EconomTraffic_Option" Name="trafficEconomicCheckBox" ToolTip="Убирает картинки с песен которые грузятся во время поиска песен." Grid.Column="1" VerticalContentAlignment="Center" IsChecked="False"/>
+            </Grid>
+            <Grid Margin="10,0,10,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</Page>

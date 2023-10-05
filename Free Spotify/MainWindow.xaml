@@ -28,10 +28,11 @@
                     <ColumnDefinition/>
                     <ColumnDefinition Width="100"/>
                 </Grid.ColumnDefinitions>
-                <Menu Background="Transparent" WindowChrome.IsHitTestVisibleInChrome="True" Grid.ColumnSpan="2">
-                    <MenuItem Width="33" Height="30">
-                        <MenuItem Click="CheckForUpdates_Click" Header="Проверить обновления..."/>
-                        <MenuItem Name="currentVersion_Item" Click="currentVersion_Item_Click" Header="Проверить обновления..."/>
+                <Menu Background="Transparent" WindowChrome.IsHitTestVisibleInChrome="True" Grid.ColumnSpan="2" Cursor="Hand">
+                    <MenuItem BorderThickness="0" Width="33" Height="30" Foreground="White">
+                        <MenuItem Name="settingsMenuItem" BorderThickness="0" Click="Settings_Click" Header="Настройки" Cursor="Hand" Background="#FF06942C"/>
+                        <MenuItem Name="checkUpdatesMenuItem" BorderThickness="0" Click="CheckForUpdates_Click" Header="Проверить обновления..." Cursor="Hand" Background="#FF06942C"/>
+                        <MenuItem BorderThickness="0" Name="currentVersion_Item" Click="currentVersion_Item_Click" Header="Проверить обновления..." Cursor="Hand" Background="#FF06942C"/>
                     </MenuItem>
                 </Menu>
                 <Image Panel.ZIndex="-1" Margin="5,5,2,5" Source="/Assets/Square44x44Logo.altform-unplated_targetsize-32.png"/>

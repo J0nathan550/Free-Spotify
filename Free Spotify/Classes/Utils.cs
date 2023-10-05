@@ -4,6 +4,10 @@ using SpotifyExplode.Search;
 using System;
 using System.IO;
 using System.Windows;
+using System.Resources;
+using System.Reflection;
+using System.Globalization;
+using static Free_Spotify.Classes.Utils;
 
 namespace Free_Spotify.Classes
 {
@@ -15,6 +19,40 @@ namespace Free_Spotify.Classes
         public static string DownloadAutoUpdateLinkX64 { get; private set; } = "https://raw.githubusercontent.com/J0nathan550/Free-Spotify/master/AutoUpdateX64.xml";
         public static string DownloadAutoUpdateLinkX86 { get; private set; } = "https://raw.githubusercontent.com/J0nathan550/Free-Spotify/master/AutoUpdateX86.xml";
 
+        public static ResourceManager localizationManager = new ResourceManager("Free_Spotify.Localization.Localization", Assembly.GetExecutingAssembly());
+
+        public static string GetLocalizationString(string name)
+        {
+            return localizationManager.GetString(name);
+        }
+
+        public static void ChangeLanguage(string language)
+        {
+            var cultureInfo = new CultureInfo(language);
+            CultureInfo.CurrentCulture = cultureInfo;
+            CultureInfo.CurrentUICulture = cultureInfo;
+        }
+
+        public static void UpdateLanguage()
+        {
+            switch (settings.languageIndex)
+            {
+                case 0: // eng
+                    ChangeLanguage("en");
+                    break;
+                case 1: // ru
+                    ChangeLanguage("ru");
+                    break;
+                case 2: // ukr
+                    ChangeLanguage("uk");
+                    break;
+                default:
+                    settings.languageIndex = 0;
+                    ChangeLanguage("en");
+                    break;
+            }
+        }
+
         /// <summary>
         /// If progress of the song is changed, it changes the progress to current position
         /// </summary>
@@ -22,25 +60,27 @@ namespace Free_Spotify.Classes
         {
             try
             {
-                MainWindow.window.discordClient.SetPresence(new RichPresence()
+                if (settings.discordRPC)
                 {
-                    Details = "Слушает музыку...",
-                    State = $"{track.Artists[0].Name} - {track.Title}",
-                    Assets = new Assets()
+                    MainWindow.window.discordClient.SetPresence(new RichPresence()
                     {
-                        LargeImageKey = track.Album.Images[0].Url,
-                        LargeImageText = $"{track.Artists[0].Name} - {track.Title}",
-                    },
-                    Timestamps = new Timestamps()
-                    {
-                        Start = DateTime.UtcNow.AddMilliseconds(-MainWindow.window.musicProgress.Value),
-                        End = DateTime.UtcNow.AddMilliseconds(MainWindow.window.musicProgress.Maximum - MainWindow.window.musicProgress.Value)
-                    },
-                    Buttons = new Button[]
-                    {
+                        Details = GetLocalizationString("DiscordRPCListeningTo"),
+                        State = $"{track.Artists[0].Name} - {track.Title}",
+                        Assets = new Assets()
+                        {
+                            LargeImageKey = track.Album.Images[0].Url,
+                            LargeImageText = $"{track.Artists[0].Name} - {track.Title}",
+                        },
+                        Timestamps = new Timestamps()
+                        {
+                            Start = DateTime.UtcNow.AddMilliseconds(-MainWindow.window.musicProgress.Value),
+                            End = DateTime.UtcNow.AddMilliseconds(MainWindow.window.musicProgress.Maximum - MainWindow.window.musicProgress.Value)
+                        },
+                        Buttons = new Button[]
+                        {
                         new Button()
                         {
-                            Label = "Послушать трек...",
+                            Label = GetLocalizationString("DiscordRPCListenToTrack"),
                             Url = track.Url,
                         },
                         new Button()
@@ -48,14 +88,13 @@ namespace Free_Spotify.Classes
                             Label = "Free Spotify...",
                             Url = GithubLink
                         }
-                    },
-                    Party = new Party()
-                    {
-                        ID = "1",
-                        Privacy = Party.PrivacySetting.Public,
-                    }
-                });
-
+                        },
+                    });
+                }
+                else
+                {
+                    MainWindow.window.discordClient.ClearPresence();
+                }
             }
             catch { /* Sometimes buttons can crash whole application because URL inside of button can be null. */ }
         }
@@ -67,16 +106,18 @@ namespace Free_Spotify.Classes
         {
             try
             {
-                MainWindow.window.discordClient.SetPresence(new RichPresence()
+                if (settings.discordRPC)
                 {
-                    Details = "Ничего не делает...",
-                    Assets = new Assets()
+                    MainWindow.window.discordClient.SetPresence(new RichPresence()
                     {
-                        LargeImageKey = "logo",
-                        LargeImageText = "Free Spotify",
-                    },
-                    Timestamps = Timestamps.Now,
-                    Buttons = new Button[]
+                        Details = GetLocalizationString("DiscordRPCAFK"),
+                        Assets = new Assets()
+                        {
+                            LargeImageKey = "logo",
+                            LargeImageText = "Free Spotify",
+                        },
+                        Timestamps = Timestamps.Now,
+                        Buttons = new Button[]
                     {
                         new Button()
                         {
@@ -84,7 +125,12 @@ namespace Free_Spotify.Classes
                             Url = GithubLink
                         }
                     }
-                });
+                    });
+                }
+                else
+                {
+                    MainWindow.window.discordClient.ClearPresence();
+                }
             }
             catch { /* Sometimes buttons can crash whole application because URL inside of button can be null. */  }
         }
@@ -96,30 +142,37 @@ namespace Free_Spotify.Classes
         {
             try
             {
-                MainWindow.window.discordClient.SetPresence(new RichPresence()
-                {
-                    Details = "Поставил музыку на паузу...",
-                    State = $"{track.Artists[0].Name} - {track.Title}",
-                    Assets = new Assets()
+                if (settings.discordRPC)
+                {                    
+                    MainWindow.window.discordClient.SetPresence(new RichPresence()
                     {
-                        LargeImageKey = track.Album.Images[0].Url,
-                        LargeImageText = $"{track.Artists[0].Name} - {track.Title}",
-                    },
-                    Timestamps = Timestamps.Now,
-                    Buttons = new Button[]
-                    {
-                        new Button()
+                        Details = GetLocalizationString("DiscordRPCPausedTrack"),
+                        State = $"{track.Artists[0].Name} - {track.Title}",
+                        Assets = new Assets()
                         {
-                            Label = "Послушать трек...",
-                            Url = track.Url,
+                            LargeImageKey = track.Album.Images[0].Url,
+                            LargeImageText = $"{track.Artists[0].Name} - {track.Title}",
                         },
-                        new Button()
+                        Timestamps = Timestamps.Now,
+                        Buttons = new Button[]
                         {
-                            Label = "Free Spotify...",
-                            Url = GithubLink
+                            new Button()
+                            {
+                                Label = GetLocalizationString("DiscordRPCListenToTrack"),
+                                Url = track.Url,
+                            },
+                            new Button()
+                            {
+                                Label = "Free Spotify...",
+                                Url = GithubLink
+                            }
                         }
-                    }
-                });
+                    });
+                }
+                else
+                {
+                    MainWindow.window.discordClient.ClearPresence();
+                }
             }
             catch { /* Sometimes buttons can crash whole application because URL inside of button can be null. */  }
         }
@@ -131,34 +184,41 @@ namespace Free_Spotify.Classes
         {
             try
             {
-                MainWindow.window.discordClient.SetPresence(new RichPresence()
+                if (settings.discordRPC)
                 {
-                    Details = "Слушает музыку...",
-                    State = $"{track.Artists[0].Name} - {track.Title}",
-                    Assets = new Assets()
+                    MainWindow.window.discordClient.SetPresence(new RichPresence()
                     {
-                        LargeImageKey = track.Album.Images[0].Url,
-                        LargeImageText = $"{track.Artists[0].Name} - {track.Title}",
-                    },
-                    Timestamps = new Timestamps()
-                    {
-                        Start = Timestamps.Now.Start,
-                        End = Timestamps.FromTimeSpan(TimeSpan.FromMilliseconds(track.DurationMs)).End
-                    },
-                    Buttons = new Button[]
-                    {
-                        new Button()
+                        Details = GetLocalizationString("DiscordRPCListeningTo"),
+                        State = $"{track.Artists[0].Name} - {track.Title}",
+                        Assets = new Assets()
                         {
-                            Label = "Послушать трек...",
-                            Url = track.Url,
+                            LargeImageKey = track.Album.Images[0].Url,
+                            LargeImageText = $"{track.Artists[0].Name} - {track.Title}",
                         },
-                        new Button()
+                        Timestamps = new Timestamps()
                         {
-                            Label = "Free Spotify...",
-                            Url = GithubLink
+                            Start = Timestamps.Now.Start,
+                            End = Timestamps.FromTimeSpan(TimeSpan.FromMilliseconds(track.DurationMs)).End
+                        },
+                        Buttons = new Button[]
+                        {
+                            new Button()
+                            {
+                                Label = GetLocalizationString("DiscordRPCListenToTrack"),
+                                Url = track.Url,
+                            },
+                            new Button()
+                            {
+                                Label = "Free Spotify...",
+                                Url = GithubLink
+                            }
                         }
-                    }
-                });
+                    });
+                }
+                else
+                {
+                    MainWindow.window.discordClient.ClearPresence();
+                }
             }
             catch { /* Sometimes buttons can crash whole application because URL inside of button can be null. */ }
         }
@@ -191,14 +251,18 @@ namespace Free_Spotify.Classes
             }
         }
 
-        public static void SaveSettings()
+        public static async void SaveSettings()
         {
-            File.WriteAllText(savePath, JsonConvert.SerializeObject(settings));
+            await File.WriteAllTextAsync(savePath, JsonConvert.SerializeObject(settings));
         }
 
         public class Settings
         {
             public double volume = 0.5f;
+            public int languageIndex = 0; // 0 -> English, 1 -> ru, 2 -> UA
+            public bool discordRPC = true; 
+            public bool economTraffic = false; 
+            public bool launchAppOnStartWin = true; 
         }
     }
 }
