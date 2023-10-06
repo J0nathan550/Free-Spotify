@@ -11,6 +11,8 @@ Requirements:
 - RAM: 300 MB maximum
 - Processor: Anything that can compute numbers
 - GPU: Anything that can render image.
+- Internet: Stable connection, or you might get some troubles, if you use mobile internet I'm recommending to use Traffic Saving mode to just listen to music.
+
 
 As the metadata to get song links, images, length and etc. I used [Spotify Explode](https://github.com/jerry08/SpotifyExplode) (thank you Jerry so much for wonderful API!)
 
