@@ -15,91 +15,79 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shell;
 using YoutubeExplode;
+using YoutubeExplode.Common;
+using YoutubeExplode.Search;
 using YoutubeExplode.Videos.Streams;
 
 namespace Free_Spotify.Pages
 {
     public partial class SearchViewPage : Page
     {
+        // singleton to do things in MainWindow script.
         public static SearchViewPage instance;
 
-        public System.Timers.Timer progressSongTimer = new System.Timers.Timer() { Interval = 1000 }; // used to render every single millisecond the progress bar of player.
+        // used to render every single millisecond the progress bar of player.
+        public System.Timers.Timer progressSongTimer = new System.Timers.Timer() { Interval = 1000 };
+        
+        // used to do query every second after you typed character
+        private System.Timers.Timer searchFieldTimer = new System.Timers.Timer() { Interval = 1000 };
+
+        // canceling the time of timer progress, pretty useless since it used only to cancel it when app is closing (crushes in VS when you close app)
         public CancellationTokenSource cancelProgressSongTimer = new CancellationTokenSource();
 
-        private List<TrackSearchResult> trackList = new List<TrackSearchResult>();
+        // Lists with meta-data of tracks / videos, used to specify which Search Engine to use, Spotify or YouTube. 
+        private List<TrackSearchResult> trackList = new();
+        private List<VideoSearchResult> trackVideoList = new();
+
+        // handy value to determine the currentIndex of song that is playing.
         private int currentSongIndex = 0;
 
-        private SearchFilter filter = SearchFilter.Track;    // used to search something certain in Search Engine.
-        private bool isTextErased = false;                   // used to remove the tip
-        public MediaPlayer mediaPlayer { get; private set; } = new();             // new feature to play sounds, removes many rookie booleans, and prevents spamming the song
-        private bool IsSongRepeat = false;                   // boolean to define if we are repeating sound
-        private bool IsSongPaused = false;                   // since we do not use NAudio anymore we need just one boolean to track if we paused. 
+        // used to search something certain in Search Engine.
+        private SpotifyExplode.Search.SearchFilter filter = SpotifyExplode.Search.SearchFilter.Track;
+
+        // used to remove default placeholder text in Search Tab.
+        private bool isTextErased = false;                
+
+        // Old but really good working MediaPlayer, prevents stacking, has awesome quality, MediaPlayer > NAudio.
+        public MediaPlayer mediaPlayer { get; private set; } = new();            
+        
+        // boolean to represent if we want to repeat the same song.
+        private bool IsSongRepeat = false;
+
+        // boolean to represent if we are paused the song.
+        private bool IsSongPaused = false;
+
+        // boolean to represent if we want to listen to random songs.
+        private bool isShuffleEnabled = false;
 
         public SearchViewPage()
         {
+            // Loading Settings to handle data. 
             Utils.LoadSettings();
             Utils.UpdateLanguage();
+            
+            // Loading entire page with functions and everything.
             InitializeComponent();
-            SearchBarTextBox.Text = Utils.GetLocalizationString("SearchBarTextBoxDefaultText");
             instance = this;
+
+            SearchBarTextBox.Text = Utils.GetLocalizationString("SearchBarTextBoxDefaultText");
             mediaPlayer.Volume = Utils.settings.volume;
             MainWindow.window.volumeSlider.Value = mediaPlayer.Volume;
 
+            // Event that represents if MediaPlayer reach the end of song. 
             mediaPlayer.MediaEnded += MediaPlayer_MediaEnded;
-            // lambda render timer, inside you can see the updating player visual.
 
-            progressSongTimer.Elapsed += new System.Timers.ElapsedEventHandler(async (o, i) =>
-            {
-                try
-                {
-                    if (cancelProgressSongTimer.IsCancellationRequested)
-                    {
-                        return;
-                    }
-                }
-                catch
-                {
-                    cancelProgressSongTimer.Cancel();
-                }
-                await Dispatcher.BeginInvoke(() =>
-                {
-                    try
-                    {
-                        if (mediaPlayer.Source != null)
-                        {
-                            if (mediaPlayer.NaturalDuration.HasTimeSpan)
-                            {
-                                Utils.ContinueDiscordPresence(trackList[currentSongIndex]);
-                                MainWindow.window.musicProgress.Value = mediaPlayer.Position.TotalMilliseconds;
+            // Timer that optimizes little bit search system (I can't say this is optimizing, but when you are typing it's good)
+            searchFieldTimer.Elapsed += SearchFieldTimer_Elapsed;
 
-                                MainWindow.window.musicProgress.Maximum = trackList[currentSongIndex].DurationMs;
+            // Event that switches if we want (at the end of the song) turn on random one.
+            MainWindow.window.randomSongButton.MouseDown += RandomSongButton_MouseDown;
 
-                                MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Normal;
-                                MainWindow.window.progressSongTaskBar.ProgressValue = mediaPlayer.Position.TotalMilliseconds / mediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds;
-
-                                if (mediaPlayer.Position.Hours > 0)
-                                {
-                                    MainWindow.window.startOfSong.Content = mediaPlayer.Position.ToString(@"h\:m\:ss");
-                                }
-                                else
-                                {
-                                    MainWindow.window.startOfSong.Content = mediaPlayer.Position.ToString(@"m\:ss");
-                                }
-                            }
-                        }
-                    }
-                    catch
-                    {
-                        StopSound();
-                    }
-                });
-            });
+            // Timer that is updating UI progress of song. 
+            progressSongTimer.Elapsed += ProgressSongTimer_Elapsed;
 
             // pause button, switches the sprite of playing (pausing) song.
-            MainWindow.window.musicToggle.MouseDown += new MouseButtonEventHandler((o, i) =>
-            {
-                PausingSong();
-            });
+            MainWindow.window.musicToggle.MouseDown += MusicToggle_MouseDown;
 
             // Handler that if you press on thumb of the slider, it will change the position of the song. Also pauses the song to prevent sound buffer to break.
             MainWindow.window.musicProgress.AddHandler(Thumb.DragDeltaEvent, new DragDeltaEventHandler(async (sender, e) =>
@@ -119,7 +107,7 @@ namespace Free_Spotify.Pages
                             {
                                 if (mediaPlayer.Position.Hours > 0)
                                 {
-                                    MainWindow.window.startOfSong.Content = new TimeSpan(0, 0, 0, 0, (int)MainWindow.window.musicProgress.Value).ToString(@"h\:m\:ss");
+                                    MainWindow.window.startOfSong.Content = new TimeSpan(0, 0, 0, 0, (int)MainWindow.window.musicProgress.Value).ToString(@"h\:mm\:ss");
                                 }
                                 else
                                 {
@@ -142,7 +130,15 @@ namespace Free_Spotify.Pages
                 {
                     if (mediaPlayer.Source != null)
                     {
-                        Utils.ContinueDiscordPresence(trackList[currentSongIndex]);
+                        if (Utils.settings.searchEngineIndex == 1)
+                        {
+                            Utils.ContinueDiscordPresence(trackVideoList[currentSongIndex]);
+                        }
+                        else
+                        {
+                            Utils.ContinueDiscordPresence(trackList[currentSongIndex]);
+                        }
+
                         if (mediaPlayer.NaturalDuration.HasTimeSpan)
                         {
                             mediaPlayer.Position = new TimeSpan(0, 0, 0, 0, (int)MainWindow.window.musicProgress.Value);
@@ -167,37 +163,157 @@ namespace Free_Spotify.Pages
             }));
 
             // repeat song button, repeats the song.
-            MainWindow.window.repeatSong.MouseDown += (sender, e) =>
-            {
-                RepeatSongBehavior();
-            };
-
+            MainWindow.window.repeatSong.MouseDown += RepeatSong_MouseDown;
 
             // right button switches to the next music
-            MainWindow.window.rightSong.MouseDown += async (sender, e) =>
-            {
-                currentSongIndex++;
-                if (currentSongIndex >= trackList.Count) currentSongIndex = 0;
-                await Task.Run(() =>
-                {
-                    Utils.ContinueDiscordPresence(trackList[currentSongIndex]);
-                    PlaySound();
-                    UpdateStatusPlayerBar();
-                });
-            };
+            MainWindow.window.rightSong.MouseDown += RightSong_MouseDown;
 
             // left button switches to the previous music
-            MainWindow.window.leftSong.MouseDown += async (sender, e) =>
+            MainWindow.window.leftSong.MouseDown += LeftSong_MouseDown;
+        }
+
+        // left button switches to the previous music
+        private async void LeftSong_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            currentSongIndex--;
+            await Task.Run(async () =>
             {
-                currentSongIndex--;
-                if (currentSongIndex < 0) currentSongIndex = trackList.Count - 1;
+                if (Utils.settings.searchEngineIndex == 1)
+                {
+                    if (currentSongIndex < 0) currentSongIndex = trackVideoList.Count - 1;
+                    Utils.ContinueDiscordPresence(trackVideoList[currentSongIndex]);
+                }
+                else
+                {
+                    if (currentSongIndex < 0) currentSongIndex = trackList.Count - 1;
+                    Utils.ContinueDiscordPresence(trackList[currentSongIndex]);
+                }
                 await Task.Run(() =>
                 {
-                    Utils.ContinueDiscordPresence(trackList[currentSongIndex]);
                     PlaySound();
                     UpdateStatusPlayerBar();
                 });
-            };
+            });
+        }
+
+        // right button switches to the next music
+        private async void RightSong_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            currentSongIndex++;
+            await Task.Run(async () =>
+            {
+                if (Utils.settings.searchEngineIndex == 1)
+                {
+                    if (currentSongIndex >= trackVideoList.Count) currentSongIndex = 0;
+                    Utils.ContinueDiscordPresence(trackVideoList[currentSongIndex]);
+                }
+                else
+                {
+                    if (currentSongIndex >= trackList.Count) currentSongIndex = 0;
+                    Utils.ContinueDiscordPresence(trackList[currentSongIndex]);
+                }
+                await Task.Run(() =>
+                {
+                    PlaySound();
+                    UpdateStatusPlayerBar();
+                });
+            });
+        }
+
+        // repeat song button, repeats the song.
+        private void RepeatSong_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            RepeatSongBehavior();
+        }
+
+        // A 'Music Toggle' literally means pause button. 
+        private void MusicToggle_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            PausingSong();
+        }
+
+        // Timer that updates UI every single second. 
+        private async void ProgressSongTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
+        {
+            try
+            {
+                if (cancelProgressSongTimer.IsCancellationRequested)
+                {
+                    return;
+                }
+            }
+            catch
+            {
+                cancelProgressSongTimer.Cancel();
+            }
+            await Dispatcher.BeginInvoke(() =>
+            {
+                try
+                {
+                    if (mediaPlayer.Source != null)
+                    {
+                        if (mediaPlayer.NaturalDuration.HasTimeSpan)
+                        {
+                            if (Utils.settings.searchEngineIndex == 1)
+                            {
+                                Utils.ContinueDiscordPresence(trackVideoList[currentSongIndex]);
+                            }
+                            else
+                            {
+                                Utils.ContinueDiscordPresence(trackList[currentSongIndex]);
+                            }
+
+                            MainWindow.window.musicProgress.Value = mediaPlayer.Position.TotalMilliseconds;
+
+                            if (Utils.settings.searchEngineIndex == 1)
+                            {
+                                MainWindow.window.musicProgress.Maximum = trackVideoList[currentSongIndex].Duration.Value.TotalMilliseconds;
+                            }
+                            else
+                            {
+                                MainWindow.window.musicProgress.Maximum = trackList[currentSongIndex].DurationMs;
+                            }
+
+                            MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Normal;
+                            MainWindow.window.progressSongTaskBar.ProgressValue = mediaPlayer.Position.TotalMilliseconds / mediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds;
+
+                            if (mediaPlayer.Position.Hours > 0)
+                            {
+                                MainWindow.window.startOfSong.Content = mediaPlayer.Position.ToString(@"h\:mm\:ss");
+                            }
+                            else
+                            {
+                                MainWindow.window.startOfSong.Content = mediaPlayer.Position.ToString(@"m\:ss");
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                    StopSound();
+                }
+            });
+        }
+
+        // Shuffling, at the end of the song it picks random music. 
+        private void RandomSongButton_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            isShuffleEnabled = !isShuffleEnabled;
+            if (isShuffleEnabled)
+            {
+                MainWindow.window.randomSongButton.Foreground = new SolidColorBrush(Colors.Lime);
+            }
+            else
+            {
+                MainWindow.window.randomSongButton.Foreground = new SolidColorBrush(Colors.White);
+            }
+        }
+
+        // Timer that start to search if for the second there was no key press. 
+        private void SearchFieldTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
+        {
+            searchFieldTimer.Stop();
+            SearchingSystem();
         }
 
         /// <summary>
@@ -207,7 +323,14 @@ namespace Free_Spotify.Pages
         /// <param name="e"></param>
         private async void MediaPlayer_MediaEnded(object? sender, EventArgs e)
         {
-            Utils.ContinueDiscordPresence(trackList[currentSongIndex]);
+            if (Utils.settings.searchEngineIndex == 1)
+            {
+                Utils.ContinueDiscordPresence(trackVideoList[currentSongIndex]);
+            }
+            else
+            {
+                Utils.ContinueDiscordPresence(trackList[currentSongIndex]);
+            }
             await Dispatcher.BeginInvoke(async () =>
             {
                 if (mediaPlayer.Source != null)
@@ -219,12 +342,47 @@ namespace Free_Spotify.Pages
                             mediaPlayer.Position = TimeSpan.Zero;
                             return;
                         }
+                        if (isShuffleEnabled)
+                        {
+                            if (Utils.settings.searchEngineIndex == 1)
+                            {
+                                Random rand = new Random();
+                                currentSongIndex = rand.Next(0, trackVideoList.Count - 1);
+                                await Task.Run(() =>
+                                {
+                                    PlaySound();
+                                    UpdateStatusPlayerBar();
+                                });
+                            }
+                            else
+                            {
+                                Random rand = new Random();
+                                currentSongIndex = rand.Next(0, trackList.Count - 1);
+                                await Task.Run(() =>
+                                {
+                                    PlaySound();
+                                    UpdateStatusPlayerBar();
+                                });
+                            }
+                            return;
+                        }
                         await Task.Run(() =>
                         {
-                            currentSongIndex++;
-                            if (currentSongIndex >= trackList.Count) currentSongIndex = 0;
-                            PlaySound();
-                            UpdateStatusPlayerBar();
+                            if (Utils.settings.searchEngineIndex == 1)
+                            {
+                                currentSongIndex++;
+                                if (currentSongIndex >= trackVideoList.Count) currentSongIndex = 0;
+                                PlaySound();
+                                UpdateStatusPlayerBar();
+                            }
+                            else
+                            {
+                                currentSongIndex++;
+                                if (currentSongIndex >= trackList.Count) currentSongIndex = 0;
+                                PlaySound();
+                                UpdateStatusPlayerBar();
+                            }
+
                         });
                     }
                     catch
@@ -257,8 +415,6 @@ namespace Free_Spotify.Pages
             }
         }
 
-
-
         /// <summary>
         /// Function that pauses the song.
         /// </summary>
@@ -279,7 +435,14 @@ namespace Free_Spotify.Pages
                                     IsSongPaused = false;
                                     mediaPlayer.Play();
                                     progressSongTimer.Start();
-                                    Utils.ContinueDiscordPresence(trackList[currentSongIndex]);
+                                    if (Utils.settings.searchEngineIndex == 1)
+                                    {
+                                        Utils.ContinueDiscordPresence(trackVideoList[currentSongIndex]);
+                                    }
+                                    else
+                                    {
+                                        Utils.ContinueDiscordPresence(trackList[currentSongIndex]);
+                                    }
                                     MainWindow.window.musicToggle.Icon = FontAwesomeIcon.Pause;
                                     if (mediaPlayer.Source != null)
                                     {
@@ -302,7 +465,14 @@ namespace Free_Spotify.Pages
                             }
                             try
                             {
-                                Utils.PauseDiscordPresence(trackList[currentSongIndex]);
+                                if (Utils.settings.searchEngineIndex == 1)
+                                {
+                                    Utils.PauseDiscordPresence(trackVideoList[currentSongIndex]);
+                                }
+                                else
+                                {
+                                    Utils.PauseDiscordPresence(trackList[currentSongIndex]);
+                                }
                                 IsSongPaused = true;
                                 mediaPlayer.Pause();
                                 progressSongTimer.Stop();
@@ -362,12 +532,10 @@ namespace Free_Spotify.Pages
         /// <summary>
         /// An event that tries to give the result of certain track.
         /// </summary>
-        private async void SearchBarTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        private void SearchBarTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            await Dispatcher.BeginInvoke(() =>
-            {
-                SearchingSystem();
-            });
+            searchFieldTimer.Stop();
+            searchFieldTimer.Start();
         }
 
         /// <summary>
@@ -386,7 +554,6 @@ namespace Free_Spotify.Pages
             });
         }
 
-
         /// <summary>
         /// A system, that when you type returns you the possible songs that you can listen in spotify.
         /// </summary>
@@ -394,6 +561,10 @@ namespace Free_Spotify.Pages
         {
             await Dispatcher.InvokeAsync(async () =>
             {
+                if (SearchBarTextBox.Text.Length < 3)
+                {
+                    return;
+                }
                 WrapPanel wrapPanelVisual = new WrapPanel();
                 try
                 {
@@ -403,8 +574,8 @@ namespace Free_Spotify.Pages
                     {
                         GC.Collect();
                         searchVisual.Children.Clear();
-                        searchVisual.Children.Add(wrapPanelVisual);
                     }
+                    searchVisual.Children.Add(wrapPanelVisual);
 
                     if (!isTextErased)
                     {
@@ -424,25 +595,27 @@ namespace Free_Spotify.Pages
                 {
                     StopSound();
                 }
-
-                try
+                if (Utils.settings.searchEngineIndex == 1) // YouTube
                 {
-                    /// searching for the song or else.
-                    int indexLoop = 0;
-                    var spotifyClient = new SpotifyClient();
-                    List<ISearchResult> searchMatches = await spotifyClient.Search.GetResultsAsync(SearchBarTextBox.Text, filter);
-                    List<TrackSearchResult> newSongs = new();
-
-                    if (searchMatches.Count != 0)
+                    try
                     {
-                        foreach (var result in searchMatches)
+                        /// searching for the song or else.
+                        int indexLoop = 0;
+                        var youTubeClient = new YoutubeClient();
+                        List<VideoSearchResult> newSongs = new();
+
+                        await foreach (var result in youTubeClient.Search.GetVideosAsync(SearchBarTextBox.Text))
                         {
+                            if (indexLoop >= 50)
+                            {
+                                break;
+                            }
                             // Use pattern matching to handle different results (albums, artists, tracks, playlists)
                             switch (result)
                             {
-                                case TrackSearchResult track:
+                                case VideoSearchResult video:
                                     {
-                                        newSongs.Add(track);
+                                        newSongs.Add(video);
                                         await Dispatcher.BeginInvoke(() =>
                                         {
                                             try
@@ -473,7 +646,7 @@ namespace Free_Spotify.Pages
                                                     sourceImageOfTrack.BeginInit();
                                                     sourceImageOfTrack.CreateOptions = BitmapCreateOptions.None;
                                                     sourceImageOfTrack.CacheOption = BitmapCacheOption.None;
-                                                    sourceImageOfTrack.UriSource = new Uri(track.Album.Images[0].Url);
+                                                    sourceImageOfTrack.UriSource = new Uri(video.Thumbnails[0].Url);
                                                     sourceImageOfTrack.EndInit();
 
                                                     Image actualImageOfTrack = new Image();
@@ -494,8 +667,8 @@ namespace Free_Spotify.Pages
                                                 captionBorder.Background = new SolidColorBrush(Color.FromArgb(180, 0x00, 0x00, 0x00));
 
                                                 TextBlock DescriptionOfTrack = new TextBlock();
-                                                DescriptionOfTrack.Text = $"{Utils.GetLocalizationString("ArtistDefaultText")} {track.Artists[0].Name}\n" +
-                                                $"{Utils.GetLocalizationString("TrackDefaultText")} {track.Title}\n";
+                                                DescriptionOfTrack.Text = $"{Utils.GetLocalizationString("ArtistDefaultText")} {video.Author.ChannelTitle}\n" +
+                                                $"{Utils.GetLocalizationString("TrackDefaultText")} {video.Title}\n";
                                                 DescriptionOfTrack.Foreground = new SolidColorBrush(Colors.White);
                                                 DescriptionOfTrack.Style = (Style)DescriptionOfTrack.FindResource("fontMontserrat");
                                                 DescriptionOfTrack.FontSize = 14;
@@ -538,8 +711,8 @@ namespace Free_Spotify.Pages
                                                         try
                                                         {
 
-                                                            trackList.Clear();
-                                                            trackList.AddRange(newSongs);
+                                                            trackVideoList.Clear();
+                                                            trackVideoList.AddRange(newSongs);
                                                             int symbolToRemove = 1;
                                                             await Dispatcher.BeginInvoke(() =>
                                                             {
@@ -584,77 +757,293 @@ namespace Free_Spotify.Pages
                             }
                             indexLoop++;
                         }
+                    }
+                    catch (HttpRequestException request)
+                    {
+                        if (request.Message.Contains("400"))
+                        {
+                            await Dispatcher.BeginInvoke(() =>
+                            {
+                                GC.Collect();
+                                searchVisual.Children.Clear();
+                                TextBlock resultTextBlock = new TextBlock();
+                                resultTextBlock.Text = Utils.GetLocalizationString("TipStartWrittingText");
+                                resultTextBlock.FontSize = 14;
+                                resultTextBlock.HorizontalAlignment = HorizontalAlignment.Center;
+                                resultTextBlock.VerticalAlignment = VerticalAlignment.Center;
+                                resultTextBlock.Foreground = new SolidColorBrush(Colors.White);
+                                resultTextBlock.TextWrapping = TextWrapping.Wrap;
+                                resultTextBlock.Style = (Style)FindResource("fontMontserrat");
+                                searchVisual.Children.Add(resultTextBlock);
+                            });
+                        }
+                        else
+                        {
+                            await Dispatcher.BeginInvoke(() =>
+                            {
+                                GC.Collect();
+                                searchVisual.Children.Clear();
+                                TextBlock resultTextBlock = new TextBlock();
+                                resultTextBlock.Text = Utils.GetLocalizationString("ErrorNoInternetText");
+                                resultTextBlock.FontSize = 14;
+                                resultTextBlock.HorizontalAlignment = HorizontalAlignment.Center;
+                                resultTextBlock.VerticalAlignment = VerticalAlignment.Center;
+                                resultTextBlock.Foreground = new SolidColorBrush(Colors.White);
+                                resultTextBlock.TextWrapping = TextWrapping.Wrap;
+                                resultTextBlock.Style = (Style)FindResource("fontMontserrat");
+                                searchVisual.Children.Add(resultTextBlock);
+                            });
+                        }
+                    }
+                    catch (ArgumentException)
+                    {
+                        // ignore for now, shows error that track does not exist to download.
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        // ignore for now, appears something related to user? json issue.
+                    }
+                    catch (Exception e)
+                    {
+                        StopSound();
+                        MessageBox.Show(e.GetType().Name);
+                        MessageBox.Show(e.Message);
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        /// searching for the song or else.
+                        int indexLoop = 0;
+                        var spotifyClient = new SpotifyClient();
+                        List<SpotifyExplode.Search.ISearchResult> searchMatches = await spotifyClient.Search.GetResultsAsync(SearchBarTextBox.Text, filter);
+                        List<TrackSearchResult> newSongs = new();
+
+                        if (searchMatches.Count != 0)
+                        {
+                            foreach (var result in searchMatches)
+                            {
+                                // Use pattern matching to handle different results (albums, artists, tracks, playlists)
+                                switch (result)
+                                {
+                                    case TrackSearchResult track:
+                                        {
+                                            newSongs.Add(track);
+                                            await Dispatcher.BeginInvoke(() =>
+                                            {
+                                                try
+                                                {
+                                                    Border background = new Border();
+                                                    background.Name = $"i{indexLoop}";
+                                                    background.CornerRadius = new CornerRadius(6);
+                                                    background.Cursor = Cursors.Hand;
+                                                    background.Background = new SolidColorBrush(Color.FromArgb(0x00, 0x21, 0x21, 0x21));
+                                                    background.Width = 256;
+                                                    background.Height = 256;
+
+                                                    Grid mainVisualGrid = new Grid();
+
+                                                    background.Child = mainVisualGrid;
+
+                                                    RowDefinition rowDefinition = new RowDefinition();
+                                                    rowDefinition.Height = new GridLength(3, GridUnitType.Star);
+                                                    mainVisualGrid.RowDefinitions.Add(rowDefinition);
+
+                                                    RowDefinition textDefinition = new RowDefinition();
+                                                    textDefinition.Height = new GridLength(1, GridUnitType.Star);
+                                                    mainVisualGrid.RowDefinitions.Add(textDefinition);
+
+                                                    if (!Utils.settings.economTraffic)
+                                                    {
+                                                        BitmapImage sourceImageOfTrack = new BitmapImage();
+                                                        sourceImageOfTrack.BeginInit();
+                                                        sourceImageOfTrack.CreateOptions = BitmapCreateOptions.None;
+                                                        sourceImageOfTrack.CacheOption = BitmapCacheOption.None;
+                                                        sourceImageOfTrack.UriSource = new Uri(track.Album.Images[0].Url);
+                                                        sourceImageOfTrack.EndInit();
+
+                                                        Image actualImageOfTrack = new Image();
+                                                        actualImageOfTrack.Source = sourceImageOfTrack;
+                                                        actualImageOfTrack.HorizontalAlignment = HorizontalAlignment.Center;
+                                                        actualImageOfTrack.VerticalAlignment = VerticalAlignment.Center;
+                                                        //actualImageOfTrack.Stretch = Stretch.Fill; later option
+                                                        actualImageOfTrack.CacheMode = null;
+                                                        mainVisualGrid.Children.Add(actualImageOfTrack);
+
+                                                        Grid.SetZIndex(actualImageOfTrack, -2);
+
+                                                        Grid.SetRow(actualImageOfTrack, 0);
+                                                        Grid.SetRowSpan(actualImageOfTrack, 2);
+                                                    }
+
+                                                    Border captionBorder = new Border();
+                                                    captionBorder.Background = new SolidColorBrush(Color.FromArgb(180, 0x00, 0x00, 0x00));
+
+                                                    TextBlock DescriptionOfTrack = new TextBlock();
+                                                    DescriptionOfTrack.Text = $"{Utils.GetLocalizationString("ArtistDefaultText")} {track.Artists[0].Name}\n" +
+                                                    $"{Utils.GetLocalizationString("TrackDefaultText")} {track.Title}\n";
+                                                    DescriptionOfTrack.Foreground = new SolidColorBrush(Colors.White);
+                                                    DescriptionOfTrack.Style = (Style)DescriptionOfTrack.FindResource("fontMontserrat");
+                                                    DescriptionOfTrack.FontSize = 14;
+                                                    DescriptionOfTrack.TextWrapping = TextWrapping.WrapWithOverflow;
+                                                    DescriptionOfTrack.VerticalAlignment = VerticalAlignment.Center;
+                                                    DescriptionOfTrack.HorizontalAlignment = HorizontalAlignment.Center;
+                                                    DescriptionOfTrack.Padding = new Thickness(0, 10, 0, 0);
+
+                                                    Grid.SetZIndex(captionBorder, -1);
+                                                    Grid.SetZIndex(DescriptionOfTrack, 1);
+
+                                                    mainVisualGrid.Children.Add(captionBorder);
+                                                    mainVisualGrid.Children.Add(DescriptionOfTrack);
+                                                    Grid.SetRow(captionBorder, 1);
+                                                    Grid.SetRow(DescriptionOfTrack, 1);
+                                                    wrapPanelVisual.Children.Add(background);
+
+                                                    background.MouseDown += new MouseButtonEventHandler(async (o, i) =>
+                                                    {
+                                                        await Dispatcher.BeginInvoke(() =>
+                                                        {
+                                                            try
+                                                            {
+                                                                if (mediaPlayer.Source != null)
+                                                                {
+                                                                    if (IsSongRepeat)
+                                                                    {
+                                                                        RepeatSongBehavior();
+                                                                    }
+                                                                    StopSound();
+                                                                }
+                                                            }
+                                                            catch
+                                                            {
+                                                                StopSound();
+                                                            }
+                                                        });
+                                                        await Task.Run(async () =>
+                                                        {
+                                                            try
+                                                            {
+
+                                                                trackList.Clear();
+                                                                trackList.AddRange(newSongs);
+                                                                int symbolToRemove = 1;
+                                                                await Dispatcher.BeginInvoke(() =>
+                                                                {
+                                                                    currentSongIndex = int.Parse(background.Name.Substring(symbolToRemove));
+                                                                });
+                                                                PlaySound();
+                                                                UpdateStatusPlayerBar();
+                                                            }
+                                                            catch (Exception ex)
+                                                            {
+                                                                StopSound();
+                                                                MessageBox.Show(ex.GetType().Name);
+                                                                MessageBox.Show(ex.Message);
+                                                            }
+                                                        });
+                                                    });
+                                                }
+                                                catch
+                                                {
+                                                }
+                                            });
+                                            break;
+                                        }
+                                    default:
+                                        {
+                                            await Dispatcher.InvokeAsync(() =>
+                                            {
+                                                GC.Collect();
+                                                searchVisual.Children.Clear();
+                                                TextBlock resultTextBlock = new TextBlock();
+                                                resultTextBlock.Text = $"{Utils.GetLocalizationString("ErrorNothingFoundText")} \"{SearchBarTextBox.Text}\" {Utils.GetLocalizationString("ErrorNothingFoundText1")}";
+                                                resultTextBlock.FontSize = 14;
+                                                resultTextBlock.HorizontalAlignment = HorizontalAlignment.Center;
+                                                resultTextBlock.VerticalAlignment = VerticalAlignment.Center;
+                                                resultTextBlock.Foreground = new SolidColorBrush(Colors.White);
+                                                resultTextBlock.TextWrapping = TextWrapping.Wrap;
+                                                resultTextBlock.Style = (Style)FindResource("fontMontserrat");
+                                                searchVisual.Children.Add(resultTextBlock);
+                                            });
+                                            break;
+                                        }
+                                }
+                                indexLoop++;
+                            }
+
+                        }
+                        else
+                        {
+                            
+                            await Dispatcher.BeginInvoke(() =>
+                            {
+                                GC.Collect();
+                                searchVisual.Children.Clear();
+                                TextBlock resultTextBlock = new TextBlock();
+                                resultTextBlock.Text = $"{Utils.GetLocalizationString("ErrorNothingFoundText")} \"{SearchBarTextBox.Text}\" {Utils.GetLocalizationString("ErrorNothingFoundText1")}";
+                                resultTextBlock.FontSize = 14;
+                                resultTextBlock.HorizontalAlignment = HorizontalAlignment.Center;
+                                resultTextBlock.VerticalAlignment = VerticalAlignment.Center;
+                                resultTextBlock.Foreground = new SolidColorBrush(Colors.White);
+                                resultTextBlock.TextWrapping = TextWrapping.Wrap;
+                                resultTextBlock.Style = (Style)FindResource("fontMontserrat");
+                                searchVisual.Children.Add(resultTextBlock);
+                            });
+                        }
 
                     }
-                    else
+                    catch (HttpRequestException request)
                     {
-                        await Dispatcher.BeginInvoke(() =>
+                        if (request.Message.Contains("400"))
                         {
-                            GC.Collect();
-                            searchVisual.Children.Clear();
-                            TextBlock resultTextBlock = new TextBlock();
-                            resultTextBlock.Text = $"{Utils.GetLocalizationString("ErrorNothingFoundText")} \"{SearchBarTextBox.Text}\" {Utils.GetLocalizationString("ErrorNothingFoundText1")}";
-                            resultTextBlock.FontSize = 14;
-                            resultTextBlock.HorizontalAlignment = HorizontalAlignment.Center;
-                            resultTextBlock.VerticalAlignment = VerticalAlignment.Center;
-                            resultTextBlock.Foreground = new SolidColorBrush(Colors.White);
-                            resultTextBlock.TextWrapping = TextWrapping.Wrap;
-                            resultTextBlock.Style = (Style)FindResource("fontMontserrat");
-                            searchVisual.Children.Add(resultTextBlock);
-                        });
+                            await Dispatcher.BeginInvoke(() =>
+                            {
+                                GC.Collect();
+                                searchVisual.Children.Clear();
+                                TextBlock resultTextBlock = new TextBlock();
+                                resultTextBlock.Text = Utils.GetLocalizationString("TipStartWrittingText");
+                                resultTextBlock.FontSize = 14;
+                                resultTextBlock.HorizontalAlignment = HorizontalAlignment.Center;
+                                resultTextBlock.VerticalAlignment = VerticalAlignment.Center;
+                                resultTextBlock.Foreground = new SolidColorBrush(Colors.White);
+                                resultTextBlock.TextWrapping = TextWrapping.Wrap;
+                                resultTextBlock.Style = (Style)FindResource("fontMontserrat");
+                                searchVisual.Children.Add(resultTextBlock);
+                            });
+                        }
+                        else
+                        {
+                            await Dispatcher.BeginInvoke(() =>
+                            {
+                                GC.Collect();
+                                searchVisual.Children.Clear();
+                                TextBlock resultTextBlock = new TextBlock();
+                                resultTextBlock.Text = Utils.GetLocalizationString("ErrorNoInternetText");
+                                resultTextBlock.FontSize = 14;
+                                resultTextBlock.HorizontalAlignment = HorizontalAlignment.Center;
+                                resultTextBlock.VerticalAlignment = VerticalAlignment.Center;
+                                resultTextBlock.Foreground = new SolidColorBrush(Colors.White);
+                                resultTextBlock.TextWrapping = TextWrapping.Wrap;
+                                resultTextBlock.Style = (Style)FindResource("fontMontserrat");
+                                searchVisual.Children.Add(resultTextBlock);
+                            });
+                        }
                     }
-
-                }
-                catch (HttpRequestException request)
-                {
-                    if (request.Message.Contains("400"))
+                    catch (ArgumentException)
                     {
-                        await Dispatcher.BeginInvoke(() =>
-                        {
-                            GC.Collect();
-                            searchVisual.Children.Clear();
-                            TextBlock resultTextBlock = new TextBlock();
-                            resultTextBlock.Text = Utils.GetLocalizationString("TipStartWrittingText");
-                            resultTextBlock.FontSize = 14;
-                            resultTextBlock.HorizontalAlignment = HorizontalAlignment.Center;
-                            resultTextBlock.VerticalAlignment = VerticalAlignment.Center;
-                            resultTextBlock.Foreground = new SolidColorBrush(Colors.White);
-                            resultTextBlock.TextWrapping = TextWrapping.Wrap;
-                            resultTextBlock.Style = (Style)FindResource("fontMontserrat");
-                            searchVisual.Children.Add(resultTextBlock);
-                        });
+                        // ignore for now, shows error that track does not exist to download.
                     }
-                    else
+                    catch (InvalidOperationException)
                     {
-                        await Dispatcher.BeginInvoke(() =>
-                        {
-                            GC.Collect();
-                            searchVisual.Children.Clear();
-                            TextBlock resultTextBlock = new TextBlock();
-                            resultTextBlock.Text = Utils.GetLocalizationString("ErrorNoInternetText");
-                            resultTextBlock.FontSize = 14;
-                            resultTextBlock.HorizontalAlignment = HorizontalAlignment.Center;
-                            resultTextBlock.VerticalAlignment = VerticalAlignment.Center;
-                            resultTextBlock.Foreground = new SolidColorBrush(Colors.White);
-                            resultTextBlock.TextWrapping = TextWrapping.Wrap;
-                            resultTextBlock.Style = (Style)FindResource("fontMontserrat");
-                            searchVisual.Children.Add(resultTextBlock);
-                        });
+                        // ignore for now, appears something related to user? json issue.
                     }
-                }
-                catch (ArgumentException)
-                {
-                    // ignore for now, shows error that track does not exist to download.
-                }
-                catch (InvalidOperationException)
-                {
-                    // ignore for now, appears something related to user? json issue.
-                }
-                catch (Exception e)
-                {
-                    StopSound();
-                    MessageBox.Show(e.GetType().Name);
-                    MessageBox.Show(e.Message);
+                    catch (Exception e)
+                    {
+                        StopSound();
+                        MessageBox.Show(e.GetType().Name);
+                        MessageBox.Show(e.Message);
+                    }
                 }
             });
         }
@@ -668,30 +1057,80 @@ namespace Free_Spotify.Pages
             {
                 try
                 {
-                    MainWindow.window.musicToggle.Icon = FontAwesomeIcon.Pause;
-                    MainWindow.window.songTitle.Content = trackList[currentSongIndex].Title;
-                    MainWindow.window.songAuthor.Content = trackList[currentSongIndex].Artists[0].Name;
-
-                    if (!Utils.settings.economTraffic)
+                    if (Utils.settings.searchEngineIndex == 1)
                     {
-                        BitmapImage sourceImageOfTrack = new BitmapImage();
-                        sourceImageOfTrack.BeginInit();
-                        sourceImageOfTrack.CreateOptions = BitmapCreateOptions.None;
-                        sourceImageOfTrack.CacheOption = BitmapCacheOption.None;
-                        sourceImageOfTrack.UriSource = new Uri(trackList[currentSongIndex].Album.Images[0].Url);
-                        sourceImageOfTrack.EndInit();
+                        MainWindow.window.musicToggle.Icon = FontAwesomeIcon.Pause;
+                        MainWindow.window.songTitle.Content = trackVideoList[currentSongIndex].Title;
+                        MainWindow.window.songAuthor.Content = trackVideoList[currentSongIndex].Author.ChannelTitle;
 
-                        MainWindow.window.iconTrack.Source = sourceImageOfTrack;
-                    }
+                        if (!Utils.settings.economTraffic)
+                        {
+                            BitmapImage sourceImageOfTrack = new BitmapImage();
+                            sourceImageOfTrack.BeginInit();
+                            sourceImageOfTrack.CreateOptions = BitmapCreateOptions.None;
+                            sourceImageOfTrack.CacheOption = BitmapCacheOption.None;
+                            sourceImageOfTrack.UriSource = new Uri(trackVideoList[currentSongIndex].Thumbnails[0].Url);
+                            sourceImageOfTrack.EndInit();
 
-                    uint hourMillisecond = 3600000;
-                    if (trackList[currentSongIndex].DurationMs > hourMillisecond)
-                    {
-                        MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(trackList[currentSongIndex].DurationMs).ToString(@"h\:m\:ss")}";
+                            MainWindow.window.iconTrack.Source = sourceImageOfTrack;
+                        }
+
+                        if (Utils.settings.searchEngineIndex == 1)
+                        {
+                            uint hourMillisecond = 3600000;
+
+                            if (trackVideoList[currentSongIndex].Duration.Value.TotalMilliseconds > hourMillisecond)
+                            {
+                                MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(trackVideoList[currentSongIndex].Duration.Value.TotalMilliseconds).ToString(@"h\:mm\:ss")}";
+                            }
+                            else
+                            {
+                                MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(trackVideoList[currentSongIndex].Duration.Value.TotalMilliseconds).ToString(@"m\:ss")}";
+                            }
+                        }
+                        else
+                        {
+                            uint hourMillisecond = 3600000;
+
+                            if (trackList[currentSongIndex].DurationMs > hourMillisecond)
+                            {
+                                MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(trackList[currentSongIndex].DurationMs).ToString(@"h\:mm\:ss")}";
+                            }
+                            else
+                            {
+                                MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(trackList[currentSongIndex].DurationMs).ToString(@"m\:ss")}";
+                            }
+                        }
+          
+
                     }
                     else
                     {
-                        MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(trackList[currentSongIndex].DurationMs).ToString(@"m\:ss")}";
+                        MainWindow.window.musicToggle.Icon = FontAwesomeIcon.Pause;
+                        MainWindow.window.songTitle.Content = trackList[currentSongIndex].Title;
+                        MainWindow.window.songAuthor.Content = trackList[currentSongIndex].Artists[0].Name;
+
+                        if (!Utils.settings.economTraffic)
+                        {
+                            BitmapImage sourceImageOfTrack = new BitmapImage();
+                            sourceImageOfTrack.BeginInit();
+                            sourceImageOfTrack.CreateOptions = BitmapCreateOptions.None;
+                            sourceImageOfTrack.CacheOption = BitmapCacheOption.None;
+                            sourceImageOfTrack.UriSource = new Uri(trackList[currentSongIndex].Album.Images[0].Url);
+                            sourceImageOfTrack.EndInit();
+
+                            MainWindow.window.iconTrack.Source = sourceImageOfTrack;
+                        }
+
+                        uint hourMillisecond = 3600000;
+                        if (mediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds > hourMillisecond)
+                        {
+                            MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(mediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds).ToString(@"h\:m\:ss")}";
+                        }
+                        else
+                        {
+                            MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(mediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds).ToString(@"m\:ss")}";
+                        }
                     }
                 }
                 catch
@@ -741,6 +1180,7 @@ namespace Free_Spotify.Pages
             }
         }
 
+
         /// <summary>
         /// Tries to play the sound from the youtube. If exist it plays if not then unfortunately you cannot play it :(
         /// </summary>
@@ -761,27 +1201,50 @@ namespace Free_Spotify.Pages
                     MainWindow.window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.Indeterminate;
                     MainWindow.window.progressSongTaskBar.ProgressValue = 0;
                 });
-                SpotifyClient spotifyYouTubeRetrive = new SpotifyClient();
-                string? youtubeID = await spotifyYouTubeRetrive.Tracks.GetYoutubeIdAsync(trackList[currentSongIndex].Url);
-                YoutubeClient? youtube = new YoutubeClient();
-                var video = youtube.Videos.GetAsync($"https://youtube.com/watch?v={youtubeID}");
-                var streamManifest = youtube.Videos.Streams.GetManifestAsync($"https://youtube.com/watch?v={youtubeID}");
-                var streamInfo = streamManifest.Result.GetAudioStreams().GetWithHighestBitrate();
-                await Dispatcher.BeginInvoke(() =>
+                if (Utils.settings.searchEngineIndex == 1)
                 {
-                    try
+                    YoutubeClient youtubeClient = new YoutubeClient();
+                    var streamManifest = youtubeClient.Videos.Streams.GetManifestAsync(trackVideoList[currentSongIndex].Url);
+                    var streamInfo = streamManifest.Result.GetAudioStreams().GetWithHighestBitrate();
+                    await Dispatcher.BeginInvoke(() =>
                     {
-                        mediaPlayer.Open(new Uri(streamInfo.Url));
-                        mediaPlayer.Play();
-                        progressSongTimer.Start();
-                        mediaPlayer.Volume = (float)MainWindow.window.volumeSlider.Value;
-                        Utils.StartDiscordPresence(trackList[currentSongIndex]);
-                    }
-                    catch
+                        try
+                        {
+                            mediaPlayer.Open(new Uri(streamInfo.Url));
+                            mediaPlayer.Play();
+                            progressSongTimer.Start();
+                            mediaPlayer.Volume = (float)MainWindow.window.volumeSlider.Value;
+                            Utils.StartDiscordPresence(trackVideoList[currentSongIndex]);
+                        }
+                        catch
+                        {
+                            StopSound();
+                        }
+                    });
+                }
+                else
+                {
+                    SpotifyClient spotifyYouTubeRetrive = new SpotifyClient();
+                    string? youtubeID = await spotifyYouTubeRetrive.Tracks.GetYoutubeIdAsync(trackList[currentSongIndex].Url);
+                    YoutubeClient? youtube = new YoutubeClient();
+                    var streamManifest = youtube.Videos.Streams.GetManifestAsync($"https://youtube.com/watch?v={youtubeID}");
+                    var streamInfo = streamManifest.Result.GetAudioStreams().GetWithHighestBitrate();
+                    await Dispatcher.BeginInvoke(() =>
                     {
-                        StopSound();
-                    }
-                });
+                        try
+                        {
+                            mediaPlayer.Open(new Uri(streamInfo.Url));
+                            mediaPlayer.Play();
+                            progressSongTimer.Start();
+                            mediaPlayer.Volume = (float)MainWindow.window.volumeSlider.Value;
+                            Utils.StartDiscordPresence(trackList[currentSongIndex]);
+                        }
+                        catch
+                        {
+                            StopSound();
+                        }
+                    });
+                }
             }
             catch (ArgumentException) // exception that arrives when song doesn't exist in YouTube and it simply tries to switch to another one. 
             {

@@ -54,6 +54,11 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
+                <Label Name="searchEngineLabel" Foreground="White" Content="Поисковая система: " Style="{StaticResource fontLabelMontserrat}" FontWeight="Medium"/>
+                <ComboBox SelectionChanged="SearchEngine_ComboBox" SelectedIndex="0" Name="searchEngineCheckBox" ToolTip="Если вы не можете найти трек который есть в YouTube вы можете спокойно поменять поисковую систему и наслаждаться музыкой с YouTube" Grid.Column="1" HorizontalAlignment="Left">
+                    <ComboBoxItem Content="Spotify"/>
+                    <ComboBoxItem Content="YouTube"/>
+                </ComboBox>
             </Grid>
         </StackPanel>
     </Grid>

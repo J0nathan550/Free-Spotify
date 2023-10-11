@@ -22,6 +22,9 @@ namespace Free_Spotify.Pages
             trafficEconomic.Content = Utils.GetLocalizationString("TrafficDefaultText");
             settingsLabel.Content = Utils.GetLocalizationString("SettingsMenuItemHeader");
             trafficEconomicCheckBox.ToolTip = Utils.GetLocalizationString("TrafficToolTipDefaultText");
+            searchEngineLabel.Content = Utils.GetLocalizationString("SearchEngineLabelText");
+            searchEngineCheckBox.ToolTip = Utils.GetLocalizationString("SearchEngineToolTipText");
+            searchEngineCheckBox.SelectedIndex = Utils.settings.searchEngineIndex;
         }
 
         private void backToSearchPage_Click(object sender, MouseButtonEventArgs e)
@@ -57,6 +60,8 @@ namespace Free_Spotify.Pages
                 trafficEconomic.Content = Utils.GetLocalizationString("TrafficDefaultText");
                 settingsLabel.Content = Utils.GetLocalizationString("SettingsMenuItemHeader");
                 trafficEconomicCheckBox.ToolTip = Utils.GetLocalizationString("TrafficToolTipDefaultText");
+                searchEngineLabel.Content = Utils.GetLocalizationString("SearchEngineLabelText");
+                searchEngineCheckBox.ToolTip = Utils.GetLocalizationString("SearchEngineToolTipText");
                 var assembly = Assembly.GetEntryAssembly();
                 Utils.IdleDiscordPresence();
                 MainWindow.window.currentVersion_Item.Header = $"{Utils.GetLocalizationString("AppCurrentVersionDefaultText")} {assembly?.GetName().Version}";
@@ -81,6 +86,18 @@ namespace Free_Spotify.Pages
             Utils.settings.economTraffic = !Utils.settings.economTraffic;
             Utils.IdleDiscordPresence();
             trafficEconomicCheckBox.IsChecked = Utils.settings.economTraffic;
+            Utils.SaveSettings();
+        }
+
+        private bool loadingPenaltySearchingEngine = false;
+        private void SearchEngine_ComboBox(object sender, SelectionChangedEventArgs e)
+        {
+            if (!loadingPenaltySearchingEngine)
+            {
+                loadingPenaltySearchingEngine = true;
+                return;
+            }
+            Utils.settings.searchEngineIndex = searchEngineCheckBox.SelectedIndex;
             Utils.SaveSettings();
         }
     }

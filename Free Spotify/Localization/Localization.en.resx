@@ -153,6 +153,12 @@
   <data name="SearchBarTextBoxDefaultText" xml:space="preserve">
     <value>What do you want to listen to?</value>
   </data>
+  <data name="SearchEngineLabelText" xml:space="preserve">
+    <value>Search Engine:</value>
+  </data>
+  <data name="SearchEngineToolTipText" xml:space="preserve">
+    <value>If you can't find a track that is on YouTube you can safely change your search engine and enjoy music from YouTube.</value>
+  </data>
   <data name="SettingsMenuItemHeader" xml:space="preserve">
     <value>Settings</value>
   </data>

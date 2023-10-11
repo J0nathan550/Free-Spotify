@@ -153,6 +153,12 @@
   <data name="SearchBarTextBoxDefaultText" xml:space="preserve">
     <value>Что хотите послушать?</value>
   </data>
+  <data name="SearchEngineLabelText" xml:space="preserve">
+    <value>Поисковая система:</value>
+  </data>
+  <data name="SearchEngineToolTipText" xml:space="preserve">
+    <value>Если вы не можете найти трек, который есть в YouTube вы можете спокойно поменять поисковую систему и наслаждаться музыкой с YouTube.</value>
+  </data>
   <data name="SettingsMenuItemHeader" xml:space="preserve">
     <value>Настройки</value>
   </data>
