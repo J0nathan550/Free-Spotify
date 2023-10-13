@@ -1,13 +1,13 @@
-﻿using DiscordRPC;
+﻿using AutoUpdaterDotNET;
+using DiscordRPC;
 using Free_Spotify.Classes;
 using Free_Spotify.Pages;
-using System.Windows;
-using AutoUpdaterDotNET;
-using System.Reflection;
-using System.Windows.Threading;
 using System;
 using System.Diagnostics;
-using Newtonsoft.Json.Linq;
+using System.Reflection;
+using System.Threading;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace Free_Spotify
 {
@@ -22,8 +22,6 @@ namespace Free_Spotify
         {
             window = this;
 
-            Environment.SetEnvironmentVariable("SLAVA_UKRAINI", "1", EnvironmentVariableTarget.User);
-
             Utils.LoadSettings();
             Utils.UpdateLanguage();
             InitializeComponent();
@@ -33,13 +31,12 @@ namespace Free_Spotify
             songAuthor.Content = Utils.GetLocalizationString("SongAuthorDefaultText");
             settingsMenuItem.Header = Utils.GetLocalizationString("SettingsMenuItemHeader");
             checkUpdatesMenuItem.Header = Utils.GetLocalizationString("CheckUpdatesMenuItemHeader");
+            discordClient.Initialize();
+            Utils.IdleDiscordPresence();
             CheckForUpdates();
             var timer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(2) };
             timer.Tick += delegate { CheckForUpdates(); };
             timer.Start();
-            discordClient.Initialize();
-            Utils.IdleDiscordPresence();
-            CheckForUpdates();
         }
 
         /// <summary>
@@ -133,6 +130,7 @@ namespace Free_Spotify
                     AutoUpdater.Start(Utils.DownloadAutoUpdateLinkX64);
                     break;
             }
+
         }
 
         private SettingsPage settingsPage = new SettingsPage(); 
