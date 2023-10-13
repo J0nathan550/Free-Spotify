@@ -6,6 +6,7 @@ using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -20,10 +21,13 @@ namespace Free_Spotify
         public DiscordRpcClient discordClient = new DiscordRpcClient("1154023388805873744");
         public MainWindow()
         {
+            CheckForUpdates();
+
             window = this;
 
             Utils.LoadSettings();
             Utils.UpdateLanguage();
+
             InitializeComponent();
             var assembly = Assembly.GetEntryAssembly();
             currentVersion_Item.Header = $"{Utils.GetLocalizationString("AppCurrentVersionDefaultText")} {assembly?.GetName().Version}";
@@ -33,7 +37,6 @@ namespace Free_Spotify
             checkUpdatesMenuItem.Header = Utils.GetLocalizationString("CheckUpdatesMenuItemHeader");
             discordClient.Initialize();
             Utils.IdleDiscordPresence();
-            CheckForUpdates();
             var timer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(2) };
             timer.Tick += delegate { CheckForUpdates(); };
             timer.Start();
@@ -121,7 +124,15 @@ namespace Free_Spotify
             AutoUpdater.UpdateMode = Mode.Forced;
             AutoUpdater.RunUpdateAsAdmin = false;
             AutoUpdater.Icon = new System.Drawing.Bitmap("Assets/spotify-icon-png-15398-Windows.ico");
-            AutoUpdater.Start("https://raw.githubusercontent.com/J0nathan550/Free-Spotify/master/AutoUpdateX64.xml");
+            switch (System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture)
+            {
+                case System.Runtime.InteropServices.Architecture.X86:
+                    AutoUpdater.Start(Utils.DownloadAutoUpdateLinkX86);
+                    break;
+                case System.Runtime.InteropServices.Architecture.X64:
+                    AutoUpdater.Start(Utils.DownloadAutoUpdateLinkX64);
+                    break;
+            }
 
         }
 
