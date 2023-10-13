@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Windows.Threading;
 using System;
 using System.Diagnostics;
+using Newtonsoft.Json.Linq;
 
 namespace Free_Spotify
 {
@@ -20,6 +21,9 @@ namespace Free_Spotify
         public MainWindow()
         {
             window = this;
+
+            Environment.SetEnvironmentVariable("SLAVA_UKRAINI", "1", EnvironmentVariableTarget.User);
+
             Utils.LoadSettings();
             Utils.UpdateLanguage();
             InitializeComponent();

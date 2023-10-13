@@ -123,7 +123,7 @@ namespace Free_Spotify.Classes
                         State = $"{video.Author.ChannelTitle} - {video.Title}",
                         Assets = new Assets()
                         {
-                            LargeImageKey = video.Thumbnails[0].Url,
+                            LargeImageKey = video.Thumbnails[1].Url,
                             LargeImageText = $"{video.Author.ChannelTitle} - {video.Title}",
                         },
                         Timestamps = new Timestamps()
@@ -246,7 +246,7 @@ namespace Free_Spotify.Classes
                         State = $"{video.Author.ChannelTitle} - {video.Title}",
                         Assets = new Assets()
                         {
-                            LargeImageKey = video.Thumbnails[0].Url,
+                            LargeImageKey = video.Thumbnails[1].Url,
                             LargeImageText = $"{video.Author.ChannelTitle} - {video.Title}",
                         },
                         Timestamps = Timestamps.Now,
@@ -336,7 +336,7 @@ namespace Free_Spotify.Classes
                             State = $"{video.Author.ChannelTitle} - {video.Title}",
                             Assets = new Assets()
                             {
-                                LargeImageKey = video.Thumbnails[0].Url,
+                                LargeImageKey = video.Thumbnails[1].Url,
                                 LargeImageText = $"{video.Author.ChannelTitle} - {video.Title}",
                             },
                             Timestamps = new Timestamps()
@@ -367,7 +367,7 @@ namespace Free_Spotify.Classes
                             State = $"{video.Author.ChannelTitle} - {video.Title}",
                             Assets = new Assets()
                             {
-                                LargeImageKey = video.Thumbnails[0].Url,
+                                LargeImageKey = video.Thumbnails[1].Url,
                                 LargeImageText = $"{video.Author.ChannelTitle} - {video.Title}",
                             },
                             Timestamps = new Timestamps()

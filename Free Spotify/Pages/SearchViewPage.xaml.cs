@@ -646,7 +646,7 @@ namespace Free_Spotify.Pages
                                                     sourceImageOfTrack.BeginInit();
                                                     sourceImageOfTrack.CreateOptions = BitmapCreateOptions.None;
                                                     sourceImageOfTrack.CacheOption = BitmapCacheOption.None;
-                                                    sourceImageOfTrack.UriSource = new Uri(video.Thumbnails[0].Url);
+                                                    sourceImageOfTrack.UriSource = new Uri(video.Thumbnails[1].Url);
                                                     sourceImageOfTrack.EndInit();
 
                                                     Image actualImageOfTrack = new Image();
@@ -1069,7 +1069,7 @@ namespace Free_Spotify.Pages
                             sourceImageOfTrack.BeginInit();
                             sourceImageOfTrack.CreateOptions = BitmapCreateOptions.None;
                             sourceImageOfTrack.CacheOption = BitmapCacheOption.None;
-                            sourceImageOfTrack.UriSource = new Uri(trackVideoList[currentSongIndex].Thumbnails[0].Url);
+                            sourceImageOfTrack.UriSource = new Uri(trackVideoList[currentSongIndex].Thumbnails[1].Url);
                             sourceImageOfTrack.EndInit();
 
                             MainWindow.window.iconTrack.Source = sourceImageOfTrack;

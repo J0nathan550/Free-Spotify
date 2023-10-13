@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Free Spotify": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "SLAVA_UKRAINI": "1"
+      }
+    }
+  }
+}
