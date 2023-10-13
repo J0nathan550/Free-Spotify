@@ -121,15 +121,7 @@ namespace Free_Spotify
             AutoUpdater.UpdateMode = Mode.Forced;
             AutoUpdater.RunUpdateAsAdmin = false;
             AutoUpdater.Icon = new System.Drawing.Bitmap("Assets/spotify-icon-png-15398-Windows.ico");
-            switch (System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture)
-            {
-                case System.Runtime.InteropServices.Architecture.X86:
-                    AutoUpdater.Start(Utils.DownloadAutoUpdateLinkX86);
-                    break;
-                case System.Runtime.InteropServices.Architecture.X64:
-                    AutoUpdater.Start(Utils.DownloadAutoUpdateLinkX64);
-                    break;
-            }
+            AutoUpdater.Start("https://raw.githubusercontent.com/J0nathan550/Free-Spotify/master/AutoUpdateX64.xml");
 
         }
 
