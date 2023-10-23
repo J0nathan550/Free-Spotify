@@ -103,11 +103,6 @@ namespace Free_Spotify
             });
         }
 
-        private void Closing_Window(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            SearchViewPage.searchWindow.cancelProgressSongTimer.Cancel();
-            Utils.SaveSettings();
-        }
 
         private void CheckForUpdates_Click(object sender, RoutedEventArgs e)
         {

@@ -8,7 +8,7 @@
         WindowStyle="SingleBorderWindow"
         Background="Transparent"
         AllowsTransparency="False"
-        Title="Free Spotify" Height="600" Width="800" ResizeMode="CanResizeWithGrip" WindowStartupLocation="CenterScreen" Icon="/Assets/Square44x44Logo.altform-unplated_targetsize-32.png" StateChanged="WindowProcedure" Closing="Closing_Window">
+        Title="Free Spotify" Height="600" Width="800" ResizeMode="CanResizeWithGrip" WindowStartupLocation="CenterScreen" Icon="/Assets/Square44x44Logo.altform-unplated_targetsize-32.png" StateChanged="WindowProcedure">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="30" ResizeBorderThickness="3"/>
     </WindowChrome.WindowChrome>
