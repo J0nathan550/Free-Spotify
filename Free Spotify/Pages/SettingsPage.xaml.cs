@@ -15,6 +15,9 @@ namespace Free_Spotify.Pages
             Utils.UpdateLanguage();
             discordRPCCheckBox.IsChecked = Utils.settings.discordRPC;
             trafficEconomicCheckBox.IsChecked = Utils.settings.economTraffic;
+            ballonPlayerCheckBox.IsChecked = Utils.settings.musicPlayerBallonTurnOn;
+            ballonPlayerText.Content = Utils.GetLocalizationString("BallonPlayerText");
+            ballonPlayerCheckBox.ToolTip = Utils.GetLocalizationString("BallonPlayerCheckBoxToolTip");
             languageLabel.Content = Utils.GetLocalizationString("LanguageSettingsDefaultText");
             trafficEconomic.Content = Utils.GetLocalizationString("TrafficDefaultText");
             settingsLabel.Content = Utils.GetLocalizationString("SettingsMenuItemHeader");
@@ -26,7 +29,7 @@ namespace Free_Spotify.Pages
 
         private void backToSearchPage_Click(object sender, MouseButtonEventArgs e)
         {
-            MainWindow.window.LoadingPagesFrame.Navigate(SearchViewPage.instance);
+            MainWindow.window.LoadingPagesFrame.Navigate(SearchViewPage.searchWindow);
         }
 
         private bool loadingPenalty = false; // removing null reference because this func is shit
@@ -59,6 +62,8 @@ namespace Free_Spotify.Pages
                 trafficEconomicCheckBox.ToolTip = Utils.GetLocalizationString("TrafficToolTipDefaultText");
                 searchEngineLabel.Content = Utils.GetLocalizationString("SearchEngineLabelText");
                 searchEngineCheckBox.ToolTip = Utils.GetLocalizationString("SearchEngineToolTipText");
+                ballonPlayerText.Content = Utils.GetLocalizationString("BallonPlayerText");
+                ballonPlayerCheckBox.ToolTip = Utils.GetLocalizationString("BallonPlayerCheckBoxToolTip");
                 var assembly = Assembly.GetEntryAssembly();
                 Utils.IdleDiscordPresence();
                 MainWindow.window.currentVersion_Item.Header = $"{Utils.GetLocalizationString("AppCurrentVersionDefaultText")} {assembly?.GetName().Version}";
@@ -95,6 +100,15 @@ namespace Free_Spotify.Pages
                 return;
             }
             Utils.settings.searchEngineIndex = searchEngineCheckBox.SelectedIndex;
+            Utils.SaveSettings();
+        }
+
+        private void ballonPlayerCheckBox_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            ballonPlayerCheckBox.IsChecked = Utils.settings.musicPlayerBallonTurnOn;
+            Utils.settings.musicPlayerBallonTurnOn = !Utils.settings.musicPlayerBallonTurnOn;
+            Utils.IdleDiscordPresence();
+            ballonPlayerCheckBox.IsChecked = Utils.settings.musicPlayerBallonTurnOn;
             Utils.SaveSettings();
         }
     }

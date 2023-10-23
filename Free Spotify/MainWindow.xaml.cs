@@ -5,9 +5,8 @@ using Free_Spotify.Pages;
 using System;
 using System.Diagnostics;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls.Primitives;
 using System.Windows.Threading;
 
 namespace Free_Spotify
@@ -77,7 +76,7 @@ namespace Free_Spotify
             Application.Current.Shutdown();
         }
 
-        private async void WindowProcedure(object sender, System.EventArgs e)
+        private async void WindowProcedure(object sender, EventArgs e)
         {
             await Dispatcher.BeginInvoke(() =>
             {
@@ -91,14 +90,22 @@ namespace Free_Spotify
                 {
                     iconMaximizedDefault.Visibility = Visibility.Hidden;
                     iconMaximizedSelected.Visibility = Visibility.Visible;
-                    windowBackground.Padding = new Thickness(3);
+                    windowBackground.Padding = new Thickness(10);
+                }
+                if (Utils.settings.musicPlayerBallonTurnOn && WindowState != WindowState.Minimized && SearchViewPage.searchWindow.ballon != null)
+                {
+                    myNotifyIcon.CloseBalloon();
+                }
+                else if(Utils.settings.musicPlayerBallonTurnOn && WindowState == WindowState.Minimized && SearchViewPage.searchWindow.ballon != null)
+                {
+                    myNotifyIcon.ShowCustomBalloon(SearchViewPage.searchWindow.ballon, PopupAnimation.Slide, null);
                 }
             });
         }
 
         private void Closing_Window(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            SearchViewPage.instance.cancelProgressSongTimer.Cancel();
+            SearchViewPage.searchWindow.cancelProgressSongTimer.Cancel();
             Utils.SaveSettings();
         }
 

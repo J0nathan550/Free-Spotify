@@ -445,6 +445,7 @@ namespace Free_Spotify.Classes
             public int searchEngineIndex = 0; // 0 -> Spotify, 1 -> YouTube
             public bool discordRPC = true;
             public bool economTraffic = false;
+            public bool musicPlayerBallonTurnOn = true; 
         }
     }
 }

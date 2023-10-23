@@ -123,6 +123,12 @@
   <data name="ArtistDefaultText" xml:space="preserve">
     <value>Артист:</value>
   </data>
+  <data name="BallonPlayerCheckBoxToolTip" xml:space="preserve">
+    <value>Коли вікно згорнуто, під час перемикання пісні спливатиме плеєр, який можна налаштувати як завгодно.</value>
+  </data>
+  <data name="BallonPlayerText" xml:space="preserve">
+    <value>Спливаюче вікно програвача:</value>
+  </data>
   <data name="CheckUpdatesMenuItemHeader" xml:space="preserve">
     <value>Перевірити оновлення</value>
   </data>

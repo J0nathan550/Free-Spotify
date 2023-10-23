@@ -8,9 +8,10 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Assets\spotify-icon-png-15398-Windows.ico</ApplicationIcon>
     <Company>J0nathan550</Company>
-    <Version>1.0.0.1</Version>
-    <AssemblyVersion>1.0.0.5</AssemblyVersion>
-    <FileVersion>1.0.0.5</FileVersion>
+    <Version>1.0.0.6</Version>
+    <AssemblyVersion>1.0.0.6</AssemblyVersion>
+    <FileVersion>1.0.0.6</FileVersion>
+    <SignAssembly>False</SignAssembly>
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,6 +29,7 @@
     <None Remove="Assets\Spotify_icon.png" />
     <None Remove="Assets\Spotify_icon.svg-_1_.ico" />
     <None Remove="Assets\Spotify_icon.svg-_3_.ico" />
+    <None Remove="Assets\spotify_icon_test.ico" />
     <None Remove="Assets\Square44x44Logo.altform-unplated_targetsize-16.png" />
     <None Remove="Assets\Square44x44Logo.altform-unplated_targetsize-32.png" />
     <None Remove="Assets\Square44x44Logo.altform-unplated_targetsize-48.png" />
@@ -53,6 +55,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Assets\spotify_icon_test.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Content Include="Assets\spotify-icon-png-15398-Windows.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -67,6 +72,7 @@
     <PackageReference Include="Autoupdater.NET.Official" Version="1.8.4" />
     <PackageReference Include="DiscordRichPresence" Version="1.2.1.24" />
     <PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" />
+    <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="SpotifyExplode" Version="1.0.7" />
     <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />

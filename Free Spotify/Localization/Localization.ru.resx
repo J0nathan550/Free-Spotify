@@ -123,6 +123,12 @@
   <data name="ArtistDefaultText" xml:space="preserve">
     <value>Артист:</value>
   </data>
+  <data name="BallonPlayerCheckBoxToolTip" xml:space="preserve">
+    <value>Когда окно свёрнуто, при переключении песни будет всплывать плеер, который можно настроить как угодно.</value>
+  </data>
+  <data name="BallonPlayerText" xml:space="preserve">
+    <value>Всплывающие окно проигрывателя:</value>
+  </data>
   <data name="CheckUpdatesMenuItemHeader" xml:space="preserve">
     <value>Проверить обновления</value>
   </data>

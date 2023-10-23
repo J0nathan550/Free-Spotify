@@ -123,6 +123,12 @@
   <data name="ArtistDefaultText" xml:space="preserve">
     <value>Artist:</value>
   </data>
+  <data name="BallonPlayerCheckBoxToolTip" xml:space="preserve">
+    <value>When the window is minimized, a player will pop up when you switch songs, which you can customize however you like.</value>
+  </data>
+  <data name="BallonPlayerText" xml:space="preserve">
+    <value>Pop-up window of MP3Player:</value>
+  </data>
   <data name="CheckUpdatesMenuItemHeader" xml:space="preserve">
     <value>Check for updates</value>
   </data>

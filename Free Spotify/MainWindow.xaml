@@ -3,7 +3,7 @@
         xmlns:fa="http://schemas.fontawesome.io/icons/"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:tb="http://www.hardcodet.net/taskbar"
         mc:Ignorable="d"
         WindowStyle="SingleBorderWindow"
         Background="Transparent"
@@ -28,6 +28,7 @@
                     <ColumnDefinition/>
                     <ColumnDefinition Width="100"/>
                 </Grid.ColumnDefinitions>
+                <tb:TaskbarIcon x:Name="myNotifyIcon" ToolTipText="Free Spotify" Visibility="Visible" IconSource="Assets/spotify_icon_test.ico" PopupActivation="LeftClick"></tb:TaskbarIcon>
                 <Menu Background="Transparent" WindowChrome.IsHitTestVisibleInChrome="True" Grid.ColumnSpan="2" Cursor="Hand">
                     <MenuItem BorderThickness="0" Width="33" Height="30" Foreground="White">
                         <MenuItem Name="settingsMenuItem" BorderThickness="0" Click="Settings_Click" Header="Настройки" Cursor="Hand" Background="#FF06942C"/>
@@ -58,7 +59,7 @@
                 </Grid>
             </Grid>
             <Frame Name="LoadingPagesFrame" NavigationUIVisibility="Hidden" Grid.Row="1" Source="/Pages/SearchViewPage.xaml"/>
-            <Border Grid.Row="2" Visibility="Visible" BorderBrush="LightGray" BorderThickness="2">
+            <Border Grid.Row="2" Visibility="Visible" BorderBrush="LightGray" BorderThickness="3">
                 <Grid x:Name="mp3PlayerHolder">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>

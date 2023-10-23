@@ -60,6 +60,14 @@
                     <ComboBoxItem Content="YouTube"/>
                 </ComboBox>
             </Grid>
+            <Grid Margin="10,0,10,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Label Name="ballonPlayerText" Foreground="White" Content="Всплывающие окно проигрывателя: " Style="{StaticResource fontLabelMontserrat}" FontWeight="Medium"/>
+                <CheckBox Click="ballonPlayerCheckBox_Click" Name="ballonPlayerCheckBox" ToolTip="Когда окно свёрнуто, при переключении песни будет вспывать плеер, который можно настроить как угодно." Grid.Column="1" VerticalContentAlignment="Center" IsChecked="True"/>
+            </Grid>
         </StackPanel>
     </Grid>
 </Page>
