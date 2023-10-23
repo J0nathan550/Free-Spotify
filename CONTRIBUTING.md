@@ -1,0 +1,1 @@
+If you want to contribute, fetch the project, make the change and describe in Pull Request your change, and why you want to change it. I will review it, and push it if it's good enough to be pushed :)
