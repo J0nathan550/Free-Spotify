@@ -138,7 +138,7 @@
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <Label Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
-                            <fa:FontAwesome x:Name="volumeIcon" Cursor="Hand" Icon="VolumeUp" FontSize="17" Foreground="White"/>
+                            <fa:FontAwesome x:Name="volumeIcon" Icon="VolumeUp" FontSize="17" Foreground="White"/>
                         </Label>
                         <Grid Grid.Column="1">
                             <Grid.RowDefinitions>
