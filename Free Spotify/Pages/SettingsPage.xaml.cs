@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Windows.Controls;
 using System.Windows.Input;
+using static Free_Spotify.Classes.Utils;
 
 namespace Free_Spotify.Pages
 {
@@ -51,8 +52,12 @@ namespace Free_Spotify.Pages
                     case 1: // ru
                         Utils.ChangeLanguage("ru");
                         break;
-                    case 2: // ukr
-                        Utils.ChangeLanguage("ukr");
+                    case 3: // japanese
+                        ChangeLanguage("ja");
+                        break;
+                    default:
+                        settings.languageIndex = 0;
+                        ChangeLanguage("en");
                         break;
                 }
 

@@ -29,7 +29,7 @@ namespace Free_Spotify.Pages
 
         // used to render every single millisecond the progress bar of player.
         public System.Timers.Timer progressSongTimer = new System.Timers.Timer() { Interval = 1000 };
-        
+
         // used to do query every second after you typed character
         private System.Timers.Timer searchFieldTimer = new System.Timers.Timer() { Interval = 1000 };
 
@@ -47,11 +47,11 @@ namespace Free_Spotify.Pages
         private SpotifyExplode.Search.SearchFilter filter = SpotifyExplode.Search.SearchFilter.Track;
 
         // used to remove default placeholder text in Search Tab.
-        private bool isTextErased = false;                
+        private bool isTextErased = false;
 
         // Old but really good working MediaPlayer, prevents stacking, has awesome quality, MediaPlayer > NAudio.
-        public MediaPlayer mediaPlayer { get; private set; } = new();            
-        
+        public MediaPlayer mediaPlayer { get; private set; } = new();
+
         // boolean to represent if we want to repeat the same song.
         private bool IsSongRepeat = false;
 
@@ -68,7 +68,7 @@ namespace Free_Spotify.Pages
             // Loading Settings to handle data. 
             Utils.LoadSettings();
             Utils.UpdateLanguage();
-            
+
             // Loading entire page with functions and everything.
             InitializeComponent();
             searchWindow = this;
@@ -178,7 +178,7 @@ namespace Free_Spotify.Pages
                         {
                             mediaPlayer.Position = new TimeSpan(0, 0, 0, 0, (int)ballon.musicProgress.Value);
                             PausingSong();
-                            return; 
+                            return;
                         }
                         mediaPlayer.Position = new TimeSpan(0, 0, 0, 0, (int)MainWindow.window.musicProgress.Value);
                     }
@@ -347,7 +347,7 @@ namespace Free_Spotify.Pages
                                 if (ballon != null && Utils.settings.musicPlayerBallonTurnOn) ballon.musicProgress.Maximum = trackYouTubeList[currentSongIndex].Duration.Value.TotalMilliseconds;
                             }
                             else
-                            { 
+                            {
                                 MainWindow.window.musicProgress.Maximum = mediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds;
                                 if (ballon != null && Utils.settings.musicPlayerBallonTurnOn) ballon.musicProgress.Maximum = mediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds;
                             }
@@ -1061,7 +1061,7 @@ namespace Free_Spotify.Pages
                         }
                         else
                         {
-                            
+
                             await Dispatcher.BeginInvoke(() =>
                             {
                                 GC.Collect();
@@ -1154,7 +1154,7 @@ namespace Free_Spotify.Pages
                             if (ballon != null) ballon = null;
                             ballon = new MusicExplorerBallon();
                         }
-                        
+
                         if (!Utils.settings.economTraffic)
                         {
                             BitmapImage sourceImageOfTrack = new BitmapImage();
@@ -1177,8 +1177,7 @@ namespace Free_Spotify.Pages
                         {
                             MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(trackYouTubeList[currentSongIndex].Duration.Value.TotalMilliseconds).ToString(@"m\:ss")}";
                         }
-
-                        if (MainWindow.window.WindowState == WindowState.Minimized && Utils.settings.musicPlayerBallonTurnOn)
+                        if (Utils.settings.musicPlayerBallonTurnOn)
                         {
                             ballon.songDescription.Text = $"{Utils.GetLocalizationString("ArtistDefaultText")} {trackYouTubeList[currentSongIndex].Author.ChannelTitle}\n{Utils.GetLocalizationString("TrackDefaultText")} {trackYouTubeList[currentSongIndex].Title}";
                             ballon.endOfSong.Content = MainWindow.window.endOfSong.Content;
@@ -1195,7 +1194,10 @@ namespace Free_Spotify.Pages
                             {
                                 MusicProgress_DragCompletedEvent();
                             }));
-                            MainWindow.window.myNotifyIcon.ShowCustomBalloon(ballon, PopupAnimation.Slide, null);
+                            if (MainWindow.window.WindowState == WindowState.Minimized)
+                            {
+                                MainWindow.window.myNotifyIcon.ShowCustomBalloon(ballon, PopupAnimation.Slide, null);
+                            }
                         }
                     }
                     else

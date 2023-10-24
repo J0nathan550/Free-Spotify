@@ -8,7 +8,7 @@
     <UserControl.Resources>
         <Storyboard x:Key="FadeOutAnimation">
             <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                         From="0.8" To="0.0"
+                         From="1" To="0.0"
                          Duration="0:0:0.4" />
         </Storyboard>
     </UserControl.Resources>
@@ -20,8 +20,9 @@
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
     </UserControl.Resources>-->
-    <Border Name="entireBaloon" MaxWidth="300" MaxHeight="200" Background="Black" Opacity="0.8" BorderBrush="White" CornerRadius="6" BorderThickness="3">
+    <Border Name="entireBaloon" MaxWidth="300" MaxHeight="200" Background="Black" Opacity="1" BorderBrush="White" CornerRadius="6" BorderThickness="3">
         <Grid x:Name="mp3PlayerHolder">
+            <Image MouseEnter="Ballon_MouseHover" Stretch="Fill" Name="songIcon" Grid.Row="0" Grid.RowSpan="3" Grid.ColumnSpan="3" Source="/Assets/spotify-icon-png-15398-Windows.ico"/>
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
                     <RowDefinition/>
@@ -29,23 +30,22 @@
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <Image MouseEnter="Ballon_MouseHover" Stretch="UniformToFill" Name="songIcon" Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="3" Source="/Assets/spotify-icon-png-15398-Windows.ico"/>
                 <Grid>
                     <Label MouseEnter="Ballon_MouseHover" HorizontalContentAlignment="Right">
                         <fa:FontAwesome Cursor="Hand" Icon="Close" Foreground="White" MouseDown="BallonClose"/>
                     </Label>
                 </Grid>
-                <Grid MouseEnter="Ballon_MouseHover"  MouseDown="Ballon_MouseDown"  Grid.Row="1">
+                <Grid MouseEnter="Ballon_MouseHover" MouseDown="Ballon_MouseDown"  Grid.Row="1">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="2*"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <Label Background="#CC000000" Opacity="1" Grid.Row="1" Style="{StaticResource fontLabelMontserrat}" Foreground="White" HorizontalContentAlignment="Center">
+                    <Label Background="#CC000000"  Opacity="1" Grid.Row="1" Style="{StaticResource fontLabelMontserrat}" Foreground="White" HorizontalContentAlignment="Center">
                         <TextBlock Name="songDescription" Text="Artist: Test"/>
                     </Label>
                 </Grid>
-                <Label MouseEnter="Ballon_MouseHover" MouseDown="Ballon_MouseDown" Grid.Row="2" Padding="0" HorizontalContentAlignment="Center">
-                    <Grid Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent">
+                <Label MouseEnter="Ballon_MouseHover" MouseDown="Ballon_MouseDown" Grid.Row="2" Padding="0" HorizontalContentAlignment="Center" Background="#CC000000" Grid.RowSpan="2">
+                    <Grid Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" >
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="50"/>
                             <ColumnDefinition Width="50"/>
@@ -53,7 +53,7 @@
                             <ColumnDefinition Width="50"/>
                             <ColumnDefinition Width="50"/>
                         </Grid.ColumnDefinitions>
-                        <Label MouseEnter="Ballon_MouseHover" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                        <Label  MouseEnter="Ballon_MouseHover" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
                             <fa:FontAwesome Cursor="Hand" x:Name="randomSongButton" Icon="Random" FontSize="17" Foreground="White"/>
                         </Label>
                         <Label MouseEnter="Ballon_MouseHover" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
@@ -78,9 +78,8 @@
                             </fa:FontAwesome>
                         </Label>
                     </Grid>
-
                 </Label>
-                <Grid  MouseEnter="Ballon_MouseHover" MouseDown="Ballon_MouseDown" Background="Transparent" Grid.Row="3">
+                <Grid Grid.Row="3" MouseEnter="Ballon_MouseHover" MouseDown="Ballon_MouseDown">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="50"/>
                         <ColumnDefinition/>

@@ -56,6 +56,9 @@ namespace Free_Spotify.Classes
                 case 2: // ukr
                     ChangeLanguage("uk");
                     break;
+                case 3: // japanese
+                    ChangeLanguage("ja");
+                    break;
                 default:
                     settings.languageIndex = 0;
                     ChangeLanguage("en");
@@ -136,7 +139,7 @@ namespace Free_Spotify.Classes
                         new Button()
                         {
                             Label = GetLocalizationString("DiscordRPCListenToTrack"),
-                            Url = video.Url,
+                            Url = video.Url + "&t=" + (int)TimeSpan.FromMilliseconds(MainWindow.window.musicProgress.Value).TotalSeconds, // = + timespan -> adds ability to follow on which position user is playing the song.
                         },
                         new Button()
                         {
@@ -255,7 +258,7 @@ namespace Free_Spotify.Classes
                             new Button()
                             {
                                 Label = GetLocalizationString("DiscordRPCListenToTrack"),
-                                Url = video.Url,
+                                Url = video.Url + "&t=" + (int)TimeSpan.FromMilliseconds(MainWindow.window.musicProgress.Value).TotalSeconds, // = + timespan -> adds ability to follow on which position user is playing the song.
                             },
                             new Button()
                             {
@@ -349,7 +352,7 @@ namespace Free_Spotify.Classes
                             new Button()
                             {
                                 Label = GetLocalizationString("DiscordRPCListenToTrack"),
-                                Url = video.Url,
+                                Url = video.Url + "&t=" + (int)TimeSpan.FromMilliseconds(MainWindow.window.musicProgress.Value).TotalSeconds, // = + timespan -> adds ability to follow on which position user is playing the song.
                             },
                             new Button()
                             {
@@ -441,7 +444,7 @@ namespace Free_Spotify.Classes
         public class Settings
         {
             public double volume = 0.5f;
-            public int languageIndex = 0; // 0 -> English, 1 -> ru, 2 -> UA
+            public int languageIndex = 0; // 0 -> English, 1 -> ru, 2 -> UA, 3 -> Japan
             public int searchEngineIndex = 0; // 0 -> Spotify, 1 -> YouTube
             public bool discordRPC = true;
             public bool economTraffic = false;

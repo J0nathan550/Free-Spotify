@@ -105,6 +105,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Localization\Localization.ja.Designer.cs">
+      <DependentUpon>Localization.ja.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
     <Compile Update="Localization\Localization.en.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -123,6 +128,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="Localization\Localization.ja.resx">
+      <LastGenOutput>Localization.ja.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="Localization\Localization.en.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Localization.en.Designer.cs</LastGenOutput>
