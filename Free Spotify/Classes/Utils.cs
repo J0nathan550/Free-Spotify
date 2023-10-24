@@ -17,7 +17,7 @@ namespace Free_Spotify.Classes
 
         public static string savePath { get; private set; } = "settings.json"; // constant string to represent file of settings. 
         public static string GithubLink { get; private set; } = "https://github.com/J0nathan550/Free-Spotify"; // later will add the link to the public repository (IF EVER!)
-        
+
         // Link updates for different arch. 
         public static string DownloadAutoUpdateLinkX64 { get; private set; } = "https://raw.githubusercontent.com/J0nathan550/Free-Spotify/master/AutoUpdateX64.xml";
         public static string DownloadAutoUpdateLinkX86 { get; private set; } = "https://raw.githubusercontent.com/J0nathan550/Free-Spotify/master/AutoUpdateX86.xml";
@@ -448,7 +448,7 @@ namespace Free_Spotify.Classes
             public int searchEngineIndex = 0; // 0 -> Spotify, 1 -> YouTube
             public bool discordRPC = true;
             public bool economTraffic = false;
-            public bool musicPlayerBallonTurnOn = true; 
+            public bool musicPlayerBallonTurnOn = true;
         }
     }
 }

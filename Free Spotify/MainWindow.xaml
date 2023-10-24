@@ -131,13 +131,6 @@
                             <Slider Cursor="Hand" Style="{StaticResource Music_Slider}" Name="musicProgress" Grid.Column="1"/>
                             <Label Padding="3" Grid.Column="2" Name="endOfSong" Content="0:00" Foreground="White" Style="{StaticResource fontLabelMontserrat}" HorizontalContentAlignment="Center" VerticalContentAlignment="Top"></Label>
                         </Grid>
-                        <Grid Grid.Row="1">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="40"/>
-                                <ColumnDefinition/>
-                                <ColumnDefinition Width="40"/>
-                            </Grid.ColumnDefinitions>
-                        </Grid>
                     </Grid>
                     <Grid Grid.Column="2">
                         <Grid.ColumnDefinitions>

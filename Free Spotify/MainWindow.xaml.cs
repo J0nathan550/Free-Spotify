@@ -96,7 +96,7 @@ namespace Free_Spotify
                 {
                     myNotifyIcon.CloseBalloon();
                 }
-                else if(Utils.settings.musicPlayerBallonTurnOn && WindowState == WindowState.Minimized && SearchViewPage.searchWindow.ballon != null)
+                else if (Utils.settings.musicPlayerBallonTurnOn && WindowState == WindowState.Minimized && SearchViewPage.searchWindow.ballon != null)
                 {
                     myNotifyIcon.ShowCustomBalloon(SearchViewPage.searchWindow.ballon, PopupAnimation.Slide, null);
                 }
@@ -143,7 +143,7 @@ namespace Free_Spotify
 
         }
 
-        private SettingsPage settingsPage = new SettingsPage(); 
+        private SettingsPage settingsPage = new SettingsPage();
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
             LoadingPagesFrame.Navigate(settingsPage);
