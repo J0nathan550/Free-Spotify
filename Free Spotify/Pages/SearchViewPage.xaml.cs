@@ -1177,7 +1177,8 @@ namespace Free_Spotify.Pages
                         {
                             MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(trackYouTubeList[currentSongIndex].Duration.Value.TotalMilliseconds).ToString(@"m\:ss")}";
                         }
-                        if (Utils.settings.musicPlayerBallonTurnOn)
+
+                        if (MainWindow.window.WindowState == WindowState.Minimized && Utils.settings.musicPlayerBallonTurnOn)
                         {
                             ballon.songDescription.Text = $"{Utils.GetLocalizationString("ArtistDefaultText")} {trackYouTubeList[currentSongIndex].Author.ChannelTitle}\n{Utils.GetLocalizationString("TrackDefaultText")} {trackYouTubeList[currentSongIndex].Title}";
                             ballon.endOfSong.Content = MainWindow.window.endOfSong.Content;
@@ -1194,10 +1195,7 @@ namespace Free_Spotify.Pages
                             {
                                 MusicProgress_DragCompletedEvent();
                             }));
-                            if (MainWindow.window.WindowState == WindowState.Minimized)
-                            {
-                                MainWindow.window.myNotifyIcon.ShowCustomBalloon(ballon, PopupAnimation.Slide, null);
-                            }
+                            MainWindow.window.myNotifyIcon.ShowCustomBalloon(ballon, PopupAnimation.Slide, null);
                         }
                     }
                     else
