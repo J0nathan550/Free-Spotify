@@ -110,7 +110,7 @@ namespace Free_Spotify.Pages
                 VolumeSlider_DragDeltaEvent();
             }));
 
-            MainWindow.window.volumeSlider.AddHandler(PreviewMouseLeftButtonDownEvent, new MouseButtonEventHandler(VolumeSlider_MouseLeftButtonDownEvent), true);
+            MainWindow.window.volumeSlider.AddHandler(PreviewMouseLeftButtonDownEvent, new MouseButtonEventHandler(Slider_MouseLeftButtonDownEvent), true);
 
             // mute song and do not change volume value on click
             MainWindow.window.volumeIcon.MouseDown += volumeIcon_Click;
@@ -229,11 +229,12 @@ namespace Free_Spotify.Pages
             });
         }
 
-        private void VolumeSlider_MouseLeftButtonDownEvent(object sender, MouseButtonEventArgs e)
+        // generic slider event that simulates one button click and drag operations on a Slider's thumb if IsMoveToPointEnabled is true
+        private void Slider_MouseLeftButtonDownEvent(object sender, MouseButtonEventArgs e)
         {
-            var volumeSlider = MainWindow.window.volumeSlider;
-            Track track = volumeSlider.Template.FindName("PART_Track", volumeSlider) as Track;
-            if (!volumeSlider.IsMoveToPointEnabled || track == null || track.Thumb == null || track.Thumb.IsMouseOver)
+            var slider = (Slider)sender;
+            Track track = slider.Template.FindName("PART_Track", slider) as Track;
+            if (!slider.IsMoveToPointEnabled || track == null || track.Thumb == null || track.Thumb.IsMouseOver)
             {
                 return;
             }
