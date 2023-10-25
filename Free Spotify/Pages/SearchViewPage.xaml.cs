@@ -244,6 +244,11 @@ namespace Free_Spotify.Pages
                 RoutedEvent = MouseLeftButtonDownEvent,
                 Source = track.Thumb
             });
+            track.Thumb.RaiseEvent(new DragDeltaEventArgs(0, 0)
+            {
+                RoutedEvent = Thumb.DragDeltaEvent,
+                Source = track.Thumb
+            });
         }
 
         // mute|unmute mediaplayer and change icon when user click on the volume icon
