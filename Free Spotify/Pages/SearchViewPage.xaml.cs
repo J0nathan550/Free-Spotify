@@ -104,6 +104,8 @@ namespace Free_Spotify.Pages
                 MusicProgress_DragCompletedEvent();
             }));
 
+            MainWindow.window.musicProgress.AddHandler(PreviewMouseLeftButtonDownEvent, new MouseButtonEventHandler(Slider_MouseLeftButtonDownEvent), true);
+
             // volume slider, manages the volume of all songs. Later will be stored in saving system.
             MainWindow.window.volumeSlider.AddHandler(Thumb.DragDeltaEvent, new DragDeltaEventHandler((sender, e) =>
             {

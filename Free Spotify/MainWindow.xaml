@@ -128,7 +128,7 @@
                                 <ColumnDefinition Width="50"/>
                             </Grid.ColumnDefinitions>
                             <Label Padding="3" Name="startOfSong" Content="0:00" Foreground="White" Style="{StaticResource fontLabelMontserrat}" HorizontalContentAlignment="Center" VerticalContentAlignment="Top"></Label>
-                            <Slider Cursor="Hand" Style="{StaticResource Music_Slider}" Name="musicProgress" Grid.Column="1"/>
+                            <Slider Cursor="Hand" Style="{StaticResource Music_Slider}" Name="musicProgress" Grid.Column="1" IsMoveToPointEnabled="True"/>
                             <Label Padding="3" Grid.Column="2" Name="endOfSong" Content="0:00" Foreground="White" Style="{StaticResource fontLabelMontserrat}" HorizontalContentAlignment="Center" VerticalContentAlignment="Top"></Label>
                         </Grid>
                     </Grid>
