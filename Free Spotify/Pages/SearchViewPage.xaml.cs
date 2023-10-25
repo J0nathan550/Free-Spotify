@@ -1177,16 +1177,12 @@ namespace Free_Spotify.Pages
                             MainWindow.window.iconTrack.Source = sourceImageOfTrack;
                             if (Utils.settings.musicPlayerBallonTurnOn) ballon.songIcon.Source = sourceImageOfTrack;
                         }
-                        uint hourMillisecond = 3600000;
 
-                        if (trackYouTubeList[currentSongIndex].Duration.Value.TotalMilliseconds > hourMillisecond)
-                        {
-                            MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(trackYouTubeList[currentSongIndex].Duration.Value.TotalMilliseconds).ToString(@"h\:mm\:ss")}";
-                        }
-                        else
-                        {
-                            MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(trackYouTubeList[currentSongIndex].Duration.Value.TotalMilliseconds).ToString(@"m\:ss")}";
-                        }
+                        uint hourMillisecond = 3600000;
+                        double trackDuration = trackYouTubeList[currentSongIndex].Duration.Value.TotalMilliseconds;
+                        string format = trackDuration > hourMillisecond ? @"h\:mm\:ss" : @"m\:ss";
+                        MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(trackDuration).ToString(format)}";
+
                         if (Utils.settings.musicPlayerBallonTurnOn)
                         {
                             ballon.songDescription.Text = $"{Utils.GetLocalizationString("ArtistDefaultText")} {trackYouTubeList[currentSongIndex].Author.ChannelTitle}\n{Utils.GetLocalizationString("TrackDefaultText")} {trackYouTubeList[currentSongIndex].Title}";
@@ -1236,15 +1232,10 @@ namespace Free_Spotify.Pages
                         }
 
                         uint hourMillisecond = 3600000;
+                        double trackDuration = trackSpotifyList[currentSongIndex].DurationMs;
+                        string format = trackDuration > hourMillisecond ? @"h\:mm\:ss" : @"m\:ss";
+                        MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(mediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds).ToString(format)}";
 
-                        if (trackSpotifyList[currentSongIndex].DurationMs > hourMillisecond)
-                        {
-                            MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(mediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds).ToString(@"h\:mm\:ss")}";
-                        }
-                        else
-                        {
-                            MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(trackSpotifyList[currentSongIndex].DurationMs).ToString(@"m\:ss")}";
-                        }
 
                         if (Utils.settings.musicPlayerBallonTurnOn)
                         {
