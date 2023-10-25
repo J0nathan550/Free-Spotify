@@ -1183,7 +1183,7 @@ namespace Free_Spotify.Pages
                         string format = trackDuration > hourMillisecond ? @"h\:mm\:ss" : @"m\:ss";
                         MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(trackDuration).ToString(format)}";
 
-                        if (Utils.settings.musicPlayerBallonTurnOn)
+                        if (Utils.settings.musicPlayerBallonTurnOn && MainWindow.window.WindowState == WindowState.Minimized)
                         {
                             ballon.songDescription.Text = $"{Utils.GetLocalizationString("ArtistDefaultText")} {trackYouTubeList[currentSongIndex].Author.ChannelTitle}\n{Utils.GetLocalizationString("TrackDefaultText")} {trackYouTubeList[currentSongIndex].Title}";
                             ballon.endOfSong.Content = MainWindow.window.endOfSong.Content;
@@ -1200,10 +1200,7 @@ namespace Free_Spotify.Pages
                             {
                                 MusicProgress_DragCompletedEvent();
                             }));
-                            if (MainWindow.window.WindowState == WindowState.Minimized)
-                            {
-                                MainWindow.window.myNotifyIcon.ShowCustomBalloon(ballon, PopupAnimation.Slide, null);
-                            }
+                            MainWindow.window.myNotifyIcon.ShowCustomBalloon(ballon, PopupAnimation.Slide, null);
                         }
                     }
                     else
@@ -1236,8 +1233,7 @@ namespace Free_Spotify.Pages
                         string format = trackDuration > hourMillisecond ? @"h\:mm\:ss" : @"m\:ss";
                         MainWindow.window.endOfSong.Content = $"{TimeSpan.FromMilliseconds(mediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds).ToString(format)}";
 
-
-                        if (Utils.settings.musicPlayerBallonTurnOn)
+                        if (Utils.settings.musicPlayerBallonTurnOn && MainWindow.window.WindowState == WindowState.Minimized)
                         {
                             ballon.songDescription.Text = $"{Utils.GetLocalizationString("ArtistDefaultText")} {trackSpotifyList[currentSongIndex].Artists[0].Name}\n{Utils.GetLocalizationString("TrackDefaultText")} {trackSpotifyList[currentSongIndex].Title}";
                             ballon.endOfSong.Content = MainWindow.window.endOfSong.Content;
@@ -1254,10 +1250,7 @@ namespace Free_Spotify.Pages
                             {
                                 MusicProgress_DragCompletedEvent();
                             }));
-                            if (MainWindow.window.WindowState == WindowState.Minimized)
-                            {
-                                MainWindow.window.myNotifyIcon.ShowCustomBalloon(ballon, PopupAnimation.Slide, null);
-                            }
+                            MainWindow.window.myNotifyIcon.ShowCustomBalloon(ballon, PopupAnimation.Slide, null);
                         }
                     }
                 }
