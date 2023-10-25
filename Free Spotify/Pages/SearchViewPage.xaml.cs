@@ -202,29 +202,15 @@ namespace Free_Spotify.Pages
                         PausingSong();
                         return;
                     }
-                    if (mediaPlayer.Source != null)
+                    if (mediaPlayer.Source != null && mediaPlayer.NaturalDuration.HasTimeSpan)
                     {
-                        if (mediaPlayer.NaturalDuration.HasTimeSpan)
+                        string format = mediaPlayer.Position.Hours > 0 ? @"h\:mm\:ss" : @"m\:ss";
+                        if (Utils.settings.musicPlayerBallonTurnOn && ballon != null && MainWindow.window.WindowState == WindowState.Minimized)
                         {
-                            if (mediaPlayer.Position.Hours > 0)
-                            {
-                                if (Utils.settings.musicPlayerBallonTurnOn && ballon != null && MainWindow.window.WindowState == WindowState.Minimized)
-                                {
-                                    ballon.startOfSong.Content = new TimeSpan(0, 0, 0, 0, (int)ballon.musicProgress.Value).ToString(@"h\:mm\:ss");
-                                    return;
-                                }
-                                MainWindow.window.startOfSong.Content = new TimeSpan(0, 0, 0, 0, (int)MainWindow.window.musicProgress.Value).ToString(@"h\:mm\:ss");
-                            }
-                            else
-                            {
-                                if (Utils.settings.musicPlayerBallonTurnOn && ballon != null && MainWindow.window.WindowState == WindowState.Minimized)
-                                {
-                                    ballon.startOfSong.Content = new TimeSpan(0, 0, 0, 0, (int)ballon.musicProgress.Value).ToString(@"m\:ss");
-                                    return;
-                                }
-                                MainWindow.window.startOfSong.Content = new TimeSpan(0, 0, 0, 0, (int)MainWindow.window.musicProgress.Value).ToString(@"m\:ss");
-                            }
+                            ballon.startOfSong.Content = new TimeSpan(0, 0, 0, 0, (int)ballon.musicProgress.Value).ToString(format);
+                            return;
                         }
+                        MainWindow.window.startOfSong.Content = new TimeSpan(0, 0, 0, 0, (int)MainWindow.window.musicProgress.Value).ToString(format);
                     }
                 }
                 catch
