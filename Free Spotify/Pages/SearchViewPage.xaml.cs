@@ -127,33 +127,30 @@ namespace Free_Spotify.Pages
         {
             int tempCurSongIndex = currentSongIndex;
             currentSongIndex--;
-            await Task.Run(async () =>
+            if (Utils.settings.searchEngineIndex == 1)
             {
-                if (Utils.settings.searchEngineIndex == 1)
+                if (trackYouTubeList.Count == 0)
                 {
-                    if (trackYouTubeList.Count == 0)
-                    {
-                        currentSongIndex = tempCurSongIndex;
-                        return;
-                    }
-                    if (currentSongIndex < 0) currentSongIndex = trackYouTubeList.Count - 1;
-                    Utils.ContinueDiscordPresence(trackYouTubeList[currentSongIndex]);
+                    currentSongIndex = tempCurSongIndex;
+                    return;
                 }
-                else
+                if (currentSongIndex < 0) currentSongIndex = trackYouTubeList.Count - 1;
+                Utils.ContinueDiscordPresence(trackYouTubeList[currentSongIndex]);
+            }
+            else
+            {
+                if (trackSpotifyList.Count == 0)
                 {
-                    if (trackSpotifyList.Count == 0)
-                    {
-                        currentSongIndex = tempCurSongIndex;
-                        return;
-                    }
-                    if (currentSongIndex < 0) currentSongIndex = trackSpotifyList.Count - 1;
-                    Utils.ContinueDiscordPresence(trackSpotifyList[currentSongIndex]);
+                    currentSongIndex = tempCurSongIndex;
+                    return;
                 }
-                await Task.Run(() =>
-                {
-                    PlaySound();
-                    UpdateStatusPlayerBar();
-                });
+                if (currentSongIndex < 0) currentSongIndex = trackSpotifyList.Count - 1;
+                Utils.ContinueDiscordPresence(trackSpotifyList[currentSongIndex]);
+            }
+            await Task.Run(() =>
+            {
+                PlaySound();
+                UpdateStatusPlayerBar();
             });
         }
 
