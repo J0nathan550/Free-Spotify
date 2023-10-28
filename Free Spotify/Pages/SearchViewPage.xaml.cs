@@ -275,33 +275,30 @@ namespace Free_Spotify.Pages
         {
             int tempCurSongIndex = currentSongIndex;
             currentSongIndex++;
-            await Task.Run(async () =>
+            if (Utils.settings.searchEngineIndex == 1)
             {
-                if (Utils.settings.searchEngineIndex == 1)
+                if (trackYouTubeList.Count == 0)
                 {
-                    if (trackYouTubeList.Count == 0)
-                    {
-                        currentSongIndex = tempCurSongIndex;
-                        return;
-                    }
-                    if (currentSongIndex >= trackYouTubeList.Count) currentSongIndex = 0;
-                    Utils.ContinueDiscordPresence(trackYouTubeList[currentSongIndex]);
+                    currentSongIndex = tempCurSongIndex;
+                    return;
                 }
-                else
+                if (currentSongIndex >= trackYouTubeList.Count) currentSongIndex = 0;
+                Utils.ContinueDiscordPresence(trackYouTubeList[currentSongIndex]);
+            }
+            else
+            {
+                if (trackSpotifyList.Count == 0)
                 {
-                    if (trackSpotifyList.Count == 0)
-                    {
-                        currentSongIndex = tempCurSongIndex;
-                        return;
-                    }
-                    if (currentSongIndex >= trackSpotifyList.Count) currentSongIndex = 0;
-                    Utils.ContinueDiscordPresence(trackSpotifyList[currentSongIndex]);
+                    currentSongIndex = tempCurSongIndex;
+                    return;
                 }
-                await Task.Run(() =>
-                {
-                    PlaySound();
-                    UpdateStatusPlayerBar();
-                });
+                if (currentSongIndex >= trackSpotifyList.Count) currentSongIndex = 0;
+                Utils.ContinueDiscordPresence(trackSpotifyList[currentSongIndex]);
+            }
+            await Task.Run(() =>
+            {
+                PlaySound();
+                UpdateStatusPlayerBar();
             });
         }
 
@@ -771,6 +768,7 @@ namespace Free_Spotify.Pages
                                                 DescriptionOfTrack.TextWrapping = TextWrapping.WrapWithOverflow;
                                                 DescriptionOfTrack.VerticalAlignment = VerticalAlignment.Center;
                                                 DescriptionOfTrack.HorizontalAlignment = HorizontalAlignment.Center;
+                                                DescriptionOfTrack.TextTrimming = TextTrimming.CharacterEllipsis;
                                                 DescriptionOfTrack.Padding = new Thickness(0, 10, 0, 0);
 
                                                 Grid.SetZIndex(captionBorder, -1);
@@ -845,6 +843,7 @@ namespace Free_Spotify.Pages
                                             resultTextBlock.VerticalAlignment = VerticalAlignment.Center;
                                             resultTextBlock.Foreground = new SolidColorBrush(Colors.White);
                                             resultTextBlock.TextWrapping = TextWrapping.Wrap;
+                                            resultTextBlock.TextTrimming = TextTrimming.CharacterEllipsis;
                                             resultTextBlock.Style = (Style)FindResource("fontMontserrat");
                                             searchVisual.Children.Add(resultTextBlock);
                                         });
@@ -869,6 +868,7 @@ namespace Free_Spotify.Pages
                                 resultTextBlock.VerticalAlignment = VerticalAlignment.Center;
                                 resultTextBlock.Foreground = new SolidColorBrush(Colors.White);
                                 resultTextBlock.TextWrapping = TextWrapping.Wrap;
+                                resultTextBlock.TextTrimming = TextTrimming.CharacterEllipsis;
                                 resultTextBlock.Style = (Style)FindResource("fontMontserrat");
                                 searchVisual.Children.Add(resultTextBlock);
                             });
@@ -886,6 +886,7 @@ namespace Free_Spotify.Pages
                                 resultTextBlock.VerticalAlignment = VerticalAlignment.Center;
                                 resultTextBlock.Foreground = new SolidColorBrush(Colors.White);
                                 resultTextBlock.TextWrapping = TextWrapping.Wrap;
+                                resultTextBlock.TextTrimming = TextTrimming.CharacterEllipsis;
                                 resultTextBlock.Style = (Style)FindResource("fontMontserrat");
                                 searchVisual.Children.Add(resultTextBlock);
                             });
@@ -985,6 +986,7 @@ namespace Free_Spotify.Pages
                                                     DescriptionOfTrack.TextWrapping = TextWrapping.WrapWithOverflow;
                                                     DescriptionOfTrack.VerticalAlignment = VerticalAlignment.Center;
                                                     DescriptionOfTrack.HorizontalAlignment = HorizontalAlignment.Center;
+                                                    DescriptionOfTrack.TextTrimming = TextTrimming.CharacterEllipsis;
                                                     DescriptionOfTrack.Padding = new Thickness(0, 10, 0, 0);
 
                                                     Grid.SetZIndex(captionBorder, -1);
@@ -1059,6 +1061,7 @@ namespace Free_Spotify.Pages
                                                 resultTextBlock.VerticalAlignment = VerticalAlignment.Center;
                                                 resultTextBlock.Foreground = new SolidColorBrush(Colors.White);
                                                 resultTextBlock.TextWrapping = TextWrapping.Wrap;
+                                                resultTextBlock.TextTrimming = TextTrimming.CharacterEllipsis;
                                                 resultTextBlock.Style = (Style)FindResource("fontMontserrat");
                                                 searchVisual.Children.Add(resultTextBlock);
                                             });
@@ -1083,6 +1086,7 @@ namespace Free_Spotify.Pages
                                 resultTextBlock.VerticalAlignment = VerticalAlignment.Center;
                                 resultTextBlock.Foreground = new SolidColorBrush(Colors.White);
                                 resultTextBlock.TextWrapping = TextWrapping.Wrap;
+                                resultTextBlock.TextTrimming = TextTrimming.CharacterEllipsis;
                                 resultTextBlock.Style = (Style)FindResource("fontMontserrat");
                                 searchVisual.Children.Add(resultTextBlock);
                             });
@@ -1104,6 +1108,7 @@ namespace Free_Spotify.Pages
                                 resultTextBlock.VerticalAlignment = VerticalAlignment.Center;
                                 resultTextBlock.Foreground = new SolidColorBrush(Colors.White);
                                 resultTextBlock.TextWrapping = TextWrapping.Wrap;
+                                resultTextBlock.TextTrimming = TextTrimming.CharacterEllipsis;
                                 resultTextBlock.Style = (Style)FindResource("fontMontserrat");
                                 searchVisual.Children.Add(resultTextBlock);
                             });
@@ -1121,6 +1126,7 @@ namespace Free_Spotify.Pages
                                 resultTextBlock.VerticalAlignment = VerticalAlignment.Center;
                                 resultTextBlock.Foreground = new SolidColorBrush(Colors.White);
                                 resultTextBlock.TextWrapping = TextWrapping.Wrap;
+                                resultTextBlock.TextTrimming = TextTrimming.CharacterEllipsis;
                                 resultTextBlock.Style = (Style)FindResource("fontMontserrat");
                                 searchVisual.Children.Add(resultTextBlock);
                             });
@@ -1156,8 +1162,8 @@ namespace Free_Spotify.Pages
                     if (Utils.settings.searchEngineIndex == 1)
                     {
                         MainWindow.window.musicToggle.Icon = FontAwesomeIcon.Pause;
-                        MainWindow.window.songTitle.Content = trackYouTubeList[currentSongIndex].Title;
-                        MainWindow.window.songAuthor.Content = trackYouTubeList[currentSongIndex].Author.ChannelTitle;
+                        MainWindow.window.songTitle.Text = trackYouTubeList[currentSongIndex].Title;
+                        MainWindow.window.songAuthor.Text = trackYouTubeList[currentSongIndex].Author.ChannelTitle;
 
                         if (Utils.settings.musicPlayerBallonTurnOn)
                         {
@@ -1206,8 +1212,8 @@ namespace Free_Spotify.Pages
                     else
                     {
                         MainWindow.window.musicToggle.Icon = FontAwesomeIcon.Pause;
-                        MainWindow.window.songTitle.Content = trackSpotifyList[currentSongIndex].Title;
-                        MainWindow.window.songAuthor.Content = trackSpotifyList[currentSongIndex].Artists[0].Name;
+                        MainWindow.window.songTitle.Text = trackSpotifyList[currentSongIndex].Title;
+                        MainWindow.window.songAuthor.Text = trackSpotifyList[currentSongIndex].Artists[0].Name;
 
                         if (Utils.settings.musicPlayerBallonTurnOn)
                         {

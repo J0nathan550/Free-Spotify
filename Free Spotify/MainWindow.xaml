@@ -37,7 +37,9 @@
                     </MenuItem>
                 </Menu>
                 <Image Panel.ZIndex="-1" Margin="5,5,2,5" Source="/Assets/Square44x44Logo.altform-unplated_targetsize-32.png"/>
-                <Label Margin="3, 0, 0, 0" Grid.Column="1" Foreground="White" Content="Free Spotify" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"/>
+                <Label Margin="3, 0, 0, 0" Grid.Column="1" Foreground="White" HorizontalContentAlignment="Left" VerticalContentAlignment="Center">
+                    <TextBlock TextTrimming="CharacterEllipsis">Free Spotify</TextBlock>
+                </Label>
                 <Grid Grid.Column="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
@@ -63,25 +65,29 @@
                 <Grid x:Name="mp3PlayerHolder">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
-                        <ColumnDefinition Width="1.57*"/>
+                        <ColumnDefinition Width="1.5*"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <Grid Grid.Column="0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="70"/>
                             <ColumnDefinition Width="6*"/>
-                            <ColumnDefinition/>
+                            <ColumnDefinition Width="30"/>
                         </Grid.ColumnDefinitions>
-                        <Image Name="iconTrack"  Margin="10" Source="/Assets/music-icon-sign-symbol-design-free-png.png"/>
+                        <Image Name="iconTrack" Margin="10" Source="/Assets/music-icon-sign-symbol-design-free-png.png" />
                         <Grid Grid.Column="1">
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
-                            <Label Margin="5,0,0,0" x:Name="songTitle" Foreground="White" Content="Unknown Track" Padding="0" FontSize="12" VerticalContentAlignment="Bottom" Style="{StaticResource fontLabelMontserrat}"/>
-                            <Label Margin="5,0,0,0" x:Name="songAuthor" Grid.Row="1" Foreground="LightGray" Content="Unknown Artist" Padding="0" FontSize="12" Style="{StaticResource fontLabelMontserrat}"/>
+                            <Label Margin="5,0,0,0" Foreground="White" Padding="0" FontSize="12" VerticalContentAlignment="Bottom" Style="{StaticResource fontLabelMontserrat}">
+                                <TextBlock x:Name="songTitle" TextTrimming="CharacterEllipsis">Unknown Track</TextBlock>
+                            </Label>
+                            <Label Margin="5,0,0,0" Grid.Row="1" Foreground="LightGray" Padding="0" FontSize="12" Style="{StaticResource fontLabelMontserrat}">
+                                <TextBlock x:Name="songAuthor" TextTrimming="CharacterEllipsis">Unknown Artist</TextBlock>
+                            </Label>
                         </Grid>
-                        <!--<fa:FontAwesome Cursor="Hand" x:Name="favoriteSongButton" Visibility="Hidden" Grid.Column="2" Icon="HeartOutline" FontSize="16" Foreground="Gray" VerticalAlignment="Center"/>-->
+                        <fa:FontAwesome Cursor="Hand" x:Name="favoriteSongButton" Visibility="Visible" Grid.Column="2" Icon="HeartOutline" FontSize="16" Foreground="Gray" VerticalAlignment="Center"/>
                     </Grid>
                     <Grid Grid.Column="1">
                         <Grid.RowDefinitions>

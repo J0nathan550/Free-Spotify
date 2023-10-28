@@ -18,7 +18,9 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <fa:FontAwesome MouseDown="backToSearchPage_Click" Icon="LongArrowLeft" Foreground="White" FontSize="28"></fa:FontAwesome>
-            <Label Name="settingsLabel" VerticalContentAlignment="Center" Style="{StaticResource fontLabelMontserrat}" Content="Настройки" Foreground="White" FontWeight="Medium" Grid.Column="1" HorizontalContentAlignment="Center" FontSize="24" Padding="0"/>
+            <Label VerticalContentAlignment="Center" Style="{StaticResource fontLabelMontserrat}" Foreground="White" FontWeight="Medium" Grid.Column="1" HorizontalContentAlignment="Center" FontSize="24" Padding="0">
+                <TextBlock Name="settingsLabel" TextTrimming="CharacterEllipsis">Настройки</TextBlock>
+            </Label>
         </Grid>
         <StackPanel Grid.Row="1">
             <Grid Margin="10,10,10,10">
@@ -26,7 +28,9 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Label Name="languageLabel" Foreground="White" Content="Язык: " Style="{StaticResource fontLabelMontserrat}" FontWeight="Medium"/>
+                <Label Foreground="White" Style="{StaticResource fontLabelMontserrat}" FontWeight="Medium">
+                    <TextBlock Name="languageLabel" TextTrimming="CharacterEllipsis">Язык: </TextBlock>
+                </Label>
                 <ComboBox Name="languageComboBox" SelectionChanged="LanguageChanged_ComboBox" HorizontalAlignment="Left" Grid.Column="1" SelectedIndex="1">
                     <ComboBoxItem Content="English"/>
                     <ComboBoxItem Content="Русский"/>
@@ -39,7 +43,9 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Label Foreground="White" Content="Discord RPC: " Style="{StaticResource fontLabelMontserrat}" FontWeight="Medium"/>
+                <Label Foreground="White" Style="{StaticResource fontLabelMontserrat}" FontWeight="Medium">
+                    <TextBlock TextTrimming="CharacterEllipsis">Discord RPC:</TextBlock>
+                </Label>
                 <CheckBox Name="discordRPCCheckBox" Grid.Column="1" VerticalContentAlignment="Center" IsChecked="True" Click="DiscordRPC_Option"/>
             </Grid>
             <Grid Margin="10,0,10,10">
@@ -47,7 +53,9 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Label Name="trafficEconomic" Foreground="White" Content="Экономия трафика: " Style="{StaticResource fontLabelMontserrat}" FontWeight="Medium"/>
+                <Label Foreground="White" Style="{StaticResource fontLabelMontserrat}" FontWeight="Medium">
+                    <TextBlock Name="trafficEconomic" TextTrimming="CharacterEllipsis">Экономия трафика: </TextBlock>
+                </Label>
                 <CheckBox Click="EconomTraffic_Option" Name="trafficEconomicCheckBox" ToolTip="Убирает картинки с песен которые грузятся во время поиска песен." Grid.Column="1" VerticalContentAlignment="Center" IsChecked="False"/>
             </Grid>
             <Grid Margin="10,0,10,10">
@@ -55,7 +63,9 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Label Name="searchEngineLabel" Foreground="White" Content="Поисковая система: " Style="{StaticResource fontLabelMontserrat}" FontWeight="Medium"/>
+                <Label Foreground="White" Style="{StaticResource fontLabelMontserrat}" FontWeight="Medium">
+                    <TextBlock Name="searchEngineLabel" TextTrimming="CharacterEllipsis">Поисковая система: </TextBlock>
+                </Label>
                 <ComboBox SelectionChanged="SearchEngine_ComboBox" SelectedIndex="0" Name="searchEngineCheckBox" ToolTip="Если вы не можете найти трек который есть в YouTube вы можете спокойно поменять поисковую систему и наслаждаться музыкой с YouTube" Grid.Column="1" HorizontalAlignment="Left">
                     <ComboBoxItem Content="Spotify"/>
                     <ComboBoxItem Content="YouTube"/>
@@ -66,7 +76,11 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Label Name="ballonPlayerText" Foreground="White" Content="Всплывающие окно проигрывателя: " Style="{StaticResource fontLabelMontserrat}" FontWeight="Medium"/>
+                <Label Foreground="White" Style="{StaticResource fontLabelMontserrat}" FontWeight="Medium">
+                    <TextBlock Name="ballonPlayerText" TextTrimming="CharacterEllipsis">
+                        Всплывающие окно проигрывателя:
+                    </TextBlock>
+                </Label>
                 <CheckBox Click="ballonPlayerCheckBox_Click" Name="ballonPlayerCheckBox" ToolTip="Когда окно свёрнуто, при переключении песни будет вспывать плеер, который можно настроить как угодно." Grid.Column="1" VerticalContentAlignment="Center" IsChecked="True"/>
             </Grid>
         </StackPanel>
