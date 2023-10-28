@@ -112,6 +112,9 @@ namespace Free_Spotify.Pages
 
             MainWindow.window.volumeSlider.AddHandler(PreviewMouseLeftButtonDownEvent, new MouseButtonEventHandler(VolumeSlider_MouseLeftButtonDownEvent), true);
 
+            // mute song and do not change volume value on click
+            MainWindow.window.volumeIcon.MouseDown += volumeIcon_Click;
+
             // repeat song button, repeats the song.
             MainWindow.window.repeatSong.MouseDown += RepeatSong_MouseDown;
 
@@ -256,6 +259,22 @@ namespace Free_Spotify.Pages
                 Source = track.Thumb
             });
         }
+
+        // mute|unmute mediaplayer and change icon when user click on the volume icon
+        private void volumeIcon_Click(object sender, RoutedEventArgs e)
+        {
+            if (mediaPlayer.IsMuted)
+            {
+                MainWindow.window.volumeIcon.Icon = FontAwesomeIcon.VolumeUp;
+                mediaPlayer.IsMuted = false;
+            }
+            else
+            {
+                MainWindow.window.volumeIcon.Icon = FontAwesomeIcon.VolumeOff;
+                mediaPlayer.IsMuted = true;
+            }
+        }
+
 
         // right button switches to the next music
         private async void RightSong_MouseDown(object sender, MouseButtonEventArgs e)
