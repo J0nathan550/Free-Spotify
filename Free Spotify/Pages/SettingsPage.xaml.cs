@@ -2,7 +2,6 @@
 using System.Reflection;
 using System.Windows.Controls;
 using System.Windows.Input;
-using static Free_Spotify.Classes.Utils;
 
 namespace Free_Spotify.Pages
 {
@@ -17,13 +16,13 @@ namespace Free_Spotify.Pages
             discordRPCCheckBox.IsChecked = Utils.settings.discordRPC;
             trafficEconomicCheckBox.IsChecked = Utils.settings.economTraffic;
             ballonPlayerCheckBox.IsChecked = Utils.settings.musicPlayerBallonTurnOn;
-            ballonPlayerText.Content = Utils.GetLocalizationString("BallonPlayerText");
+            ballonPlayerText.Text = Utils.GetLocalizationString("BallonPlayerText");
             ballonPlayerCheckBox.ToolTip = Utils.GetLocalizationString("BallonPlayerCheckBoxToolTip");
-            languageLabel.Content = Utils.GetLocalizationString("LanguageSettingsDefaultText");
-            trafficEconomic.Content = Utils.GetLocalizationString("TrafficDefaultText");
-            settingsLabel.Content = Utils.GetLocalizationString("SettingsMenuItemHeader");
+            languageLabel.Text = Utils.GetLocalizationString("LanguageSettingsDefaultText");
+            trafficEconomic.Text = Utils.GetLocalizationString("TrafficDefaultText");
+            settingsLabel.Text = Utils.GetLocalizationString("SettingsMenuItemHeader");
             trafficEconomicCheckBox.ToolTip = Utils.GetLocalizationString("TrafficToolTipDefaultText");
-            searchEngineLabel.Content = Utils.GetLocalizationString("SearchEngineLabelText");
+            searchEngineLabel.Text = Utils.GetLocalizationString("SearchEngineLabelText");
             searchEngineCheckBox.ToolTip = Utils.GetLocalizationString("SearchEngineToolTipText");
             searchEngineCheckBox.SelectedIndex = Utils.settings.searchEngineIndex;
         }
@@ -53,27 +52,29 @@ namespace Free_Spotify.Pages
                         Utils.ChangeLanguage("ru");
                         break;
                     case 3: // japanese
-                        ChangeLanguage("ja");
+                        Utils.ChangeLanguage("ja");
                         break;
                     default:
-                        settings.languageIndex = 0;
-                        ChangeLanguage("en");
+                        Utils.settings.languageIndex = 0;
+                        Utils.ChangeLanguage("en");
                         break;
                 }
 
-                languageLabel.Content = Utils.GetLocalizationString("LanguageSettingsDefaultText");
-                trafficEconomic.Content = Utils.GetLocalizationString("TrafficDefaultText");
-                settingsLabel.Content = Utils.GetLocalizationString("SettingsMenuItemHeader");
+                languageLabel.Text = Utils.GetLocalizationString("LanguageSettingsDefaultText");
+                trafficEconomic.Text = Utils.GetLocalizationString("TrafficDefaultText");
+                settingsLabel.Text = Utils.GetLocalizationString("SettingsMenuItemHeader");
                 trafficEconomicCheckBox.ToolTip = Utils.GetLocalizationString("TrafficToolTipDefaultText");
-                searchEngineLabel.Content = Utils.GetLocalizationString("SearchEngineLabelText");
+                searchEngineLabel.Text = Utils.GetLocalizationString("SearchEngineLabelText");
                 searchEngineCheckBox.ToolTip = Utils.GetLocalizationString("SearchEngineToolTipText");
-                ballonPlayerText.Content = Utils.GetLocalizationString("BallonPlayerText");
+                ballonPlayerText.Text = Utils.GetLocalizationString("BallonPlayerText");
                 ballonPlayerCheckBox.ToolTip = Utils.GetLocalizationString("BallonPlayerCheckBoxToolTip");
                 var assembly = Assembly.GetEntryAssembly();
                 Utils.IdleDiscordPresence();
                 MainWindow.window.currentVersion_Item.Header = $"{Utils.GetLocalizationString("AppCurrentVersionDefaultText")} {assembly?.GetName().Version}";
                 MainWindow.window.settingsMenuItem.Header = Utils.GetLocalizationString("SettingsMenuItemHeader");
                 MainWindow.window.checkUpdatesMenuItem.Header = Utils.GetLocalizationString("CheckUpdatesMenuItemHeader");
+                MainWindow.window.songTitle.Text = Utils.GetLocalizationString("SongTitleDefaultText");
+                MainWindow.window.songAuthor.Text = Utils.GetLocalizationString("SongAuthorDefaultText");
                 Utils.SaveSettings();
             });
         }

@@ -30,8 +30,8 @@ namespace Free_Spotify
             InitializeComponent();
             var assembly = Assembly.GetEntryAssembly();
             currentVersion_Item.Header = $"{Utils.GetLocalizationString("AppCurrentVersionDefaultText")} {assembly?.GetName().Version}";
-            songTitle.Content = Utils.GetLocalizationString("SongTitleDefaultText");
-            songAuthor.Content = Utils.GetLocalizationString("SongAuthorDefaultText");
+            songTitle.Text = Utils.GetLocalizationString("SongTitleDefaultText");
+            songAuthor.Text = Utils.GetLocalizationString("SongAuthorDefaultText");
             settingsMenuItem.Header = Utils.GetLocalizationString("SettingsMenuItemHeader");
             checkUpdatesMenuItem.Header = Utils.GetLocalizationString("CheckUpdatesMenuItemHeader");
             discordClient.Initialize();

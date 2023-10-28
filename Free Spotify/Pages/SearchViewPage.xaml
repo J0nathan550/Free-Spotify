@@ -20,7 +20,20 @@
                     <ColumnDefinition Width="50"/>
                 </Grid.ColumnDefinitions>
                 <fa:FontAwesome Icon="Search" FontSize="24" Foreground="White" VerticalAlignment="Center"/>
-                <TextBox x:Name="SearchBarTextBox" Style="{StaticResource fontTextBoxMontserrat}" Text="Что хотите послушать?" Foreground="Gray" Grid.Column="1" BorderThickness="0" Background="Transparent" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" FontSize="18" FontWeight="Medium" BorderBrush="#00000000" SelectionBrush="White" SelectionTextBrush="#00000000" Margin="0,0,22,0" GotFocus="SearchTextBox_Focus" LostFocus="SearchTextBox_LostFocus" CaretBrush="#FF00FF04" TextChanged="SearchBarTextBox_TextChanged"/>
+                <TextBox x:Name="SearchBarTextBox" Style="{StaticResource fontTextBoxMontserrat}" Foreground="Gray" Grid.Column="1" BorderThickness="0" Background="Transparent" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" FontSize="18" FontWeight="Medium" BorderBrush="#00000000" SelectionBrush="White" SelectionTextBrush="#00000000" Margin="0,0,22,0" GotFocus="SearchTextBox_Focus" LostFocus="SearchTextBox_LostFocus" CaretBrush="#FF00FF04" TextChanged="SearchBarTextBox_TextChanged">
+                    <TextBox.Template>
+                        <ControlTemplate>
+                            <Border>
+                                <Label VerticalContentAlignment="Center">
+                                    <TextBlock Text="{Binding Text, RelativeSource={RelativeSource TemplatedParent}}"
+                                    TextTrimming="CharacterEllipsis" 
+                                    TextWrapping="NoWrap"
+                                    Foreground="{Binding Foreground, ElementName=SearchBarTextBox}"/>             
+                                </Label>
+                            </Border>
+                        </ControlTemplate>
+                    </TextBox.Template>
+                </TextBox>
                 <fa:FontAwesome MouseDown="removeEverythingFromSearchBoxButton_MouseDown" Cursor="Hand" Visibility="Hidden" Grid.Column="2" x:Name="removeEverythingFromSearchBoxButton" Icon="Remove" FontSize="24" Foreground="White" VerticalAlignment="Center"/>
             </Grid>
         </Border>
