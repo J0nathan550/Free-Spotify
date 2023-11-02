@@ -55,8 +55,7 @@ namespace Free_Spotify.Pages
             }
             catch
             {
-                Uri uri = new($"/{Utils.ProjectName};component/Assets/spotify-icon-png-15398-Windows.ico", UriKind.RelativeOrAbsolute);
-                BitmapImage bitmapImage = new(uri);
+                BitmapImage bitmapImage = new(new Uri(Utils.DefaultImagePath));
                 ImageBehavior.SetAnimatedSource(playListImage, bitmapImage);
                 ImageBehavior.SetRepeatBehavior(playListImage, RepeatBehavior.Forever);
                 RenderOptions.SetBitmapScalingMode(bitmapImage, BitmapScalingMode.Fant);
@@ -258,9 +257,7 @@ namespace Free_Spotify.Pages
                         }
                         catch
                         {
-                            Uri uri = new($"/{Utils.ProjectName};component/Assets/spotify-icon-png-15398-Windows.ico", UriKind.RelativeOrAbsolute);
-
-                            BitmapImage bitmapImage = new(uri);
+                            BitmapImage bitmapImage = new(new Uri(Utils.DefaultImagePath));
 
                             // Create an Image
                             Image image = new()

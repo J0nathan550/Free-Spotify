@@ -124,7 +124,7 @@ namespace Free_Spotify.Dialogs
             }
             else
             {
-                image = $"/{Utils.ProjectName};component/Assets/spotify-icon-png-15398-Windows.ico";
+                image = Utils.DefaultImagePath;
             }
             Settings.SettingsData.playlists[renamePlayListIndex].ImagePath = image;
             Settings.SettingsData.playlists[renamePlayListIndex].Title = titleTextBox.Text;
@@ -150,8 +150,7 @@ namespace Free_Spotify.Dialogs
         /// </summary>
         private void LoadDefaultImage()
         {
-            Uri uri = new($"/{Utils.ProjectName};component/Assets/spotify-icon-png-15398-Windows.ico", UriKind.RelativeOrAbsolute);
-            BitmapImage bitmapImage = new(uri);
+            BitmapImage bitmapImage = new(new Uri(Utils.DefaultImagePath));
             demoImagePlaylist.Source = bitmapImage;
             ImageBehavior.SetAnimatedSource(demoImagePlaylist, bitmapImage);
             ImageBehavior.SetRepeatBehavior(demoImagePlaylist, RepeatBehavior.Forever);

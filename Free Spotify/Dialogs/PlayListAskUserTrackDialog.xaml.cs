@@ -89,8 +89,8 @@ namespace Free_Spotify.Dialogs
                 }
                 catch
                 {
-                    Uri uri = new($"/{Utils.ProjectName};component/Assets/spotify-icon-png-15398-Windows.ico", UriKind.RelativeOrAbsolute);
-                    BitmapImage bitmapImage = new(uri);
+
+                    BitmapImage bitmapImage = new(new Uri(Utils.DefaultImagePath));
 
                     // Create an Image
                     Image image = new()

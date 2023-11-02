@@ -8,34 +8,36 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Assets\spotify-icon-png-15398-Windows.ico</ApplicationIcon>
     <Company>J0nathan550</Company>
-    <Version>1.0.0.8</Version>
-    <AssemblyVersion>1.0.0.8</AssemblyVersion>
-    <FileVersion>1.0.0.8</FileVersion>
+    <Version>1.0.0.9</Version>
+    <AssemblyVersion>1.0.0.9</AssemblyVersion>
+    <FileVersion>1.0.0.9</FileVersion>
     <SignAssembly>False</SignAssembly>
     <Copyright>J0nathan550</Copyright>
     <NeutralLanguage>uk-UA</NeutralLanguage>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Prefer32Bit>True</Prefer32Bit>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Prefer32Bit>True</Prefer32Bit>
+  </PropertyGroup>
+
   <ItemGroup>
-    <None Remove="Assets\circle.png" />
     <None Remove="Assets\close-icon.png" />
     <None Remove="Assets\discord_game_sdk.dll" />
     <None Remove="Assets\music-icon-sign-symbol-design-free-png.png" />
     <None Remove="Assets\music-icon-sign-symbol-design-free-png.webp" />
-    <None Remove="Assets\SplashScreen.scale-100.png" />
-    <None Remove="Assets\SplashScreen.scale-200.png" />
     <None Remove="Assets\SplashScreen.scale-400.png" />
     <None Remove="Assets\maximize-icon-selected.png" />
     <None Remove="Assets\maximize-icon.png" />
     <None Remove="Assets\minimize-icon.png" />
     <None Remove="Assets\spotify-icon-png-15398-Windows.ico" />
-    <None Remove="Assets\Spotify_icon.png" />
     <None Remove="Assets\Spotify_icon.svg-_1_.ico" />
     <None Remove="Assets\Spotify_icon.svg-_3_.ico" />
     <None Remove="Assets\spotify_icon_test.ico" />
-    <None Remove="Assets\Square44x44Logo.altform-unplated_targetsize-16.png" />
     <None Remove="Assets\Square44x44Logo.altform-unplated_targetsize-32.png" />
-    <None Remove="Assets\Square44x44Logo.altform-unplated_targetsize-48.png" />
     <None Remove="Fonts\Montserrat-Black.ttf" />
     <None Remove="Fonts\Montserrat-BlackItalic.ttf" />
     <None Remove="Fonts\Montserrat-Bold.ttf" />
@@ -58,9 +60,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Assets\circle.png" />
     <Resource Include="Assets\spotify_icon_test.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Content Include="Assets\spotify-icon-png-15398-Windows.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -69,7 +70,6 @@
 
   <ItemGroup>
     <Resource Include="Assets\music-icon-sign-symbol-design-free-png.png" />
-    <Resource Include="Assets\SmallTile.scale-100.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -86,8 +86,6 @@
 
   <ItemGroup>
     <Resource Include="Assets\close-icon.png" />
-    <Resource Include="Assets\SplashScreen.scale-100.png" />
-    <Resource Include="Assets\SplashScreen.scale-200.png" />
     <Resource Include="Assets\spotify-icon-png-15398-Windows.ico" />
     <Resource Include="Fonts\Montserrat-ThinItalic.ttf">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
@@ -101,10 +99,7 @@
     <Resource Include="Assets\maximize-icon-selected.png" />
     <Resource Include="Assets\maximize-icon.png" />
     <Resource Include="Assets\minimize-icon.png" />
-    <Resource Include="Assets\Spotify_icon.png" />
-    <Resource Include="Assets\Square44x44Logo.altform-unplated_targetsize-16.png" />
     <Resource Include="Assets\Square44x44Logo.altform-unplated_targetsize-32.png" />
-    <Resource Include="Assets\Square44x44Logo.altform-unplated_targetsize-48.png" />
   </ItemGroup>
 
   <ItemGroup>
