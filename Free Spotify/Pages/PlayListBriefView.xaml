@@ -1,0 +1,107 @@
+﻿<Page x:Class="Free_Spotify.Pages.PlayListBriefView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:fa="http://schemas.fontawesome.io/icons/"
+      xmlns:gif="http://wpfanimatedgif.codeplex.com"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="PlayListBriefView">
+    <Border BorderThickness="2" BorderBrush="White" Background="Black" CornerRadius="6">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                    <fa:FontAwesome MouseDown="BackToSearchPage_Click" Icon="LongArrowLeft" Foreground="White" FontSize="28"></fa:FontAwesome>
+                </Label>
+            </Grid>
+            <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled" Grid.Row="1">
+                <StackPanel>
+                    <Grid Height="100">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="100"/>
+                        </Grid.ColumnDefinitions>
+                        <Label>
+                            <Image Name="playListImage" Source="/Assets/spotify-icon-png-15398-Windows.ico"/>
+                        </Label>
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Label HorizontalContentAlignment="Left" VerticalContentAlignment="Bottom" Style="{StaticResource fontLabelMontserrat}" Foreground="White" FontWeight="Medium" FontSize="18">
+                                <TextBlock Name="playListTitle" TextTrimming="CharacterEllipsis" Text="Test Playlist Title"/>
+                            </Label>
+                            <Label Grid.Row="1" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Style="{StaticResource fontLabelMontserrat}" Foreground="#FFA0A0A0" FontWeight="Medium" FontSize="14">
+                                <TextBlock Name="playListAmountTracks" TextTrimming="CharacterEllipsis" Text="Amount of tracks: 0"/>
+                            </Label>
+                        </Grid>
+                        <Grid Grid.Column="2">
+                            <Label Margin="3,0,0,0" HorizontalContentAlignment="Left" VerticalContentAlignment="Center">
+                                <Border Name="playButtonBorder" MouseDown="PlayButtonBorder_MouseDown" BorderThickness="0" BorderBrush="White" Width="65" Height="65" Background="White" CornerRadius="60">
+                                    <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                                        <fa:FontAwesome Name="playIconPlaylist" Icon="Play" Foreground="Black" FontSize="28"></fa:FontAwesome>
+                                    </Label>
+                                </Border>
+                            </Label>
+                        </Grid>
+                    </Grid>
+                    <Border BorderThickness="1" SnapsToDevicePixels="True" BorderBrush="White" Margin="10">
+                        <StackPanel Name="trackPanelDisplay">
+                            <Grid Height="50">
+                                <Grid.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Move Up"/>
+                                        <MenuItem Header="Move Down"/>
+                                        <MenuItem Header="Delete"/>
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="30"/>
+                                    <ColumnDefinition Width="1"/>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="1"/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="1"/>
+                                    <ColumnDefinition Width="100"/>
+                                </Grid.ColumnDefinitions>
+                                <Label Foreground="White" Style="{StaticResource fontLabelMontserrat}" FontWeight="Bold" FontSize="18" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                                    <TextBlock TextTrimming="CharacterEllipsis" Text="1"/>
+                                </Label>
+                                <Rectangle SnapsToDevicePixels="True" Grid.Column="1" Fill="White"/>
+                                <Image Stretch="Fill" Grid.Column="2" Source="/Assets/spotify_icon_test.ico"/>
+                                <Rectangle SnapsToDevicePixels="True" Grid.Column="3" Fill="White"/>
+                                <Grid Grid.Column="4">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Label Margin="5,0,0,0" Padding="0" Style="{StaticResource fontLabelMontserrat}" Foreground="White" FontWeight="Medium" FontSize="18" VerticalContentAlignment="Center" HorizontalContentAlignment="Left">
+                                        <TextBlock TextTrimming="CharacterEllipsis" Text="Freddie Dredd - Wrath"/>
+                                    </Label>
+                                    <Label Grid.Row="1" Margin="5,0,0,0" Padding="0" Style="{StaticResource fontLabelMontserrat}" Foreground="#FFA0A0A0" FontWeight="Medium" FontSize="14" VerticalContentAlignment="Center" HorizontalContentAlignment="Left">
+                                        <TextBlock TextTrimming="CharacterEllipsis" Text="by Freddie Dredd"/>
+                                    </Label>
+                                </Grid>
+                                <Rectangle Grid.Column="5" Fill="White"/>
+                                <Label Style="{StaticResource fontLabelMontserrat}" Foreground="White" FontWeight="Medium" FontSize="18" Grid.Column="6" VerticalContentAlignment="Center" HorizontalContentAlignment="Center">
+                                    <TextBlock TextTrimming="CharacterEllipsis" Text="5:23"/>
+                                </Label>
+                            </Grid>
+                            <Border BorderThickness="0.5" BorderBrush="White"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Border>
+</Page>

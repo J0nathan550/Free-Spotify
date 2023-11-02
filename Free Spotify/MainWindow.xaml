@@ -8,7 +8,7 @@
         WindowStyle="SingleBorderWindow"
         Background="Transparent"
         AllowsTransparency="False"
-        Title="Free Spotify" Height="600" Width="800" ResizeMode="CanResizeWithGrip" WindowStartupLocation="CenterScreen" Icon="/Assets/Square44x44Logo.altform-unplated_targetsize-32.png" StateChanged="WindowProcedure" Closing="Closing_Window">
+        Title="Free Spotify" Height="600" Width="800" ResizeMode="CanResizeWithGrip" WindowStartupLocation="CenterScreen" Icon="/Assets/Square44x44Logo.altform-unplated_targetsize-32.png" StateChanged="WindowProcedure">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="30" ResizeBorderThickness="3"/>
     </WindowChrome.WindowChrome>
@@ -17,12 +17,19 @@
     </Window.TaskbarItemInfo>
     <Border Name="windowBackground" Background="Black"  BorderThickness="1" BorderBrush="Gray">
         <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="4"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
                 <RowDefinition/>
                 <RowDefinition Height="75"/>
             </Grid.RowDefinitions>
-            <Grid>
+            <Frame Margin="0,0,0,5" Grid.Row="1" Name="playlistFrame" NavigationUIVisibility="Hidden" Source="/Pages/PlayListView.xaml" />
+            <GridSplitter Style="{StaticResource CustomGridSplitterStyle}" Grid.Column="1" ResizeDirection="Columns" Grid.Row="1" HorizontalAlignment="Stretch"/>
+            <Grid Grid.ColumnSpan="3">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="32"/>
                     <ColumnDefinition/>
@@ -31,12 +38,24 @@
                 <tb:TaskbarIcon x:Name="myNotifyIcon" ToolTipText="Free Spotify" Visibility="Visible" IconSource="Assets/spotify_icon_test.ico" PopupActivation="LeftClick"></tb:TaskbarIcon>
                 <Menu Background="Transparent" WindowChrome.IsHitTestVisibleInChrome="True" Grid.ColumnSpan="2" Cursor="Hand">
                     <MenuItem BorderThickness="0" Width="33" Height="30" Foreground="White">
-                        <MenuItem Name="settingsMenuItem" BorderThickness="0" Click="Settings_Click" Header="Настройки" Cursor="Hand" Background="#FF06942C"/>
-                        <MenuItem Name="checkUpdatesMenuItem" BorderThickness="0" Click="CheckForUpdates_Click" Header="Проверить обновления..." Cursor="Hand" Background="#FF06942C"/>
-                        <MenuItem BorderThickness="0" Name="currentVersion_Item" Click="currentVersion_Item_Click" Header="Проверить обновления..." Cursor="Hand" Background="#FF06942C"/>
+                        <MenuItem Name="settingsMenuItem" BorderThickness="0" Click="Settings_Click" Header="Настройки" Cursor="Hand" Background="Black">
+                            <MenuItem.Icon>
+                                <fa:FontAwesome FontSize="14" Icon="Gears" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Name="checkUpdatesMenuItem" BorderThickness="0" Click="CheckForUpdates_Click" Header="Проверить обновления..." Cursor="Hand" Background="Black">
+                            <MenuItem.Icon>
+                                <fa:FontAwesome Icon="Server" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem BorderThickness="0" Name="currentVersion_Item" Click="CurrentVersion_Item_Click" Header="Проверить обновления..." Cursor="Hand" Background="Black">
+                            <MenuItem.Icon>
+                                <fa:FontAwesome Icon="Info" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
                     </MenuItem>
                 </Menu>
-                <Image Panel.ZIndex="-1" Margin="5,5,2,5" Source="/Assets/Square44x44Logo.altform-unplated_targetsize-32.png"/>
+                <Image Panel.ZIndex="-1" Margin="5,5,2,5" Source="/Assets/Square44x44Logo.altform-unplated_targetsize-32.png" RenderOptions.BitmapScalingMode="Fant"/>
                 <Label Margin="3, 0, 0, 0" Grid.Column="1" Foreground="White" HorizontalContentAlignment="Left" VerticalContentAlignment="Center">
                     <TextBlock TextTrimming="CharacterEllipsis">Free Spotify</TextBlock>
                 </Label>
@@ -46,116 +65,23 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Button WindowChrome.IsHitTestVisibleInChrome="True" Grid.Column="0" Style="{StaticResource RoundedButtonStyle}" BorderThickness="0" Padding="10" Click="MinimizeIcon_Click">
+                    <Button WindowChrome.IsHitTestVisibleInChrome="True" Grid.Column="0" Style="{StaticResource RoundedButtonStyle}" BorderThickness="0" Padding="10" Click="MinimizeIcon_Click" RenderOptions.BitmapScalingMode="Fant">
                         <Image Source="/Assets/minimize-icon.png" Stretch="Uniform"/>
                     </Button>
-                    <Button WindowChrome.IsHitTestVisibleInChrome="True" Grid.Column="1" Style="{StaticResource RoundedButtonStyle}" BorderThickness="0" Padding="10" Click="MaximizedIcon_Click">
+                    <Button WindowChrome.IsHitTestVisibleInChrome="True" Grid.Column="1" Style="{StaticResource RoundedButtonStyle}" BorderThickness="0" Padding="10" Click="MaximizedIcon_Click" RenderOptions.BitmapScalingMode="Fant">
                         <Grid>
-                            <Image x:Name="iconMaximizedDefault" Source="/Assets/maximize-icon.png" Stretch="Uniform"/>
-                            <Image Visibility="Hidden" x:Name="iconMaximizedSelected" Source="/Assets/maximize-icon-selected.png" Stretch="Uniform"/>
+                            <Image x:Name="iconMaximizedDefault" Source="/Assets/maximize-icon.png" Stretch="Uniform" RenderOptions.BitmapScalingMode="Fant"/>
+                            <Image Visibility="Hidden" x:Name="iconMaximizedSelected" Source="/Assets/maximize-icon-selected.png" Stretch="Uniform" RenderOptions.BitmapScalingMode="Fant"/>
                         </Grid>
                     </Button>
-                    <Button WindowChrome.IsHitTestVisibleInChrome="True" Grid.Column="2" Style="{StaticResource RoundedButtonExitStyle}" BorderThickness="0" Padding="10" Click="CloseWindow_Click">
-                        <Image Source="/Assets/close-icon.png" Stretch="Uniform"/>
+                    <Button WindowChrome.IsHitTestVisibleInChrome="True" Grid.Column="2" Style="{StaticResource RoundedButtonExitStyle}" BorderThickness="0" Padding="10" Click="CloseWindow_Click" RenderOptions.BitmapScalingMode="Fant">
+                        <Image RenderOptions.BitmapScalingMode="Fant" Source="/Assets/close-icon.png" Stretch="Uniform"/>
                     </Button>
                 </Grid>
             </Grid>
-            <Frame Name="LoadingPagesFrame" NavigationUIVisibility="Hidden" Grid.Row="1" Source="/Pages/SearchViewPage.xaml"/>
-            <Border Grid.Row="2" Visibility="Visible" BorderBrush="LightGray" BorderThickness="3">
-                <Grid x:Name="mp3PlayerHolder">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition Width="1.5*"/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <Grid Grid.Column="0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="70"/>
-                            <ColumnDefinition Width="6*"/>
-                            <ColumnDefinition Width="30"/>
-                        </Grid.ColumnDefinitions>
-                        <Image Name="iconTrack" Margin="10" Source="/Assets/music-icon-sign-symbol-design-free-png.png" />
-                        <Grid Grid.Column="1">
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-                            <Label Margin="5,0,0,0" Foreground="White" Padding="0" FontSize="12" VerticalContentAlignment="Bottom" Style="{StaticResource fontLabelMontserrat}">
-                                <TextBlock x:Name="songTitle" TextTrimming="CharacterEllipsis">Unknown Track</TextBlock>
-                            </Label>
-                            <Label Margin="5,0,0,0" Grid.Row="1" Foreground="LightGray" Padding="0" FontSize="12" Style="{StaticResource fontLabelMontserrat}">
-                                <TextBlock x:Name="songAuthor" TextTrimming="CharacterEllipsis">Unknown Artist</TextBlock>
-                            </Label>
-                        </Grid>
-                        <fa:FontAwesome Cursor="Hand" x:Name="favoriteSongButton" Visibility="Visible" Grid.Column="2" Icon="HeartOutline" FontSize="16" Foreground="Gray" VerticalAlignment="Center"/>
-                    </Grid>
-                    <Grid Grid.Column="1">
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="50"/>
-                                <ColumnDefinition Width="50"/>
-                                <ColumnDefinition Width="50"/>
-                                <ColumnDefinition Width="50"/>
-                                <ColumnDefinition Width="50"/>
-                            </Grid.ColumnDefinitions>
-                            <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
-                                <fa:FontAwesome Cursor="Hand" x:Name="randomSongButton" Icon="Random" FontSize="17" Foreground="White"/>
-                            </Label>
-                            <Label Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
-                                <fa:FontAwesome Cursor="Hand" x:Name="leftSong" Icon="CaretSquareOutlineLeft" FontSize="17" Foreground="White"/>
-                            </Label>
-                            <Label Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
-                                <fa:FontAwesome Cursor="Hand" x:Name="musicToggle" Icon="Pause" FontSize="17" Foreground="White"/>
-                            </Label>
-                            <Label Grid.Column="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
-                                <fa:FontAwesome Cursor="Hand" x:Name="rightSong" Icon="CaretSquareOutlineRight" FontSize="17" Foreground="White"/>
-                            </Label>
-                            <Label Grid.Column="4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
-                                <fa:FontAwesome Cursor="Hand" x:Name="repeatSong" Icon="Repeat" FontSize="17" Foreground="White" RenderTransformOrigin="0.5,0.5">
-                                    <fa:FontAwesome.RenderTransform>
-                                        <TransformGroup>
-                                            <ScaleTransform ScaleX="-1"/>
-                                            <SkewTransform/>
-                                            <RotateTransform/>
-                                            <TranslateTransform/>
-                                        </TransformGroup>
-                                    </fa:FontAwesome.RenderTransform>
-                                </fa:FontAwesome>
-                            </Label>
-                        </Grid>
-                        <Grid Grid.Row="1">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="50"/>
-                                <ColumnDefinition/>
-                                <ColumnDefinition Width="50"/>
-                            </Grid.ColumnDefinitions>
-                            <Label Padding="3" Name="startOfSong" Content="0:00" Foreground="White" Style="{StaticResource fontLabelMontserrat}" HorizontalContentAlignment="Center" VerticalContentAlignment="Top"></Label>
-                            <Slider Cursor="Hand" Style="{StaticResource Music_Slider}" Name="musicProgress" Grid.Column="1"/>
-                            <Label Padding="3" Grid.Column="2" Name="endOfSong" Content="0:00" Foreground="White" Style="{StaticResource fontLabelMontserrat}" HorizontalContentAlignment="Center" VerticalContentAlignment="Top"></Label>
-                        </Grid>
-                    </Grid>
-                    <Grid Grid.Column="2">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="30"/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Label Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
-                            <fa:FontAwesome x:Name="volumeIcon" Cursor="Hand" Icon="VolumeUp" FontSize="17" Foreground="White"/>
-                        </Label>
-                        <Grid Grid.Column="1">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="1.1*"/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-                            <Slider x:Name="volumeSlider" Value="0.5" Cursor="Hand" Style="{StaticResource Volume_Slider}" IsMoveToPointEnabled="True"  Maximum="1" Minimum="0"  Grid.Row="1" Margin="0,0,10,0"/>
-                        </Grid>
-                    </Grid>
-                </Grid>
+            <Frame Grid.Column="3" Name="LoadingPagesFrame" Margin="0,0,0,5" NavigationUIVisibility="Hidden" Grid.Row="1" Source="/Pages/SearchViewPage.xaml" RenderOptions.BitmapScalingMode="Fant" />
+            <Border  CornerRadius="6" Grid.Row="2" Grid.ColumnSpan="3" Visibility="Visible" BorderBrush="LightGray" BorderThickness="3" RenderOptions.BitmapScalingMode="Fant">
+                <Frame NavigationUIVisibility="Hidden" Source="/Pages/MusicPlayerPage.xaml" RenderOptions.BitmapScalingMode="Fant"/>
             </Border>
         </Grid>
     </Border>

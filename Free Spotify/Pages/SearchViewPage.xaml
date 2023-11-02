@@ -1,9 +1,9 @@
 ﻿<Page x:Class="Free_Spotify.Pages.SearchViewPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:fa="http://schemas.fontawesome.io/icons/"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:Free_Spotify.Pages" xmlns:fa="http://schemas.fontawesome.io/icons/"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="SearchViewPage">
@@ -12,33 +12,20 @@
             <RowDefinition Height="60"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Border Background="#242424" BorderThickness="2" BorderBrush="White">
+        <Border RenderOptions.BitmapScalingMode="Fant" CornerRadius="6" Background="#242424" BorderThickness="2" BorderBrush="White">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="50"/>
                     <ColumnDefinition/>
                     <ColumnDefinition Width="50"/>
                 </Grid.ColumnDefinitions>
-                <fa:FontAwesome Icon="Search" FontSize="24" Foreground="White" VerticalAlignment="Center"/>
-                <TextBox x:Name="SearchBarTextBox" Style="{StaticResource fontTextBoxMontserrat}" Foreground="Gray" Grid.Column="1" BorderThickness="0" Background="Transparent" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" FontSize="18" FontWeight="Medium" BorderBrush="#00000000" SelectionBrush="White" SelectionTextBrush="#00000000" Margin="0,0,22,0" GotFocus="SearchTextBox_Focus" LostFocus="SearchTextBox_LostFocus" CaretBrush="#FF00FF04" TextChanged="SearchBarTextBox_TextChanged">
-                    <TextBox.Template>
-                        <ControlTemplate>
-                            <Border>
-                                <Label VerticalContentAlignment="Center">
-                                    <TextBlock Text="{Binding Text, RelativeSource={RelativeSource TemplatedParent}}"
-                                    TextTrimming="CharacterEllipsis" 
-                                    TextWrapping="NoWrap"
-                                    Foreground="{Binding Foreground, ElementName=SearchBarTextBox}"/>             
-                                </Label>
-                            </Border>
-                        </ControlTemplate>
-                    </TextBox.Template>
-                </TextBox>
-                <fa:FontAwesome MouseDown="removeEverythingFromSearchBoxButton_MouseDown" Cursor="Hand" Visibility="Hidden" Grid.Column="2" x:Name="removeEverythingFromSearchBoxButton" Icon="Remove" FontSize="24" Foreground="White" VerticalAlignment="Center"/>
+                <fa:FontAwesome RenderOptions.BitmapScalingMode="Fant" Icon="Search" FontSize="24" Foreground="White" VerticalAlignment="Center"/>
+                <TextBox RenderOptions.BitmapScalingMode="Fant" x:Name="SearchBarTextBox" Style="{StaticResource fontTextBoxMontserrat}" Foreground="Gray" Grid.Column="1" BorderThickness="0" Background="Transparent" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" FontSize="18" FontWeight="Medium" BorderBrush="#00000000" SelectionBrush="White" SelectionTextBrush="#00000000" Margin="0,0,22,0" GotFocus="SearchTextBox_Focus" LostFocus="SearchTextBox_LostFocus" CaretBrush="#FF00FF04" TextChanged="SearchBarTextBox_TextChanged"></TextBox>
+                <fa:FontAwesome RenderOptions.BitmapScalingMode="Fant" MouseDown="RemoveEverythingFromSearchBoxButton_MouseDown" Cursor="Hand" Visibility="Hidden" Grid.Column="2" x:Name="removeEverythingFromSearchBoxButton" Icon="Remove" FontSize="24" Foreground="White" VerticalAlignment="Center"/>
             </Grid>
         </Border>
-        <ScrollViewer Grid.Row="2" Margin="5" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
-            <Grid x:Name="searchVisual">
+        <ScrollViewer RenderOptions.BitmapScalingMode="Fant" Grid.Row="2" Margin="5" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
+            <Grid RenderOptions.BitmapScalingMode="Fant" x:Name="searchVisual">
             </Grid>
         </ScrollViewer>
     </Grid>

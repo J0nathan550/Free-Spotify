@@ -1,12 +1,14 @@
 ﻿using AutoUpdaterDotNET;
 using DiscordRPC;
 using Free_Spotify.Classes;
+using Free_Spotify.Dialogs;
 using Free_Spotify.Pages;
 using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace Free_Spotify
@@ -16,26 +18,25 @@ namespace Free_Spotify
     /// </summary>
     public partial class MainWindow : Window
     {
-        public static MainWindow window;
-        public DiscordRpcClient discordClient = new DiscordRpcClient("1154023388805873744");
+        private static MainWindow? window;
+        public DiscordRpcClient discordClient = new("1154023388805873744");
+
         public MainWindow()
         {
             CheckForUpdates();
 
-            window = this;
+            Window = this;
 
-            Utils.LoadSettings();
-            Utils.UpdateLanguage();
+            Settings.LoadSettings();
+            Settings.UpdateLanguage();
 
             InitializeComponent();
             var assembly = Assembly.GetEntryAssembly();
-            currentVersion_Item.Header = $"{Utils.GetLocalizationString("AppCurrentVersionDefaultText")} {assembly?.GetName().Version}";
-            songTitle.Text = Utils.GetLocalizationString("SongTitleDefaultText");
-            songAuthor.Text = Utils.GetLocalizationString("SongAuthorDefaultText");
-            settingsMenuItem.Header = Utils.GetLocalizationString("SettingsMenuItemHeader");
-            checkUpdatesMenuItem.Header = Utils.GetLocalizationString("CheckUpdatesMenuItemHeader");
+            currentVersion_Item.Header = $"{Settings.GetLocalizationString("AppCurrentVersionDefaultText")} {assembly?.GetName().Version}";
+            settingsMenuItem.Header = Settings.GetLocalizationString("SettingsMenuItemHeader");
+            checkUpdatesMenuItem.Header = Settings.GetLocalizationString("CheckUpdatesMenuItemHeader");
             discordClient.Initialize();
-            Utils.IdleDiscordPresence();
+            DiscordStatuses.IdleDiscordPresence();
             var timer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(2) };
             timer.Tick += delegate { CheckForUpdates(); };
             timer.Start();
@@ -76,6 +77,9 @@ namespace Free_Spotify
             Application.Current.Shutdown();
         }
 
+        /// <summary>
+        /// Function that handles of sorts functions of the window, like maximize, minimize. 
+        /// </summary>
         private async void WindowProcedure(object sender, EventArgs e)
         {
             await Dispatcher.BeginInvoke(() =>
@@ -92,29 +96,29 @@ namespace Free_Spotify
                     iconMaximizedSelected.Visibility = Visibility.Visible;
                     windowBackground.Padding = new Thickness(10);
                 }
-                if (Utils.settings.musicPlayerBallonTurnOn && WindowState != WindowState.Minimized && SearchViewPage.searchWindow.ballon != null)
+                if (Settings.SettingsData.musicPlayerBallonTurnOn && WindowState != WindowState.Minimized && MusicPlayerPage.Instance != null && MusicPlayerPage.Instance.ballon != null)
                 {
                     myNotifyIcon.CloseBalloon();
                 }
-                else if (Utils.settings.musicPlayerBallonTurnOn && WindowState == WindowState.Minimized && SearchViewPage.searchWindow.ballon != null)
+                else if (Settings.SettingsData.musicPlayerBallonTurnOn && WindowState == WindowState.Minimized && MusicPlayerPage.Instance != null && MusicPlayerPage.Instance.ballon != null)
                 {
-                    myNotifyIcon.ShowCustomBalloon(SearchViewPage.searchWindow.ballon, PopupAnimation.Slide, null);
+                    myNotifyIcon.ShowCustomBalloon(MusicPlayerPage.Instance.ballon, PopupAnimation.Slide, null);
                 }
             });
         }
 
-        private void Closing_Window(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            SearchViewPage.searchWindow.cancelProgressSongTimer.Cancel();
-            Utils.SaveSettings();
-        }
-
+        /// <summary>
+        /// Check for the updates. If you click in the menu on check updates (it will hopefully start the update)
+        /// </summary>
         private void CheckForUpdates_Click(object sender, RoutedEventArgs e)
         {
             CheckForUpdates();
         }
 
-        private void currentVersion_Item_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Resends to Git page.
+        /// </summary>
+        private void CurrentVersion_Item_Click(object sender, RoutedEventArgs e)
         {
             Process.Start(new ProcessStartInfo()
             {
@@ -123,7 +127,10 @@ namespace Free_Spotify
             });
         }
 
-        private void CheckForUpdates()
+        /// <summary>
+        /// Function that if update is happen creates special modal window.
+        /// </summary>
+        private static void CheckForUpdates()
         {
             AutoUpdater.ShowSkipButton = false;
             AutoUpdater.ShowRemindLaterButton = false;
@@ -143,10 +150,33 @@ namespace Free_Spotify
 
         }
 
-        private SettingsPage settingsPage = new SettingsPage();
+        private SettingsPage? settingsPage;
+
+        public static MainWindow? Window { get => window; set => window = value; }
+
+        /// <summary>
+        /// Menu selection of settings.
+        /// </summary>
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
+            if (settingsPage != null)
+            {
+                settingsPage = null;
+            }
+            settingsPage = new SettingsPage();
+            LoadingPagesFrame.Content = null;
+            LoadingPagesFrame.NavigationService.Navigate(null);
+            LoadingPagesFrame.NavigationService.RemoveBackEntry();
             LoadingPagesFrame.Navigate(settingsPage);
+        }
+
+        /// <summary>
+        /// Heart icon that shows you the menu of adding favorite track to one of your playlists.
+        /// </summary>
+        private void FavoriteSongButton_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            PlayListAskUserTrackDialog playListAskUserTrackDialog = new();
+            playListAskUserTrackDialog.ShowDialog();
         }
     }
 }

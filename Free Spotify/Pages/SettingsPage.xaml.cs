@@ -7,32 +7,54 @@ namespace Free_Spotify.Pages
 {
     public partial class SettingsPage : Page
     {
+        /// <summary>
+        /// Constructor of this page.
+        /// </summary>
         public SettingsPage()
         {
             InitializeComponent();
-            Utils.LoadSettings();
-            languageComboBox.SelectedIndex = Utils.settings.languageIndex;
-            Utils.UpdateLanguage();
-            discordRPCCheckBox.IsChecked = Utils.settings.discordRPC;
-            trafficEconomicCheckBox.IsChecked = Utils.settings.economTraffic;
-            ballonPlayerCheckBox.IsChecked = Utils.settings.musicPlayerBallonTurnOn;
-            ballonPlayerText.Text = Utils.GetLocalizationString("BallonPlayerText");
-            ballonPlayerCheckBox.ToolTip = Utils.GetLocalizationString("BallonPlayerCheckBoxToolTip");
-            languageLabel.Text = Utils.GetLocalizationString("LanguageSettingsDefaultText");
-            trafficEconomic.Text = Utils.GetLocalizationString("TrafficDefaultText");
-            settingsLabel.Text = Utils.GetLocalizationString("SettingsMenuItemHeader");
-            trafficEconomicCheckBox.ToolTip = Utils.GetLocalizationString("TrafficToolTipDefaultText");
-            searchEngineLabel.Text = Utils.GetLocalizationString("SearchEngineLabelText");
-            searchEngineCheckBox.ToolTip = Utils.GetLocalizationString("SearchEngineToolTipText");
-            searchEngineCheckBox.SelectedIndex = Utils.settings.searchEngineIndex;
+            Settings.LoadSettings();
+            languageComboBox.SelectedIndex = Settings.SettingsData.languageIndex;
+            Settings.UpdateLanguage();
+            discordRPCCheckBox.IsChecked = Settings.SettingsData.discordRPC;
+            trafficEconomicCheckBox.IsChecked = Settings.SettingsData.economTraffic;
+            ballonPlayerCheckBox.IsChecked = Settings.SettingsData.musicPlayerBallonTurnOn;
+            ballonPlayerText.Text = Settings.GetLocalizationString("BallonPlayerText");
+            ballonPlayerCheckBox.ToolTip = Settings.GetLocalizationString("BallonPlayerCheckBoxToolTip");
+            languageLabel.Text = Settings.GetLocalizationString("LanguageSettingsDefaultText");
+            trafficEconomic.Text = Settings.GetLocalizationString("TrafficDefaultText");
+            settingsLabel.Text = Settings.GetLocalizationString("SettingsMenuItemHeader");
+            trafficEconomicCheckBox.ToolTip = Settings.GetLocalizationString("TrafficToolTipDefaultText");
+            searchEngineLabel.Text = Settings.GetLocalizationString("SearchEngineLabelText");
+            searchEngineCheckBox.ToolTip = Settings.GetLocalizationString("SearchEngineToolTipText");
+            searchEngineCheckBox.SelectedIndex = Settings.SettingsData.searchEngineIndex;
         }
 
-        private void backToSearchPage_Click(object sender, MouseButtonEventArgs e)
+        /// <summary>
+        /// Handles a click event, checks for the existence of the main window, clears the content of a frame, removes a navigation entry, and navigates to the search view page.
+        /// </summary>
+        private void BackToSearchPage_Click(object sender, MouseButtonEventArgs e)
         {
-            MainWindow.window.LoadingPagesFrame.Navigate(SearchViewPage.searchWindow);
+            if (MainWindow.Window == null)
+            {
+                return;
+            }
+            if (SearchViewPage.SearchWindow != null)
+            {
+                SearchViewPage.SearchWindow = null;
+                SearchViewPage.SearchWindow = new();
+            }
+            MainWindow.Window.LoadingPagesFrame.Content = null;
+            MainWindow.Window.LoadingPagesFrame.NavigationService.Navigate(null);
+            MainWindow.Window.LoadingPagesFrame.NavigationService.RemoveBackEntry();
+            MainWindow.Window.LoadingPagesFrame.Navigate(SearchViewPage.SearchWindow);
         }
 
         private bool loadingPenalty = false; // removing null reference because this func is shit
+        /// <summary>
+        /// Handles a selection change event for a language ComboBox. It updates the application's language settings based on the selected language and updates 
+        /// various UI elements accordingly.
+        /// </summary>
         private async void LanguageChanged_ComboBox(object sender, SelectionChangedEventArgs e)
         {
             if (!loadingPenalty)
@@ -42,62 +64,81 @@ namespace Free_Spotify.Pages
             }
             await Dispatcher.BeginInvoke(() =>
             {
-                Utils.settings.languageIndex = languageComboBox.SelectedIndex;
+                Settings.SettingsData.languageIndex = languageComboBox.SelectedIndex;
                 switch (languageComboBox.SelectedIndex)
                 {
                     case 0: // eng
-                        Utils.ChangeLanguage("en");
+                        Settings.ChangeLanguage("en");
                         break;
                     case 1: // ru
-                        Utils.ChangeLanguage("ru");
+                        Settings.ChangeLanguage("ru");
+                        break;
+                    case 2: // ua
+                        Settings.ChangeLanguage("uk");
                         break;
                     case 3: // japanese
-                        Utils.ChangeLanguage("ja");
+                        Settings.ChangeLanguage("ja");
                         break;
                     default:
-                        Utils.settings.languageIndex = 0;
-                        Utils.ChangeLanguage("en");
+                        Settings.SettingsData.languageIndex = 0;
+                        Settings.ChangeLanguage("en");
                         break;
                 }
 
-                languageLabel.Text = Utils.GetLocalizationString("LanguageSettingsDefaultText");
-                trafficEconomic.Text = Utils.GetLocalizationString("TrafficDefaultText");
-                settingsLabel.Text = Utils.GetLocalizationString("SettingsMenuItemHeader");
-                trafficEconomicCheckBox.ToolTip = Utils.GetLocalizationString("TrafficToolTipDefaultText");
-                searchEngineLabel.Text = Utils.GetLocalizationString("SearchEngineLabelText");
-                searchEngineCheckBox.ToolTip = Utils.GetLocalizationString("SearchEngineToolTipText");
-                ballonPlayerText.Text = Utils.GetLocalizationString("BallonPlayerText");
-                ballonPlayerCheckBox.ToolTip = Utils.GetLocalizationString("BallonPlayerCheckBoxToolTip");
+                languageLabel.Text = Settings.GetLocalizationString("LanguageSettingsDefaultText");
+                trafficEconomic.Text = Settings.GetLocalizationString("TrafficDefaultText");
+                settingsLabel.Text = Settings.GetLocalizationString("SettingsMenuItemHeader");
+                trafficEconomicCheckBox.ToolTip = Settings.GetLocalizationString("TrafficToolTipDefaultText");
+                searchEngineLabel.Text = Settings.GetLocalizationString("SearchEngineLabelText");
+                searchEngineCheckBox.ToolTip = Settings.GetLocalizationString("SearchEngineToolTipText");
+                ballonPlayerText.Text = Settings.GetLocalizationString("BallonPlayerText");
+                ballonPlayerCheckBox.ToolTip = Settings.GetLocalizationString("BallonPlayerCheckBoxToolTip");
+                if (PlayListView.Instance != null)
+                {
+                    PlayListView.Instance.yourPlaylist.Text = Settings.GetLocalizationString("YourPlaylistText");
+                }
                 var assembly = Assembly.GetEntryAssembly();
-                Utils.IdleDiscordPresence();
-                MainWindow.window.currentVersion_Item.Header = $"{Utils.GetLocalizationString("AppCurrentVersionDefaultText")} {assembly?.GetName().Version}";
-                MainWindow.window.settingsMenuItem.Header = Utils.GetLocalizationString("SettingsMenuItemHeader");
-                MainWindow.window.checkUpdatesMenuItem.Header = Utils.GetLocalizationString("CheckUpdatesMenuItemHeader");
-                MainWindow.window.songTitle.Text = Utils.GetLocalizationString("SongTitleDefaultText");
-                MainWindow.window.songAuthor.Text = Utils.GetLocalizationString("SongAuthorDefaultText");
-                Utils.SaveSettings();
+                DiscordStatuses.IdleDiscordPresence();
+
+                if (MainWindow.Window != null)
+                {
+                    MainWindow.Window.currentVersion_Item.Header = $"{Settings.GetLocalizationString("AppCurrentVersionDefaultText")} {assembly?.GetName().Version}";
+                    MainWindow.Window.settingsMenuItem.Header = Settings.GetLocalizationString("SettingsMenuItemHeader");
+                    MainWindow.Window.checkUpdatesMenuItem.Header = Settings.GetLocalizationString("CheckUpdatesMenuItemHeader");
+                }
+                Settings.SaveSettings();
             });
         }
 
+        /// <summary>
+        ///  Handles a UI option related to Discord Rich Presence. Toggles the option on or off and updates the Discord presence status accordingly.
+        /// </summary>
         private void DiscordRPC_Option(object sender, System.Windows.RoutedEventArgs e)
         {
-            discordRPCCheckBox.IsChecked = Utils.settings.discordRPC;
-            Utils.settings.discordRPC = !Utils.settings.discordRPC;
-            Utils.IdleDiscordPresence();
-            discordRPCCheckBox.IsChecked = Utils.settings.discordRPC;
-            Utils.SaveSettings();
+            discordRPCCheckBox.IsChecked = Settings.SettingsData.discordRPC;
+            Settings.SettingsData.discordRPC = !Settings.SettingsData.discordRPC;
+            DiscordStatuses.IdleDiscordPresence();
+            discordRPCCheckBox.IsChecked = Settings.SettingsData.discordRPC;
+            Settings.SaveSettings();
         }
 
+
+        /// <summary>
+        /// Handles a UI option related to economical traffic. Toggles the option on or off and updates the Discord presence status accordingly.
+        /// </summary>
         private void EconomTraffic_Option(object sender, System.Windows.RoutedEventArgs e)
         {
-            trafficEconomicCheckBox.IsChecked = Utils.settings.economTraffic;
-            Utils.settings.economTraffic = !Utils.settings.economTraffic;
-            Utils.IdleDiscordPresence();
-            trafficEconomicCheckBox.IsChecked = Utils.settings.economTraffic;
-            Utils.SaveSettings();
+            trafficEconomicCheckBox.IsChecked = Settings.SettingsData.economTraffic;
+            Settings.SettingsData.economTraffic = !Settings.SettingsData.economTraffic;
+            DiscordStatuses.IdleDiscordPresence();
+            trafficEconomicCheckBox.IsChecked = Settings.SettingsData.economTraffic;
+            Settings.SaveSettings();
         }
 
         private bool loadingPenaltySearchingEngine = false;
+        /// <summary>
+        /// Handles a selection change event for a search engine ComboBox. Updates the application's search engine settings based on the selected option.
+        /// </summary>
         private void SearchEngine_ComboBox(object sender, SelectionChangedEventArgs e)
         {
             if (!loadingPenaltySearchingEngine)
@@ -105,17 +146,20 @@ namespace Free_Spotify.Pages
                 loadingPenaltySearchingEngine = true;
                 return;
             }
-            Utils.settings.searchEngineIndex = searchEngineCheckBox.SelectedIndex;
-            Utils.SaveSettings();
+            Settings.SettingsData.searchEngineIndex = searchEngineCheckBox.SelectedIndex;
+            Settings.SaveSettings();
         }
 
-        private void ballonPlayerCheckBox_Click(object sender, System.Windows.RoutedEventArgs e)
+        /// <summary>
+        /// Handles a click event for a CheckBox related to a music player feature. Toggles the music player's balloon display option and updates Discord presence status.
+        /// </summary>
+        private void BallonPlayerCheckBox_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            ballonPlayerCheckBox.IsChecked = Utils.settings.musicPlayerBallonTurnOn;
-            Utils.settings.musicPlayerBallonTurnOn = !Utils.settings.musicPlayerBallonTurnOn;
-            Utils.IdleDiscordPresence();
-            ballonPlayerCheckBox.IsChecked = Utils.settings.musicPlayerBallonTurnOn;
-            Utils.SaveSettings();
+            ballonPlayerCheckBox.IsChecked = Settings.SettingsData.musicPlayerBallonTurnOn;
+            Settings.SettingsData.musicPlayerBallonTurnOn = !Settings.SettingsData.musicPlayerBallonTurnOn;
+            DiscordStatuses.IdleDiscordPresence();
+            ballonPlayerCheckBox.IsChecked = Settings.SettingsData.musicPlayerBallonTurnOn;
+            Settings.SaveSettings();
         }
     }
 }

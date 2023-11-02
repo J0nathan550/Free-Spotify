@@ -22,7 +22,7 @@
     </UserControl.Resources>-->
     <Border Name="entireBaloon" MaxWidth="300" MaxHeight="200" Background="Black" Opacity="1" BorderBrush="White" CornerRadius="6" BorderThickness="3">
         <Grid x:Name="mp3PlayerHolder">
-            <Image MouseEnter="Ballon_MouseHover" Stretch="Fill" Name="songIcon" Grid.Row="0" Grid.RowSpan="3" Grid.ColumnSpan="3" Source="/Assets/spotify-icon-png-15398-Windows.ico"/>
+            <Image RenderOptions.BitmapScalingMode="Fant" MouseEnter="Ballon_MouseHover" Stretch="Uniform" Name="songIcon" Grid.Row="0" Grid.RowSpan="3" Grid.ColumnSpan="3" Source="/Assets/spotify-icon-png-15398-Windows.ico"/>
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
                     <RowDefinition/>

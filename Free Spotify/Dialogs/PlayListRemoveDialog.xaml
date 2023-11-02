@@ -1,0 +1,60 @@
+﻿<Window x:Class="Free_Spotify.Dialogs.PlayListRemoveDialog"
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:fa="http://schemas.fontawesome.io/icons/"
+    xmlns:gif="http://wpfanimatedgif.codeplex.com"
+    mc:Ignorable="d"
+ WindowStyle="SingleBorderWindow"
+ Background="Transparent"
+ AllowsTransparency="False"
+ Title="Remove Playlist" Height="292" Width="422" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Icon="/Assets/Square44x44Logo.altform-unplated_targetsize-32.png">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="30" ResizeBorderThickness="3"/>
+    </WindowChrome.WindowChrome>
+    <Border Name="windowBackground" Background="Black"  BorderThickness="1" BorderBrush="Gray">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="3*"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid Grid.ColumnSpan="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="32"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="100"/>
+                </Grid.ColumnDefinitions>
+                <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                    <fa:FontAwesome Icon="FloppyOutline" Foreground="White" FontSize="16"/>
+                </Label>
+                <Label Margin="3, 0, 0, 0" Grid.Column="1" Foreground="White" HorizontalContentAlignment="Left" VerticalContentAlignment="Center">
+                    <TextBlock Name="removePlaylist" TextTrimming="CharacterEllipsis">Remove Playlist</TextBlock>
+                </Label>
+                <Grid Grid.Column="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Button WindowChrome.IsHitTestVisibleInChrome="True" Grid.Column="2" Style="{StaticResource RoundedButtonExitStyle}" BorderThickness="0" Padding="10" Click="CloseWindow_Click">
+                        <Image Source="/Assets/close-icon.png" Stretch="Uniform"/>
+                    </Button>
+                </Grid>
+            </Grid>
+            <Label Name="whatToRemove" Grid.Row="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="Are you sure that you want to remove this playlist?" Foreground="White" Style="{StaticResource fontLabelMontserrat}" FontWeight="Bold"/>
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Button Click="RemovePlaylist_Click" Margin="5" Style="{StaticResource RoundedButtonStyleRemovePlaylist}" Foreground="White" BorderBrush="White" BorderThickness="2" FontWeight="Medium">
+                    <TextBlock Name="removeButtonText" Style="{StaticResource fontMontserrat}" TextTrimming="CharacterEllipsis">Remove</TextBlock>
+                </Button>
+                <Button Grid.Column="1" Click="RemovePlaylistCancel_Click" Margin="5" Style="{StaticResource RoundedButtonStyleAddPlaylist}" Foreground="White" BorderBrush="White" BorderThickness="2" FontWeight="Medium">
+                    <TextBlock Name="removeCancelText" Style="{StaticResource fontMontserrat}" TextTrimming="CharacterEllipsis">Cancel</TextBlock>
+                </Button>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

@@ -117,6 +117,21 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AddButtonText" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="AddPlaylistText" xml:space="preserve">
+    <value>Add playlist</value>
+  </data>
+  <data name="AddSongToPlaylistText" xml:space="preserve">
+    <value>Add song to playlist</value>
+  </data>
+  <data name="AddTrackErrorText" xml:space="preserve">
+    <value>To add a track to a playlist, click the button next to the playlist.</value>
+  </data>
+  <data name="AmountTracksDefaultText" xml:space="preserve">
+    <value>Number of tracks:</value>
+  </data>
   <data name="AppCurrentVersionDefaultText" xml:space="preserve">
     <value>Current Version:</value>
   </data>
@@ -129,8 +144,17 @@
   <data name="BallonPlayerText" xml:space="preserve">
     <value>Pop-up window of MP3Player:</value>
   </data>
+  <data name="CancelButtonText" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
   <data name="CheckUpdatesMenuItemHeader" xml:space="preserve">
     <value>Check for updates</value>
+  </data>
+  <data name="CreatePlaylistText" xml:space="preserve">
+    <value>Create a playlist</value>
+  </data>
+  <data name="DeleteDefaultText" xml:space="preserve">
+    <value>Delete</value>
   </data>
   <data name="DiscordRPCAFK" xml:space="preserve">
     <value>Doesn't do anything...</value>
@@ -144,8 +168,20 @@
   <data name="DiscordRPCPausedTrack" xml:space="preserve">
     <value>Paused the music...</value>
   </data>
+  <data name="EnterPlaylistTitleDefaultText" xml:space="preserve">
+    <value>Enter the name of the playlist...</value>
+  </data>
+  <data name="ErrorEnterTheTitleDefaultText" xml:space="preserve">
+    <value>Type in the name of the playlist first!</value>
+  </data>
+  <data name="ErrorJSONCorrupted" xml:space="preserve">
+    <value>The settings file has been corrupted, the settings have been reset to default.</value>
+  </data>
   <data name="ErrorNoInternetText" xml:space="preserve">
     <value>Looks like you're having internet problems!</value>
+  </data>
+  <data name="ErrorNoPlaylist" xml:space="preserve">
+    <value>Create a playlist to add tracks!</value>
   </data>
   <data name="ErrorNothingFoundText" xml:space="preserve">
     <value>By request:</value>
@@ -153,8 +189,50 @@
   <data name="ErrorNothingFoundText1" xml:space="preserve">
     <value>nothing was found.</value>
   </data>
+  <data name="ErrorText" xml:space="preserve">
+    <value>Error!</value>
+  </data>
+  <data name="FilterForDialogDefaultText" xml:space="preserve">
+    <value>JPEG Files (*.jpg;*.jpeg)|*.jpg;*.jpeg|PNG Files (*.png)|*.png|GIF Files (*.gif)|*.gif|All Files (*.*)|*.*</value>
+  </data>
+  <data name="HoursText" xml:space="preserve">
+    <value>h</value>
+  </data>
+  <data name="ImagePlaylistDefaultText" xml:space="preserve">
+    <value>Picture (optional):</value>
+  </data>
   <data name="LanguageSettingsDefaultText" xml:space="preserve">
     <value>Language:</value>
+  </data>
+  <data name="MinutesText" xml:space="preserve">
+    <value>min</value>
+  </data>
+  <data name="MoveDownDefaultText" xml:space="preserve">
+    <value>Move down</value>
+  </data>
+  <data name="MoveUpDefaultText" xml:space="preserve">
+    <value>Move up</value>
+  </data>
+  <data name="NoPlaylistDefaultText" xml:space="preserve">
+    <value>Looks like you don't have any playlists created...</value>
+  </data>
+  <data name="QuestionPlaylist" xml:space="preserve">
+    <value>Are you sure you want to delete this playlist?</value>
+  </data>
+  <data name="QuestionTrack" xml:space="preserve">
+    <value>Are you sure you want to delete this track?</value>
+  </data>
+  <data name="RemoveButtonText" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="RemovePlaylistText" xml:space="preserve">
+    <value>Remove playlist</value>
+  </data>
+  <data name="RenameDefaultText" xml:space="preserve">
+    <value>Rename</value>
+  </data>
+  <data name="RenamePlaylistText" xml:space="preserve">
+    <value>Rename playlist</value>
   </data>
   <data name="SearchBarTextBoxDefaultText" xml:space="preserve">
     <value>What do you want to listen to?</value>
@@ -164,6 +242,12 @@
   </data>
   <data name="SearchEngineToolTipText" xml:space="preserve">
     <value>If you can't find a track that is on YouTube you can safely change your search engine and enjoy music from YouTube.</value>
+  </data>
+  <data name="SecondsText" xml:space="preserve">
+    <value>sec</value>
+  </data>
+  <data name="SelectImageDefaultText" xml:space="preserve">
+    <value>Select an image...</value>
   </data>
   <data name="SettingsMenuItemHeader" xml:space="preserve">
     <value>Settings</value>
@@ -177,6 +261,9 @@
   <data name="TipStartWrittingText" xml:space="preserve">
     <value>Start writing something to enjoy the music!</value>
   </data>
+  <data name="TitlePlaylistDefaultText" xml:space="preserve">
+    <value>Title:</value>
+  </data>
   <data name="TrackDefaultText" xml:space="preserve">
     <value>Track:</value>
   </data>
@@ -185,5 +272,8 @@
   </data>
   <data name="TrafficToolTipDefaultText" xml:space="preserve">
     <value>Removes pictures from songs that load during song search.</value>
+  </data>
+  <data name="YourPlaylistText" xml:space="preserve">
+    <value>Your playlists</value>
   </data>
 </root>

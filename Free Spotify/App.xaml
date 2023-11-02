@@ -10,10 +10,35 @@
         </Style>
         <Style x:Key="fontTextBoxMontserrat" TargetType="TextBox">
             <Setter Property="TextElement.FontFamily" Value="/Fonts/#Montserrat"></Setter>
-
         </Style>
         <Style x:Key="fontLabelMontserrat" TargetType="Label">
             <Setter Property="TextElement.FontFamily" Value="/Fonts/#Montserrat"></Setter>
+        </Style>
+        <Style x:Key="CustomGridSplitterStyle" TargetType="GridSplitter">
+            <Setter Property="Background" Value="Transparent" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="White" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="PlaylistItem" TargetType="Border">
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Storyboard.TargetProperty="(Background).(SolidColorBrush.Color)" From="#000000" To="#181818" Duration="0:0:0.2"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="MouseLeave">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Storyboard.TargetProperty="(Background).(SolidColorBrush.Color)" From="#181818" To="#000000" Duration="0:0:0.2"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Style.Triggers>
         </Style>
         <Style TargetType="{x:Type ResizeGrip}">
             <Setter Property="MinWidth" Value="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}"/>
@@ -89,6 +114,64 @@
                 <!-- Add triggers for hover and click effects if desired -->
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="DarkGray" />
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="Background" Value="Transparent" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="RoundedButtonStyleAddPlaylist" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Padding" Value="10,5" />
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                     BorderBrush="{TemplateBinding BorderBrush}"
+                     Padding="10"
+                     BorderThickness="{TemplateBinding BorderThickness}"
+                     CornerRadius="0">
+                            <!-- Adjust the CornerRadius as needed -->
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <!-- Add triggers for hover and click effects if desired -->
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="Green" />
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="Background" Value="Transparent" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="RoundedButtonStyleRemovePlaylist" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Padding" Value="10,5" />
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                     BorderBrush="{TemplateBinding BorderBrush}"
+                     Padding="10"
+                     BorderThickness="{TemplateBinding BorderThickness}"
+                     CornerRadius="0">
+                            <!-- Adjust the CornerRadius as needed -->
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <!-- Add triggers for hover and click effects if desired -->
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="Red" />
                 </Trigger>
                 <Trigger Property="IsMouseOver" Value="False">
                     <Setter Property="Background" Value="Transparent" />

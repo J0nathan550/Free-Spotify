@@ -117,6 +117,21 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AddButtonText" xml:space="preserve">
+    <value>Добавить</value>
+  </data>
+  <data name="AddPlaylistText" xml:space="preserve">
+    <value>Добавить плейлист</value>
+  </data>
+  <data name="AddSongToPlaylistText" xml:space="preserve">
+    <value>Добавить песню в плейлист</value>
+  </data>
+  <data name="AddTrackErrorText" xml:space="preserve">
+    <value>Чтобы добавить трек в плейлист, нажмите на кнопку рядом с плейлистом.</value>
+  </data>
+  <data name="AmountTracksDefaultText" xml:space="preserve">
+    <value>Количество треков:</value>
+  </data>
   <data name="AppCurrentVersionDefaultText" xml:space="preserve">
     <value>Текущая версия:</value>
   </data>
@@ -129,8 +144,17 @@
   <data name="BallonPlayerText" xml:space="preserve">
     <value>Всплывающие окно проигрывателя:</value>
   </data>
+  <data name="CancelButtonText" xml:space="preserve">
+    <value>Отменить</value>
+  </data>
   <data name="CheckUpdatesMenuItemHeader" xml:space="preserve">
     <value>Проверить обновления</value>
+  </data>
+  <data name="CreatePlaylistText" xml:space="preserve">
+    <value>Создать плейлист</value>
+  </data>
+  <data name="DeleteDefaultText" xml:space="preserve">
+    <value>Удалить</value>
   </data>
   <data name="DiscordRPCAFK" xml:space="preserve">
     <value>Ничего не делает...</value>
@@ -144,8 +168,20 @@
   <data name="DiscordRPCPausedTrack" xml:space="preserve">
     <value>Поставил музыку на паузу...</value>
   </data>
+  <data name="EnterPlaylistTitleDefaultText" xml:space="preserve">
+    <value>Введите название плейлиста...</value>
+  </data>
+  <data name="ErrorEnterTheTitleDefaultText" xml:space="preserve">
+    <value>Сперва введите название плейлиста!</value>
+  </data>
+  <data name="ErrorJSONCorrupted" xml:space="preserve">
+    <value>Файл с настройками был повреждён, настройки сброшены по умолчанию.</value>
+  </data>
   <data name="ErrorNoInternetText" xml:space="preserve">
     <value>Похоже у вас проблемы с интернетом!</value>
+  </data>
+  <data name="ErrorNoPlaylist" xml:space="preserve">
+    <value>Создайте плейлист чтобы добавлять треки!</value>
   </data>
   <data name="ErrorNothingFoundText" xml:space="preserve">
     <value>По запросу:</value>
@@ -153,8 +189,50 @@
   <data name="ErrorNothingFoundText1" xml:space="preserve">
     <value>ничего не найдено.</value>
   </data>
+  <data name="ErrorText" xml:space="preserve">
+    <value>Ошибка!</value>
+  </data>
+  <data name="FilterForDialogDefaultText" xml:space="preserve">
+    <value>JPEG Файлы (*.jpg;*.jpeg)|*.jpg;*.jpeg|PNG Файлы (*.png)|*.png|GIF Файлы (*.gif)|*.gif|Все файлы (*.*)|*.*</value>
+  </data>
+  <data name="HoursText" xml:space="preserve">
+    <value>ч</value>
+  </data>
+  <data name="ImagePlaylistDefaultText" xml:space="preserve">
+    <value>Картинка (опционально):</value>
+  </data>
   <data name="LanguageSettingsDefaultText" xml:space="preserve">
     <value>Язык:</value>
+  </data>
+  <data name="MinutesText" xml:space="preserve">
+    <value>мин</value>
+  </data>
+  <data name="MoveDownDefaultText" xml:space="preserve">
+    <value>Опустить вниз</value>
+  </data>
+  <data name="MoveUpDefaultText" xml:space="preserve">
+    <value>Поднять вверх</value>
+  </data>
+  <data name="NoPlaylistDefaultText" xml:space="preserve">
+    <value>Похоже у вас нет созданных плейлистов...</value>
+  </data>
+  <data name="QuestionPlaylist" xml:space="preserve">
+    <value>Вы уверены что хотите удалить данный плейлист?</value>
+  </data>
+  <data name="QuestionTrack" xml:space="preserve">
+    <value>Вы уверены что хотите удалить данный трек?</value>
+  </data>
+  <data name="RemoveButtonText" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="RemovePlaylistText" xml:space="preserve">
+    <value>Убрать плейлист</value>
+  </data>
+  <data name="RenameDefaultText" xml:space="preserve">
+    <value>Переименовать</value>
+  </data>
+  <data name="RenamePlaylistText" xml:space="preserve">
+    <value>Переименовать плейлист</value>
   </data>
   <data name="SearchBarTextBoxDefaultText" xml:space="preserve">
     <value>Что хотите послушать?</value>
@@ -164,6 +242,12 @@
   </data>
   <data name="SearchEngineToolTipText" xml:space="preserve">
     <value>Если вы не можете найти трек, который есть в YouTube вы можете спокойно поменять поисковую систему и наслаждаться музыкой с YouTube.</value>
+  </data>
+  <data name="SecondsText" xml:space="preserve">
+    <value>сек</value>
+  </data>
+  <data name="SelectImageDefaultText" xml:space="preserve">
+    <value>Выберите изображение...</value>
   </data>
   <data name="SettingsMenuItemHeader" xml:space="preserve">
     <value>Настройки</value>
@@ -177,6 +261,9 @@
   <data name="TipStartWrittingText" xml:space="preserve">
     <value>Начните писать что-то, чтобы насладится музыкой!</value>
   </data>
+  <data name="TitlePlaylistDefaultText" xml:space="preserve">
+    <value>Название:</value>
+  </data>
   <data name="TrackDefaultText" xml:space="preserve">
     <value>Трек:</value>
   </data>
@@ -185,5 +272,8 @@
   </data>
   <data name="TrafficToolTipDefaultText" xml:space="preserve">
     <value>Убирает картинки с песен которые грузятся во время поиска песен.</value>
+  </data>
+  <data name="YourPlaylistText" xml:space="preserve">
+    <value>Ваши плейлисты</value>
   </data>
 </root>

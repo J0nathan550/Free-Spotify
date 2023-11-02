@@ -8,15 +8,16 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Assets\spotify-icon-png-15398-Windows.ico</ApplicationIcon>
     <Company>J0nathan550</Company>
-    <Version>1.0.0.7</Version>
-    <AssemblyVersion>1.0.0.7</AssemblyVersion>
-    <FileVersion>1.0.0.7</FileVersion>
+    <Version>1.0.0.8</Version>
+    <AssemblyVersion>1.0.0.8</AssemblyVersion>
+    <FileVersion>1.0.0.8</FileVersion>
     <SignAssembly>False</SignAssembly>
     <Copyright>J0nathan550</Copyright>
     <NeutralLanguage>uk-UA</NeutralLanguage>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\circle.png" />
     <None Remove="Assets\close-icon.png" />
     <None Remove="Assets\discord_game_sdk.dll" />
     <None Remove="Assets\music-icon-sign-symbol-design-free-png.png" />
@@ -57,6 +58,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Assets\circle.png" />
     <Resource Include="Assets\spotify_icon_test.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
@@ -78,6 +80,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="SpotifyExplode" Version="1.0.7" />
     <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />
+    <PackageReference Include="WpfAnimatedGif" Version="2.0.2" />
     <PackageReference Include="YoutubeExplode" Version="6.3.4" />
   </ItemGroup>
 

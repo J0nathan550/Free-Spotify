@@ -117,6 +117,21 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AddButtonText" xml:space="preserve">
+    <value>加える。</value>
+  </data>
+  <data name="AddPlaylistText" xml:space="preserve">
+    <value>プレイリストの追加</value>
+  </data>
+  <data name="AddSongToPlaylistText" xml:space="preserve">
+    <value>プレイリストに曲を追加する</value>
+  </data>
+  <data name="AddTrackErrorText" xml:space="preserve">
+    <value>プレイリストにトラックを追加するには、プレイリストの横にあるボタンをクリックします。</value>
+  </data>
+  <data name="AmountTracksDefaultText" xml:space="preserve">
+    <value>トラック数：</value>
+  </data>
   <data name="AppCurrentVersionDefaultText" xml:space="preserve">
     <value>現在のバージョン：</value>
   </data>
@@ -129,8 +144,17 @@
   <data name="BallonPlayerText" xml:space="preserve">
     <value>選手が飛び出す：</value>
   </data>
+  <data name="CancelButtonText" xml:space="preserve">
+    <value>廃止</value>
+  </data>
   <data name="CheckUpdatesMenuItemHeader" xml:space="preserve">
     <value>アップデートの確認</value>
+  </data>
+  <data name="CreatePlaylistText" xml:space="preserve">
+    <value>プレイリストの作成</value>
+  </data>
+  <data name="DeleteDefaultText" xml:space="preserve">
+    <value>削除</value>
   </data>
   <data name="DiscordRPCAFK" xml:space="preserve">
     <value>何の役にも立たない...</value>
@@ -144,8 +168,20 @@
   <data name="DiscordRPCPausedTrack" xml:space="preserve">
     <value>私は音楽を一時停止した...</value>
   </data>
+  <data name="EnterPlaylistTitleDefaultText" xml:space="preserve">
+    <value>プレイリストの名前を入力...</value>
+  </data>
+  <data name="ErrorEnterTheTitleDefaultText" xml:space="preserve">
+    <value>最初にプレイリストの名前を入力します！</value>
+  </data>
+  <data name="ErrorJSONCorrupted" xml:space="preserve">
+    <value>設定ファイルが破損し、設定がデフォルトにリセットされました。</value>
+  </data>
   <data name="ErrorNoInternetText" xml:space="preserve">
     <value>インターネットに問題があるようですね！</value>
+  </data>
+  <data name="ErrorNoPlaylist" xml:space="preserve">
+    <value>プレイリストを作成してトラックを追加する！</value>
   </data>
   <data name="ErrorNothingFoundText" xml:space="preserve">
     <value>リクエストに応じて：</value>
@@ -153,8 +189,50 @@
   <data name="ErrorNothingFoundText1" xml:space="preserve">
     <value>何も見つかっていない。</value>
   </data>
+  <data name="ErrorText" xml:space="preserve">
+    <value>間違いだ！</value>
+  </data>
+  <data name="FilterForDialogDefaultText" xml:space="preserve">
+    <value>JPEGファイル(*.jpg;*.jpeg)|*.jpg;*.jpeg|PNGファイル(*.png)|*.png|GIFファイル(*.gif)|*.gif|すべてのファイル(*.*)|*.*</value>
+  </data>
+  <data name="HoursText" xml:space="preserve">
+    <value>時</value>
+  </data>
+  <data name="ImagePlaylistDefaultText" xml:space="preserve">
+    <value>写真（オプション）：</value>
+  </data>
   <data name="LanguageSettingsDefaultText" xml:space="preserve">
     <value>言語：</value>
+  </data>
+  <data name="MinutesText" xml:space="preserve">
+    <value>分</value>
+  </data>
+  <data name="MoveDownDefaultText" xml:space="preserve">
+    <value>引き下げる</value>
+  </data>
+  <data name="MoveUpDefaultText" xml:space="preserve">
+    <value>持ち上げる</value>
+  </data>
+  <data name="NoPlaylistDefaultText" xml:space="preserve">
+    <value>プレイリストが作成されていないようだが......。</value>
+  </data>
+  <data name="QuestionPlaylist" xml:space="preserve">
+    <value>本当にこのプレイリストを削除しますか？</value>
+  </data>
+  <data name="QuestionTrack" xml:space="preserve">
+    <value>本当にこのトラックを削除しますか？</value>
+  </data>
+  <data name="RemoveButtonText" xml:space="preserve">
+    <value>削除</value>
+  </data>
+  <data name="RemovePlaylistText" xml:space="preserve">
+    <value>プレイリストの削除</value>
+  </data>
+  <data name="RenameDefaultText" xml:space="preserve">
+    <value>名前変更</value>
+  </data>
+  <data name="RenamePlaylistText" xml:space="preserve">
+    <value>プレイリストの名前を変更する</value>
   </data>
   <data name="SearchBarTextBoxDefaultText" xml:space="preserve">
     <value>何を聴きたい？</value>
@@ -164,6 +242,12 @@
   </data>
   <data name="SearchEngineToolTipText" xml:space="preserve">
     <value>YouTubeにアップされている曲が見つからない場合は、検索エンジンを変えてYouTubeから簡単に音楽を楽しむことができる。</value>
+  </data>
+  <data name="SecondsText" xml:space="preserve">
+    <value>秒</value>
+  </data>
+  <data name="SelectImageDefaultText" xml:space="preserve">
+    <value>画像を選択...</value>
   </data>
   <data name="SettingsMenuItemHeader" xml:space="preserve">
     <value>設定だ。</value>
@@ -177,6 +261,9 @@
   <data name="TipStartWrittingText" xml:space="preserve">
     <value>曲を楽しむために何かを書き始める！</value>
   </data>
+  <data name="TitlePlaylistDefaultText" xml:space="preserve">
+    <value>タイトル</value>
+  </data>
   <data name="TrackDefaultText" xml:space="preserve">
     <value>トラック：</value>
   </data>
@@ -185,5 +272,8 @@
   </data>
   <data name="TrafficToolTipDefaultText" xml:space="preserve">
     <value>楽曲検索時に読み込んだ楽曲から画像を削除します。</value>
+  </data>
+  <data name="YourPlaylistText" xml:space="preserve">
+    <value>プレイリスト</value>
   </data>
 </root>
