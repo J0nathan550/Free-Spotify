@@ -11,7 +11,7 @@
         public const string DownloadAutoUpdateLinkX64 = "https://raw.githubusercontent.com/J0nathan550/Free-Spotify/master/AutoUpdateX64.xml";
         public const string DownloadAutoUpdateLinkX86 = "https://raw.githubusercontent.com/J0nathan550/Free-Spotify/master/AutoUpdateX86.xml";
         public const string ProjectName = "Free Spotify";
-        public static string DefaultImagePath = $@"{System.AppDomain.CurrentDomain.BaseDirectory}\Assets\spotify-icon-png-15398-Windows.ico";
+        public static string DefaultImagePath = $@"{System.AppDomain.CurrentDomain.BaseDirectory}\Assets\default-playlist-icon.png";
         public static bool IsPlayingFromPlaylist { get; set; } = false;
     }
 }

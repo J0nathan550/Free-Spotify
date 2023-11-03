@@ -6,7 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using WpfAnimatedGif;
+using XamlAnimatedGif;
 
 namespace Free_Spotify.Dialogs
 {
@@ -41,7 +41,6 @@ namespace Free_Spotify.Dialogs
         private void AddImageToPlayList_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Uri uri;
-            BitmapImage bitmapImage;
             try
             {
                 OpenFileDialog ofd = new()
@@ -54,11 +53,10 @@ namespace Free_Spotify.Dialogs
                 if (ofd.ShowDialog() == true)
                 {
                     uri = new Uri(ofd.FileName, UriKind.RelativeOrAbsolute);
-                    bitmapImage = new BitmapImage(uri);
-                    demoImagePlaylist.Source = bitmapImage;
-                    ImageBehavior.SetAnimatedSource(demoImagePlaylist, bitmapImage);
-                    ImageBehavior.SetRepeatBehavior(demoImagePlaylist, RepeatBehavior.Forever);
+                    AnimationBehavior.SetSourceUri(demoImagePlaylist, uri);
+                    AnimationBehavior.SetRepeatBehavior(demoImagePlaylist, RepeatBehavior.Forever);
                     imageTextBox.Text = ofd.FileName;
+
                     return;
                 }
                 LoadDefaultImage();
@@ -101,6 +99,7 @@ namespace Free_Spotify.Dialogs
             {
                 image = Utils.DefaultImagePath;
             }
+            GC.Collect();
             Settings.SettingsData.playlists.Add(new SettingsData.Playlist() { Title = titleTextBox.Text, ImagePath = image });
             Settings.SaveSettings();
             DialogResult = true;
@@ -112,10 +111,9 @@ namespace Free_Spotify.Dialogs
         /// </summary>
         private void LoadDefaultImage()
         {
-            BitmapImage bitmapImage = new(new Uri(Utils.DefaultImagePath));
-            demoImagePlaylist.Source = bitmapImage;
-            ImageBehavior.SetAnimatedSource(demoImagePlaylist, bitmapImage);
-            ImageBehavior.SetRepeatBehavior(demoImagePlaylist, RepeatBehavior.Forever);
+            Uri uri = new(Utils.DefaultImagePath);
+            AnimationBehavior.SetSourceUri(demoImagePlaylist, uri);
+            AnimationBehavior.SetRepeatBehavior(demoImagePlaylist, RepeatBehavior.Forever);
             imageTextBox.Text = string.Empty;
         }
 

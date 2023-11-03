@@ -306,11 +306,9 @@ namespace Free_Spotify.Pages
                                                                 MusicPlayerPage.Instance.UpdateStatusPlayerBar();
                                                             }
                                                         }
-                                                        catch (Exception ex)
+                                                        catch
                                                         {
-                                                            MusicPlayerPage.Instance?.StopSound();
-                                                            MessageBox.Show(ex.GetType().Name);
-                                                            MessageBox.Show(ex.Message);
+                                                            MusicPlayerPage.Instance?.ClearMusic();
                                                         }
                                                     });
                                                 });
@@ -397,11 +395,9 @@ namespace Free_Spotify.Pages
                     {
                         // ignore for now, appears something related to user? json issue.
                     }
-                    catch (Exception e)
+                    catch
                     {
-                        MusicPlayerPage.Instance?.StopSound();
-                        MessageBox.Show(e.GetType().Name);
-                        MessageBox.Show(e.Message);
+                        MusicPlayerPage.Instance?.ClearMusic();
                     }
                 }
                 else
@@ -555,11 +551,9 @@ namespace Free_Spotify.Pages
                                                                     MusicPlayerPage.Instance.UpdateStatusPlayerBar();
                                                                 }
                                                             }
-                                                            catch (Exception ex)
+                                                            catch
                                                             {
-                                                                MusicPlayerPage.Instance?.StopSound();
-                                                                MessageBox.Show(ex.GetType().Name);
-                                                                MessageBox.Show(ex.Message);
+                                                                MusicPlayerPage.Instance?.ClearMusic();
                                                             }
                                                         });
                                                     });
@@ -670,11 +664,9 @@ namespace Free_Spotify.Pages
                     {
                         // ignore for now, appears something related to user? json issue.
                     }
-                    catch (Exception e)
+                    catch
                     {
-                        MusicPlayerPage.Instance?.StopSound();
-                        MessageBox.Show(e.GetType().Name);
-                        MessageBox.Show(e.Message);
+                        MusicPlayerPage.Instance?.ClearMusic();
                     }
                 }
             });
@@ -702,33 +694,40 @@ namespace Free_Spotify.Pages
         /// </summary>
         public void PreviousSong()
         {
-            if (MusicPlayerPage.Instance == null)
+            try
             {
-                return;
-            }
-            currentSongIndex--;
+                if (MusicPlayerPage.Instance == null)
+                {
+                    return;
+                }
+                currentSongIndex--;
 
-            // Check the search engine index and update the current song accordingly
-            if (Settings.SettingsData.searchEngineIndex == 1)
-            {
-                if (currentSongIndex < 0)
+                // Check the search engine index and update the current song accordingly
+                if (Settings.SettingsData.searchEngineIndex == 1)
                 {
-                    currentSongIndex = trackYouTubeList.Count - 1;
+                    if (currentSongIndex < 0)
+                    {
+                        currentSongIndex = trackYouTubeList.Count - 1;
+                    }
+                    MusicPlayerPage.Instance.PlaySound(trackYouTubeList[currentSongIndex], null, this);
+                    MusicPlayerPage.Instance.UpdateStatusPlayerBar();
                 }
-                MusicPlayerPage.Instance.PlaySound(trackYouTubeList[currentSongIndex], null, this);
-                MusicPlayerPage.Instance.UpdateStatusPlayerBar();
-            }
-            else
-            {
-                if (currentSongIndex < 0)
+                else
                 {
-                    currentSongIndex = trackSpotifyList.Count - 1;
+                    if (currentSongIndex < 0)
+                    {
+                        currentSongIndex = trackSpotifyList.Count - 1;
+                    }
+                    MusicPlayerPage.Instance.PlaySound(trackSpotifyList[currentSongIndex], this);
+                    MusicPlayerPage.Instance.UpdateStatusPlayerBar();
                 }
-                MusicPlayerPage.Instance.PlaySound(trackSpotifyList[currentSongIndex], this);
-                MusicPlayerPage.Instance.UpdateStatusPlayerBar();
+                newSongsSpotify.Clear();
+                newSongsYouTube.Clear();
             }
-            newSongsSpotify.Clear();
-            newSongsYouTube.Clear();
+            catch
+            {
+                MusicPlayerPage.Instance?.ClearMusic();
+            }
         }
 
         /// <summary>
@@ -736,33 +735,40 @@ namespace Free_Spotify.Pages
         /// </summary>
         public void NextSong()
         {
-            if (MusicPlayerPage.Instance == null)
+            try
             {
-                return;
-            }
-            currentSongIndex++;
+                if (MusicPlayerPage.Instance == null)
+                {
+                    return;
+                }
+                currentSongIndex++;
 
-            // Check the search engine index and update the current song accordingly
-            if (Settings.SettingsData.searchEngineIndex == 1)
-            {
-                if (trackYouTubeList.Count <= currentSongIndex)
+                // Check the search engine index and update the current song accordingly
+                if (Settings.SettingsData.searchEngineIndex == 1)
                 {
-                    currentSongIndex = 0;
+                    if (trackYouTubeList.Count <= currentSongIndex)
+                    {
+                        currentSongIndex = 0;
+                    }
+                    MusicPlayerPage.Instance.PlaySound(trackYouTubeList[currentSongIndex], null, this);
+                    MusicPlayerPage.Instance.UpdateStatusPlayerBar();
                 }
-                MusicPlayerPage.Instance.PlaySound(trackYouTubeList[currentSongIndex], null, this);
-                MusicPlayerPage.Instance.UpdateStatusPlayerBar();
-            }
-            else
-            {
-                if (trackSpotifyList.Count <= currentSongIndex)
+                else
                 {
-                    currentSongIndex = 0;
+                    if (trackSpotifyList.Count <= currentSongIndex)
+                    {
+                        currentSongIndex = 0;
+                    }
+                    MusicPlayerPage.Instance.PlaySound(trackSpotifyList[currentSongIndex], this);
+                    MusicPlayerPage.Instance.UpdateStatusPlayerBar();
                 }
-                MusicPlayerPage.Instance.PlaySound(trackSpotifyList[currentSongIndex], this);
-                MusicPlayerPage.Instance.UpdateStatusPlayerBar();
+                newSongsSpotify.Clear();
+                newSongsYouTube.Clear();
             }
-            newSongsSpotify.Clear();
-            newSongsYouTube.Clear();
+            catch
+            {
+                MusicPlayerPage.Instance?.ClearMusic();
+            }
         }
 
         /// <summary>
@@ -770,43 +776,50 @@ namespace Free_Spotify.Pages
         /// </summary>
         public void ShuffleSongs()
         {
-            if (MusicPlayerPage.Instance == null)
+            try
             {
-                return;
-            }
-
-            // Create a random number generator
-            Random rand = new();
-
-            // Check the search engine index and shuffle the current song accordingly
-            if (Settings.SettingsData.searchEngineIndex == 1)
-            {
-                int pos = rand.Next(0, trackYouTubeList.Count);
-                int times = 1000;
-                while (pos == currentSongIndex && times > 0)
+                if (MusicPlayerPage.Instance == null)
                 {
-                    pos = rand.Next(0, trackYouTubeList.Count);
-                    times--;
+                    return;
                 }
-                currentSongIndex = pos;
-                MusicPlayerPage.Instance.PlaySound(trackYouTubeList[currentSongIndex], null, this);
-                MusicPlayerPage.Instance.UpdateStatusPlayerBar();
-            }
-            else
-            {
-                int pos = rand.Next(0, trackSpotifyList.Count);
-                int times = 1000;
-                while (pos == currentSongIndex && times > 0)
+
+                // Create a random number generator
+                Random rand = new();
+
+                // Check the search engine index and shuffle the current song accordingly
+                if (Settings.SettingsData.searchEngineIndex == 1)
                 {
-                    pos = rand.Next(0, trackSpotifyList.Count);
-                    times--;
+                    int pos = rand.Next(0, trackYouTubeList.Count);
+                    int times = 1000;
+                    while (pos == currentSongIndex && times > 0)
+                    {
+                        pos = rand.Next(0, trackYouTubeList.Count);
+                        times--;
+                    }
+                    currentSongIndex = pos;
+                    MusicPlayerPage.Instance.PlaySound(trackYouTubeList[currentSongIndex], null, this);
+                    MusicPlayerPage.Instance.UpdateStatusPlayerBar();
                 }
-                currentSongIndex = pos;
-                MusicPlayerPage.Instance.PlaySound(trackSpotifyList[currentSongIndex], this);
-                MusicPlayerPage.Instance.UpdateStatusPlayerBar();
+                else
+                {
+                    int pos = rand.Next(0, trackSpotifyList.Count);
+                    int times = 1000;
+                    while (pos == currentSongIndex && times > 0)
+                    {
+                        pos = rand.Next(0, trackSpotifyList.Count);
+                        times--;
+                    }
+                    currentSongIndex = pos;
+                    MusicPlayerPage.Instance.PlaySound(trackSpotifyList[currentSongIndex], this);
+                    MusicPlayerPage.Instance.UpdateStatusPlayerBar();
+                }
+                newSongsSpotify.Clear();
+                newSongsYouTube.Clear();
             }
-            newSongsSpotify.Clear();
-            newSongsYouTube.Clear();
+            catch
+            {
+                MusicPlayerPage.Instance?.ClearMusic();
+            }
         }
 
         public void ClearSearchView()

@@ -7,7 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using WpfAnimatedGif;
+using XamlAnimatedGif;
 
 namespace Free_Spotify.Dialogs
 {
@@ -73,35 +73,31 @@ namespace Free_Spotify.Dialogs
                 try
                 {
                     Uri uri = new(playlist.ImagePath, UriKind.RelativeOrAbsolute);
-                    BitmapImage bitmapImage = new(uri);
 
                     // Create an Image
                     Image image = new()
                     {
                         Margin = new Thickness(5),
-                        Source = bitmapImage,
                         Stretch = Stretch.Uniform
                     };
 
-                    ImageBehavior.SetAnimatedSource(image, bitmapImage);
-                    ImageBehavior.SetRepeatBehavior(image, RepeatBehavior.Forever);
+                    AnimationBehavior.SetSourceUri(image, uri);
+                    AnimationBehavior.SetRepeatBehavior(image, RepeatBehavior.Forever);
                     actualImage = image;
                 }
                 catch
                 {
-
-                    BitmapImage bitmapImage = new(new Uri(Utils.DefaultImagePath));
+                    Uri uri = new(Utils.DefaultImagePath);
 
                     // Create an Image
                     Image image = new()
                     {
                         Margin = new Thickness(5),
-                        Source = bitmapImage,
                         Stretch = Stretch.Uniform
                     };
 
-                    ImageBehavior.SetAnimatedSource(image, bitmapImage);
-                    ImageBehavior.SetRepeatBehavior(image, RepeatBehavior.Forever);
+                    AnimationBehavior.SetSourceUri(image, uri);
+                    AnimationBehavior.SetRepeatBehavior(image, RepeatBehavior.Forever);
                     actualImage = image;
                 }
 

@@ -9,7 +9,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using WpfAnimatedGif;
+using XamlAnimatedGif;
 
 namespace Free_Spotify.Pages
 {
@@ -48,17 +48,14 @@ namespace Free_Spotify.Pages
             try
             {
                 Uri uri = new(Settings.SettingsData.playlists[playListCurrentIndex].ImagePath, UriKind.RelativeOrAbsolute);
-                BitmapImage bitmapImage = new(uri);
-                ImageBehavior.SetAnimatedSource(playListImage, bitmapImage);
-                ImageBehavior.SetRepeatBehavior(playListImage, RepeatBehavior.Forever);
-                RenderOptions.SetBitmapScalingMode(bitmapImage, BitmapScalingMode.Fant);
+                AnimationBehavior.SetSourceUri(playListImage, uri);
+                AnimationBehavior.SetRepeatBehavior(playListImage, RepeatBehavior.Forever);
             }
             catch
             {
-                BitmapImage bitmapImage = new(new Uri(Utils.DefaultImagePath));
-                ImageBehavior.SetAnimatedSource(playListImage, bitmapImage);
-                ImageBehavior.SetRepeatBehavior(playListImage, RepeatBehavior.Forever);
-                RenderOptions.SetBitmapScalingMode(bitmapImage, BitmapScalingMode.Fant);
+                Uri uri = new(Utils.DefaultImagePath);
+                AnimationBehavior.SetSourceUri(playListImage, uri);
+                AnimationBehavior.SetRepeatBehavior(playListImage, RepeatBehavior.Forever);
             }
 
             if (PlayListView.Instance != null)
@@ -224,57 +221,48 @@ namespace Free_Spotify.Pages
                             if (track.YouTubeTrack != null && track.YouTubeTrack.Thumbnails != null)
                             {
                                 Uri uri = new(track.YouTubeTrack.Thumbnails[0].Url, UriKind.RelativeOrAbsolute);
-                                BitmapImage bitmapImage = new(uri);
 
                                 // Create an Image
                                 Image image = new()
                                 {
                                     Margin = new Thickness(5),
-                                    Source = bitmapImage,
                                     Stretch = Stretch.Uniform
                                 };
-                                ImageBehavior.SetAnimatedSource(image, bitmapImage);
-                                ImageBehavior.SetRepeatBehavior(image, RepeatBehavior.Forever);
+                                AnimationBehavior.SetSourceUri(image, uri);
+                                AnimationBehavior.SetRepeatBehavior(image, RepeatBehavior.Forever);
                                 actualImage = image;
                             }
                             else if (track.SpotifyTrack != null)
                             {
                                 Uri uri = new(track.SpotifyTrack.Album.Images[0].Url, UriKind.RelativeOrAbsolute);
-                                BitmapImage bitmapImage = new(uri);
 
                                 // Create an Image
                                 Image image = new()
                                 {
                                     Margin = new Thickness(5),
-                                    Source = bitmapImage,
                                     Stretch = Stretch.Uniform
                                 };
 
-                                ImageBehavior.SetAnimatedSource(image, bitmapImage);
-                                ImageBehavior.SetRepeatBehavior(image, RepeatBehavior.Forever);
+                                AnimationBehavior.SetSourceUri(image, uri);
+                                AnimationBehavior.SetRepeatBehavior(image, RepeatBehavior.Forever);
                                 actualImage = image;
                             }
                         }
                         catch
                         {
-                            BitmapImage bitmapImage = new(new Uri(Utils.DefaultImagePath));
+                            Uri uri = new(Utils.DefaultImagePath);
 
                             // Create an Image
                             Image image = new()
                             {
                                 Margin = new Thickness(5),
-                                Source = bitmapImage,
                                 Stretch = Stretch.Uniform
                             };
 
-                            ImageBehavior.SetAnimatedSource(image, bitmapImage);
-                            ImageBehavior.SetRepeatBehavior(image, RepeatBehavior.Forever);
+                            AnimationBehavior.SetSourceUri(image, uri);
+                            AnimationBehavior.SetRepeatBehavior(image, RepeatBehavior.Forever);
                             actualImage = image;
                         }
-                    }
-                    else
-                    {
-                        actualImage = null;
                     }
 
 

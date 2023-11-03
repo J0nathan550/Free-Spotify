@@ -6,8 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using WpfAnimatedGif;
+using XamlAnimatedGif;
 
 namespace Free_Spotify.Dialogs
 {
@@ -38,10 +37,8 @@ namespace Free_Spotify.Dialogs
             try
             {
                 Uri uri = new(Settings.SettingsData.playlists[renamePlayListIndex].ImagePath, UriKind.RelativeOrAbsolute);
-                BitmapImage bitmapImage = new(uri);
-                demoImagePlaylist.Source = bitmapImage;
-                ImageBehavior.SetAnimatedSource(demoImagePlaylist, bitmapImage);
-                ImageBehavior.SetRepeatBehavior(demoImagePlaylist, RepeatBehavior.Forever);
+                AnimationBehavior.SetSourceUri(demoImagePlaylist, uri);
+                AnimationBehavior.SetRepeatBehavior(demoImagePlaylist, RepeatBehavior.Forever);
             }
             catch
             {
@@ -78,7 +75,6 @@ namespace Free_Spotify.Dialogs
         private void RenameImageToPlayList_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Uri uri;
-            BitmapImage bitmapImage;
             try
             {
                 OpenFileDialog ofd = new()
@@ -92,10 +88,8 @@ namespace Free_Spotify.Dialogs
                 if (ofd.ShowDialog() == true)
                 {
                     uri = new Uri(ofd.FileName, UriKind.RelativeOrAbsolute);
-                    bitmapImage = new BitmapImage(uri);
-                    demoImagePlaylist.Source = bitmapImage;
-                    ImageBehavior.SetAnimatedSource(demoImagePlaylist, bitmapImage);
-                    ImageBehavior.SetRepeatBehavior(demoImagePlaylist, RepeatBehavior.Forever);
+                    AnimationBehavior.SetSourceUri(demoImagePlaylist, uri);
+                    AnimationBehavior.SetRepeatBehavior(demoImagePlaylist, RepeatBehavior.Forever);
                     imageTextBox.Text = ofd.FileName;
                     return;
                 }
@@ -150,10 +144,9 @@ namespace Free_Spotify.Dialogs
         /// </summary>
         private void LoadDefaultImage()
         {
-            BitmapImage bitmapImage = new(new Uri(Utils.DefaultImagePath));
-            demoImagePlaylist.Source = bitmapImage;
-            ImageBehavior.SetAnimatedSource(demoImagePlaylist, bitmapImage);
-            ImageBehavior.SetRepeatBehavior(demoImagePlaylist, RepeatBehavior.Forever);
+            Uri uri = new(Utils.DefaultImagePath);
+            AnimationBehavior.SetSourceUri(demoImagePlaylist, uri);
+            AnimationBehavior.SetRepeatBehavior(demoImagePlaylist, RepeatBehavior.Forever);
             imageTextBox.Text = string.Empty;
         }
 

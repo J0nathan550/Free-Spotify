@@ -3,7 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:fa="http://schemas.fontawesome.io/icons/"
-        xmlns:gif="http://wpfanimatedgif.codeplex.com"
+        xmlns:gif="https://github.com/XamlAnimatedGif/XamlAnimatedGif"
         mc:Ignorable="d"
      WindowStyle="SingleBorderWindow"
      Background="Transparent"
@@ -82,7 +82,7 @@
                         <ColumnDefinition Width="70"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Image gif:ImageBehavior.RepeatBehavior="0x"  Name="demoImagePlaylist" Margin="5" Source="/Assets/spotify-icon-png-15398-Windows.ico" Stretch="Uniform" />
+                    <Image gif:AnimationBehavior.RepeatBehavior="Forever"  Name="demoImagePlaylist" Margin="5" gif:AnimationBehavior.SourceUri="/Assets/spotify_icon_test.ico"  Stretch="Uniform" />
                     <Grid Grid.Column="1">
                         <Grid.RowDefinitions>
                             <RowDefinition/>

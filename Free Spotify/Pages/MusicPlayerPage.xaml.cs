@@ -675,15 +675,9 @@ namespace Free_Spotify.Pages
                 });
                 GC.Collect();
             }
-            catch (Exception ex)
+            catch
             {
-                MusicMediaPlayer.Stop();
-                MusicMediaPlayer.Close();
-                progressSongTimer.Stop();
-                IsSongPaused = true;
-                PausingSong();
-                MessageBox.Show(ex.GetType().ToString());
-                MessageBox.Show(ex.Message);
+                ClearMusic();
                 GC.Collect();
             }
         }
