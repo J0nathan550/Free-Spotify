@@ -22,6 +22,7 @@ namespace Free_Spotify.Dialogs
             title.Text = Settings.GetLocalizationString("TitlePlaylistDefaultText");
             imageOptional.Text = Settings.GetLocalizationString("ImagePlaylistDefaultText");
             createPlaylistText.Text = Settings.GetLocalizationString("CreatePlaylistText");
+            amountOfTracksText.Text = $"{Settings.GetLocalizationString("AmountTracksDefaultText")} 0";
             LoadDefaultImage();
         }
 

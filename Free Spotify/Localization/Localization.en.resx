@@ -127,7 +127,7 @@
     <value>Add song to playlist</value>
   </data>
   <data name="AddTrackErrorText" xml:space="preserve">
-    <value>To add a track to a playlist, click the button next to the playlist.</value>
+    <value>To add a track to a playlist, select one of the playlists.</value>
   </data>
   <data name="AmountTracksDefaultText" xml:space="preserve">
     <value>Number of tracks:</value>

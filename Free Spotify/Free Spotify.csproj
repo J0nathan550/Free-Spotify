@@ -8,9 +8,9 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Assets\spotify-icon-png-15398-Windows.ico</ApplicationIcon>
     <Company>J0nathan550</Company>
-    <Version>1.0.1.0</Version>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
-    <FileVersion>1.0.1.0</FileVersion>
+    <Version>1.0.1.1</Version>
+    <AssemblyVersion>1.0.1.1</AssemblyVersion>
+    <FileVersion>1.0.1.1</FileVersion>
     <SignAssembly>False</SignAssembly>
     <Copyright>J0nathan550</Copyright>
     <NeutralLanguage>uk-UA</NeutralLanguage>

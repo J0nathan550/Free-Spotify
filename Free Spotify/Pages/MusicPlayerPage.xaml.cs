@@ -76,6 +76,7 @@ namespace Free_Spotify.Pages
             musicToggle.MouseDown += MusicToggle_MouseDown; // Toggle play/pause.
             musicProgress.AddHandler(Thumb.DragDeltaEvent, new DragDeltaEventHandler((sender, e) => MusicProgress_DragDeltaProgress())); // Change song position when dragging the slider.
             musicProgress.AddHandler(Thumb.DragCompletedEvent, new DragCompletedEventHandler((sender, e) => MusicProgress_DragCompletedEvent())); // Resume playback after dragging the slider.
+            musicProgress.AddHandler(PreviewMouseLeftButtonDownEvent, new MouseButtonEventHandler(MusicProgressSlider_MouseLeftButtonDownEvent), true); // Handle music slider interactions.
             volumeSlider.AddHandler(Thumb.DragDeltaEvent, new DragDeltaEventHandler((sender, e) => VolumeSlider_DragDeltaEvent())); // Adjust the volume when dragging the volume slider.
             volumeSlider.AddHandler(PreviewMouseLeftButtonDownEvent, new MouseButtonEventHandler(VolumeSlider_MouseLeftButtonDownEvent), true); // Handle volume slider interactions.
             volumeIcon.MouseDown += VolumeIcon_Click; // Mute the song without changing volume.
@@ -190,17 +191,62 @@ namespace Free_Spotify.Pages
         /// </summary>
         private void VolumeSlider_MouseLeftButtonDownEvent(object sender, MouseButtonEventArgs e)
         {
-            if (!volumeSlider.IsMoveToPointEnabled || volumeSlider.Template.FindName("PART_Track", volumeSlider) is not Track track || track.Thumb == null || track.Thumb.IsMouseOver)
+            try
             {
-                return;
-            }
-            track.Thumb.UpdateLayout();
+                if (!volumeSlider.IsMoveToPointEnabled || volumeSlider.Template.FindName("PART_Track", volumeSlider) is not Track track || track.Thumb == null || track.Thumb.IsMouseOver)
+                {
+                    return;
+                }
+                track.Thumb.UpdateLayout();
 
-            track.Thumb.RaiseEvent(new MouseButtonEventArgs(e.MouseDevice, e.Timestamp, MouseButton.Left)
+                track.Thumb.RaiseEvent(new MouseButtonEventArgs(e.MouseDevice, e.Timestamp, MouseButton.Left)
+                {
+                    RoutedEvent = MouseLeftButtonDownEvent,
+                    Source = track.Thumb
+                });
+
+                track.Thumb.RaiseEvent(new DragDeltaEventArgs(0, 0)
+                {
+                    RoutedEvent = Thumb.DragDeltaEvent,
+                    Source = track.Thumb
+                });
+            }
+            catch
             {
-                RoutedEvent = MouseLeftButtonDownEvent,
-                Source = track.Thumb
-            });
+                StopSound();
+            }
+        }
+
+        /// <summary>
+        /// Handles the mouse left button down event for a volume slider. This method checks whether the music slider is enabled for 
+        /// move-to-point interaction, and if not, or if the mouse is over the thumb, it takes no action. If the conditions are met, it simulates a left mouse button down event on the slider's thumb.
+        /// </summary>
+        private void MusicProgressSlider_MouseLeftButtonDownEvent(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                if (!musicProgress.IsMoveToPointEnabled || musicProgress.Template.FindName("PART_Track", musicProgress) is not Track track || track.Thumb == null || track.Thumb.IsMouseOver)
+                {
+                    return;
+                }
+                track.Thumb.UpdateLayout();
+
+                track.Thumb.RaiseEvent(new MouseButtonEventArgs(e.MouseDevice, e.Timestamp, MouseButton.Left)
+                {
+                    RoutedEvent = MouseLeftButtonDownEvent,
+                    Source = track.Thumb
+                });
+
+                track.Thumb.RaiseEvent(new DragDeltaEventArgs(0, 0)
+                {
+                    RoutedEvent = Thumb.DragDeltaEvent,
+                    Source = track.Thumb
+                });
+            }
+            catch
+            {
+                StopSound();
+            }
         }
 
         /// <summary>
@@ -209,15 +255,22 @@ namespace Free_Spotify.Pages
         /// </summary>
         public void VolumeIcon_Click(object sender, RoutedEventArgs e)
         {
-            if (MusicMediaPlayer.IsMuted)
+            try
             {
-                volumeIcon.Icon = FontAwesomeIcon.VolumeUp;
-                MusicMediaPlayer.IsMuted = false;
+                if (MusicMediaPlayer.IsMuted)
+                {
+                    volumeIcon.Icon = FontAwesomeIcon.VolumeUp;
+                    MusicMediaPlayer.IsMuted = false;
+                }
+                else
+                {
+                    volumeIcon.Icon = FontAwesomeIcon.VolumeOff;
+                    MusicMediaPlayer.IsMuted = true;
+                }
             }
-            else
+            catch
             {
-                volumeIcon.Icon = FontAwesomeIcon.VolumeOff;
-                MusicMediaPlayer.IsMuted = true;
+                StopSound();
             }
         }
 
@@ -663,9 +716,6 @@ namespace Free_Spotify.Pages
                         MusicMediaPlayer.Close();
                     }
                     progressSongTimer.Stop();
-                });
-                await Dispatcher.BeginInvoke(() =>
-                {
                     if (MainWindow.Window == null)
                     {
                         return;
@@ -688,29 +738,43 @@ namespace Free_Spotify.Pages
         /// </summary>
         public async void PlaySound(TrackSearchResult? spotifyTrack, ISongManager songManager)
         {
-            StopSound();
-            this.songManager = songManager;
-            trackSpotify = spotifyTrack;
-            trackYouTube = null;
-            await Task.Run(() =>
+            try
             {
-                PlaySound();
-            });
+                StopSound();
+                this.songManager = songManager;
+                trackSpotify = spotifyTrack;
+                trackYouTube = null;
+                await Task.Run(() =>
+                {
+                    PlaySound();
+                });
+            }
+            catch
+            {
+                StopSound();
+            }
         }
         /// <summary>
         /// Tries to play a sound from YouTube. Stops the current sound, updates the song manager, and plays the selected YouTube track.
         /// </summary>
         public async void PlaySound(VideoSearchResult? youTubeTrack, YouTubeTrackItem? youTubeTrackReserv, ISongManager songManager)
         {
-            StopSound();
-            this.songManager = songManager;
-            trackYouTube = youTubeTrack;
-            trackYouTubePlaylist = youTubeTrackReserv;
-            trackSpotify = null;
-            await Task.Run(() =>
+            try
             {
-                PlaySound();
-            });
+                StopSound();
+                this.songManager = songManager;
+                trackYouTube = youTubeTrack;
+                trackYouTubePlaylist = youTubeTrackReserv;
+                trackSpotify = null;
+                await Task.Run(() =>
+                {
+                    PlaySound();
+                });
+            }
+            catch
+            {
+                StopSound();
+            }
         }
         /// <summary>
         /// Plays the selected track, updates the player bar, and manages audio stream selection and playback.
@@ -743,24 +807,31 @@ namespace Free_Spotify.Pages
                 });
                 if (trackYouTube != null)
                 {
-                    YoutubeClient youtubeClient = new();
                     ValueTask<StreamManifest> streamManifest = new();
-                    if (trackYouTube.Id.Value == null)
+                    try
                     {
-                        if (trackYouTubePlaylist != null)
+                        YoutubeClient youtubeClient = new();
+                        if (trackYouTube.Id.Value == null)
                         {
-                            streamManifest = youtubeClient.Videos.Streams.GetManifestAsync(trackYouTubePlaylist.Url);
+                            if (trackYouTubePlaylist != null)
+                            {
+                                streamManifest = youtubeClient.Videos.Streams.GetManifestAsync(trackYouTubePlaylist.Url);
+                            }
+                        }
+                        else
+                        {
+                            streamManifest = youtubeClient.Videos.Streams.GetManifestAsync(trackYouTube.Url);
                         }
                     }
-                    else
+                    catch
                     {
-                        streamManifest = youtubeClient.Videos.Streams.GetManifestAsync(trackYouTube.Url);
+                        StopSound();
                     }
-                    var streamInfo = streamManifest.Result.GetAudioStreams().GetWithHighestBitrate();
                     await Dispatcher.BeginInvoke(() =>
                     {
                         try
                         {
+                            var streamInfo = streamManifest.Result.GetAudioStreams().GetWithHighestBitrate();
                             MusicMediaPlayer.Open(new Uri(streamInfo.Url));
                             MusicMediaPlayer.Play();
                             progressSongTimer.Start();
@@ -863,15 +934,18 @@ namespace Free_Spotify.Pages
 
         public void ClearMusic()
         {
-            StopSound();
-            MusicMediaPlayer.Close();
-            trackSpotify = null;
-            trackYouTube = null;
-            trackYouTubePlaylist = null;
-            IsSongPaused = false;
-            IsSongRepeat = false;
-            isShuffleEnabled = false;
-            ballon = null;
+            Dispatcher.BeginInvoke(() =>
+            {
+                StopSound();
+                MusicMediaPlayer.Close();
+                trackSpotify = null;
+                trackYouTube = null;
+                trackYouTubePlaylist = null;
+                IsSongPaused = false;
+                IsSongRepeat = false;
+                isShuffleEnabled = false;
+                ballon = null;
+            });
         }
 
         /// <summary>

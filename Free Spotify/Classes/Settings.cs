@@ -163,7 +163,7 @@ namespace Free_Spotify.Classes
                 long seconds = duration / 1000;
                 if (seconds < 60)
                 {
-                    return duration + $" {Settings.GetLocalizationString("SecondsText")}.";
+                    return seconds + $" {Settings.GetLocalizationString("SecondsText")}.";
                 }
                 if (seconds < 3600)
                 {

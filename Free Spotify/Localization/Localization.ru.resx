@@ -127,7 +127,7 @@
     <value>Добавить песню в плейлист</value>
   </data>
   <data name="AddTrackErrorText" xml:space="preserve">
-    <value>Чтобы добавить трек в плейлист, нажмите на кнопку рядом с плейлистом.</value>
+    <value>Чтобы добавить трек в плейлист, выберите один из плейлистов.</value>
   </data>
   <data name="AmountTracksDefaultText" xml:space="preserve">
     <value>Количество треков:</value>

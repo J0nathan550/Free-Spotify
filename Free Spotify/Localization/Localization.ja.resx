@@ -127,7 +127,7 @@
     <value>プレイリストに曲を追加する</value>
   </data>
   <data name="AddTrackErrorText" xml:space="preserve">
-    <value>プレイリストにトラックを追加するには、プレイリストの横にあるボタンをクリックします。</value>
+    <value>プレイリストにトラックを追加するには、プレイリストの1つを選択します。</value>
   </data>
   <data name="AmountTracksDefaultText" xml:space="preserve">
     <value>トラック数：</value>

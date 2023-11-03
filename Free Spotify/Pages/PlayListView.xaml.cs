@@ -40,7 +40,6 @@ namespace Free_Spotify.Pages
             // Clears the playlist rendering area
             // If there are no playlists, displays a message
             // Otherwise, iterates through playlists, creates UI elements, and handles interactions.
-
             playlistRender.Children.Clear();
             if (Settings.SettingsData.playlists.Count == 0)
             {
@@ -118,9 +117,8 @@ namespace Free_Spotify.Pages
                         if (SearchViewPage.SearchWindow != null)
                         {
                             SearchViewPage.SearchWindow = null;
-                            SearchViewPage.SearchWindow = new();
                         }
-                        MusicPlayerPage.Instance?.ClearMusic();
+                        SearchViewPage.SearchWindow = new();
                         MainWindow.Window.LoadingPagesFrame.Content = null;
                         MainWindow.Window.LoadingPagesFrame.NavigationService.Navigate(null);
                         MainWindow.Window.LoadingPagesFrame.NavigationService.RemoveBackEntry();

@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
 using XamlAnimatedGif;
 
 namespace Free_Spotify.Dialogs
@@ -60,8 +60,18 @@ namespace Free_Spotify.Dialogs
                     BorderBrush = Brushes.White
                 };
 
+                // CheckBox (Column 3)
+                CheckBox checkBox = new() { Name = $"i{index}" };
+
                 // Grid
-                Grid grid = new();
+                Grid grid = new()
+                {
+                    Cursor = Cursors.Hand
+                };
+                grid.MouseLeftButtonDown += (sender, e) =>
+                {
+                    checkBox.IsChecked = !checkBox.IsChecked;
+                };
 
                 // Column Definitions
                 grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(100) });
@@ -143,9 +153,6 @@ namespace Free_Spotify.Dialogs
                         TextTrimming = TextTrimming.CharacterEllipsis
                     }
                 };
-
-                // CheckBox (Column 3)
-                CheckBox checkBox = new() { Name = $"i{index}" };
 
                 Label labelInColumn3 = new()
                 {
@@ -239,6 +246,7 @@ namespace Free_Spotify.Dialogs
                 MessageBox.Show(Settings.GetLocalizationString("AddTrackErrorText"), Settings.GetLocalizationString("ErrorText"), MessageBoxButton.OK, MessageBoxImage.Error);
                 DialogResult = true;
                 Close();
+                return;
             }
 
             PlayListView.Instance?.CreatePlaylists();

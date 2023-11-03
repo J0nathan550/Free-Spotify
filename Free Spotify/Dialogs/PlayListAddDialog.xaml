@@ -92,7 +92,7 @@
                             <TextBlock Name="titleDemoPlaylist" TextTrimming="CharacterEllipsis">Enter playlist title...</TextBlock>
                         </Label>
                         <Label Grid.Row="1" FontSize="12" Foreground="White" Style="{StaticResource fontLabelMontserrat}" FontWeight="Medium" VerticalContentAlignment="Top" HorizontalContentAlignment="Left">
-                            <TextBlock TextTrimming="CharacterEllipsis">Amount of tracks: 0</TextBlock>
+                            <TextBlock Name="amountOfTracksText" TextTrimming="CharacterEllipsis">Amount of tracks: 0</TextBlock>
                         </Label>
                     </Grid>
                 </Grid>
