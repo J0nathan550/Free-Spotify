@@ -723,12 +723,12 @@ namespace Free_Spotify.Pages
                     MainWindow.Window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.None;
                     MainWindow.Window.progressSongTaskBar.ProgressValue = 0;
                 });
-                GC.Collect();
+                
             }
             catch
             {
                 ClearMusic();
-                GC.Collect();
+                
             }
         }
 
@@ -885,7 +885,7 @@ namespace Free_Spotify.Pages
                 {
                     await Dispatcher.BeginInvoke(() =>
                     {
-                        GC.Collect();
+                        
                         SearchViewPage.SearchWindow?.searchVisual.Children.Clear();
                         TextBlock resultTextBlock = new()
                         {
@@ -904,7 +904,7 @@ namespace Free_Spotify.Pages
                 {
                     await Dispatcher.BeginInvoke(() =>
                     {
-                        GC.Collect();
+                        
                         SearchViewPage.SearchWindow?.searchVisual.Children.Clear();
                         TextBlock resultTextBlock = new()
                         {

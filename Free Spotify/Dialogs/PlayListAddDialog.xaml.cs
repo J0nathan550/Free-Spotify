@@ -100,7 +100,7 @@ namespace Free_Spotify.Dialogs
             {
                 image = Utils.DefaultImagePath;
             }
-            GC.Collect();
+            
             Settings.SettingsData.playlists.Add(new SettingsData.Playlist() { Title = titleTextBox.Text, ImagePath = image });
             Settings.SaveSettings();
             DialogResult = true;

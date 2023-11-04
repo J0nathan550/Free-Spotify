@@ -325,7 +325,7 @@ namespace Free_Spotify.Pages
                                         {
                                             await Dispatcher.InvokeAsync(() =>
                                             {
-                                                GC.Collect();
+                                                
                                                 searchVisual.Children.Clear();
                                                 TextBlock resultTextBlock = new()
                                                 {
@@ -352,7 +352,7 @@ namespace Free_Spotify.Pages
                             {
                                 await Dispatcher.BeginInvoke(() =>
                                 {
-                                    GC.Collect();
+                                    
                                     searchVisual.Children.Clear();
                                     TextBlock resultTextBlock = new()
                                     {
@@ -372,7 +372,7 @@ namespace Free_Spotify.Pages
                             {
                                 await Dispatcher.BeginInvoke(() =>
                                 {
-                                    GC.Collect();
+                                    
                                     searchVisual.Children.Clear();
                                     TextBlock resultTextBlock = new()
                                     {
@@ -570,7 +570,7 @@ namespace Free_Spotify.Pages
                                             {
                                                 await Dispatcher.InvokeAsync(() =>
                                                 {
-                                                    GC.Collect();
+                                                    
                                                     searchVisual.Children.Clear();
                                                     TextBlock resultTextBlock = new()
                                                     {
@@ -597,7 +597,7 @@ namespace Free_Spotify.Pages
 
                                 await Dispatcher.BeginInvoke(() =>
                                 {
-                                    GC.Collect();
+                                    
                                     searchVisual.Children.Clear();
                                     TextBlock resultTextBlock = new()
                                     {
@@ -621,7 +621,7 @@ namespace Free_Spotify.Pages
                             {
                                 await Dispatcher.BeginInvoke(() =>
                                 {
-                                    GC.Collect();
+                                    
                                     searchVisual.Children.Clear();
                                     TextBlock resultTextBlock = new()
                                     {
@@ -641,7 +641,7 @@ namespace Free_Spotify.Pages
                             {
                                 await Dispatcher.BeginInvoke(() =>
                                 {
-                                    GC.Collect();
+                                    
                                     searchVisual.Children.Clear();
                                     TextBlock resultTextBlock = new()
                                     {
