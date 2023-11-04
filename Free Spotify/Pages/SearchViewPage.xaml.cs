@@ -23,7 +23,7 @@ namespace Free_Spotify.Pages
         private static SearchViewPage? searchWindow;
 
         // used to do query every second after you typed character
-        private readonly System.Timers.Timer searchFieldTimer = new() { Interval = 1000 };
+        private readonly System.Timers.Timer searchFieldTimer = new() { Interval = 1000, AutoReset = false, Enabled = false };
 
         // used to search something certain in Search Engine.
         private readonly SpotifyExplode.Search.SearchFilter filter = SpotifyExplode.Search.SearchFilter.Track;
@@ -65,7 +65,6 @@ namespace Free_Spotify.Pages
         // Timer that start to search if for the second there was no key press. 
         private void SearchFieldTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
-            searchFieldTimer.Stop();
             SearchingSystem();
         }
 
@@ -87,8 +86,18 @@ namespace Free_Spotify.Pages
         /// </summary>
         private void SearchBarTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            searchFieldTimer.Stop();
-            searchFieldTimer.Start();
+            if (SearchBarTextBox.Text.Length != 0)
+            {
+                removeEverythingFromSearchBoxButton.Visibility = Visibility.Visible;
+                if (SearchBarTextBox.Text.Length > 2)
+                {
+                    searchFieldTimer.Start();
+                }
+            }
+            else
+            {
+                removeEverythingFromSearchBoxButton.Visibility = Visibility.Hidden;
+            }
         }
 
         /// <summary>
@@ -137,14 +146,6 @@ namespace Free_Spotify.Pages
                             return;
                         }
 
-                        if (SearchBarTextBox.Text.Length != 0)
-                        {
-                            removeEverythingFromSearchBoxButton.Visibility = Visibility.Visible;
-                        }
-                        else
-                        {
-                            removeEverythingFromSearchBoxButton.Visibility = Visibility.Hidden;
-                        }
                     }
                     catch
                     {
