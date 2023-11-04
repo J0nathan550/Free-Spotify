@@ -118,39 +118,27 @@ namespace Free_Spotify.Pages
         /// </summary>
         private void SearchingSystem()
         {
+            newSongsSpotify.Clear();
+            newSongsYouTube.Clear();
             Dispatcher.BeginInvoke(async () =>
             {
-
-                newSongsSpotify.Clear();
-                newSongsYouTube.Clear();
                 await Dispatcher.BeginInvoke(async () =>
                 {
+                    // Create Wrap panel
+                    WrapPanel wrapPanelVisual = new();
+                    wrapPanelVisual.Orientation = Orientation.Horizontal;
 
-                    if (SearchBarTextBox.Text.Length < 3)
+                    if (searchVisual.Children.Count != 0)
+                    {
+                        searchVisual.Children.Clear();
+                    }
+                    searchVisual.Children.Add(wrapPanelVisual);
+
+                    if (!isTextErased)
                     {
                         return;
                     }
-                    WrapPanel wrapPanelVisual = new();
-                    try
-                    {
-                        wrapPanelVisual.Orientation = Orientation.Horizontal;
 
-                        if (searchVisual.Children.Count != 0)
-                        {
-                            searchVisual.Children.Clear();
-                        }
-                        searchVisual.Children.Add(wrapPanelVisual);
-
-                        if (!isTextErased)
-                        {
-                            return;
-                        }
-
-                    }
-                    catch
-                    {
-                        MusicPlayerPage.Instance?.StopSound();
-                    }
                     if (Settings.SettingsData.searchEngineIndex == 1) // YouTube
                     {
                         try
