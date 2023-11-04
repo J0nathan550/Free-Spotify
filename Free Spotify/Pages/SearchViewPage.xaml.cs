@@ -72,17 +72,14 @@ namespace Free_Spotify.Pages
         /// <summary>
         /// An a event that is used in search bar to represent if you are lost focus, if you have no text inside, it will add the tip.
         /// </summary>
-        private async void SearchTextBox_LostFocus(object sender, RoutedEventArgs e)
+        private void SearchTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
-            await Dispatcher.BeginInvoke(() =>
+            if (SearchBarTextBox.Text.Length == 0)
             {
-                if (SearchBarTextBox.Text.Length == 0)
-                {
-                    SearchBarTextBox.Foreground = new SolidColorBrush(Color.FromArgb(255, 0x80, 0x80, 0x80));
-                    SearchBarTextBox.Text = Settings.GetLocalizationString("SearchBarTextBoxDefaultText");
-                    isTextErased = false;
-                }
-            });
+                SearchBarTextBox.Foreground = new SolidColorBrush(Color.FromArgb(255, 0x80, 0x80, 0x80));
+                SearchBarTextBox.Text = Settings.GetLocalizationString("SearchBarTextBoxDefaultText");
+                isTextErased = false;
+            }
         }
 
         /// <summary>
@@ -97,17 +94,14 @@ namespace Free_Spotify.Pages
         /// <summary>
         /// An a event that is used in search bar to represent if you are clicked it, if you have no text inside, it will remove the tip.
         /// </summary>
-        private async void SearchTextBox_Focus(object sender, RoutedEventArgs e)
+        private void SearchTextBox_Focus(object sender, RoutedEventArgs e)
         {
-            await Dispatcher.InvokeAsync(() =>
+            if (!isTextErased)
             {
-                if (!isTextErased)
-                {
-                    SearchBarTextBox.Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
-                    SearchBarTextBox.Text = string.Empty;
-                    isTextErased = true;
-                }
-            });
+                SearchBarTextBox.Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+                SearchBarTextBox.Text = string.Empty;
+                isTextErased = true;
+            }
         }
 
         /// <summary>
@@ -680,16 +674,12 @@ namespace Free_Spotify.Pages
         /// <summary>
         /// Button that removes everything from the textbox, nice little feature.
         /// </summary>
-        private async void RemoveEverythingFromSearchBoxButton_MouseDown(object sender, MouseButtonEventArgs e)
+        private void RemoveEverythingFromSearchBoxButton_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            await Dispatcher.InvokeAsync(() =>
-            {
-                GC.Collect();
-                SearchBarTextBox.Text = string.Empty;
-                Keyboard.ClearFocus(); // removes focus from the textbox.
-                searchVisual.Children.Clear();
-                removeEverythingFromSearchBoxButton.Visibility = Visibility.Hidden;
-            });
+            SearchBarTextBox.Text = string.Empty;
+            Keyboard.ClearFocus(); // removes focus from the textbox.
+            searchVisual.Children.Clear();
+            removeEverythingFromSearchBoxButton.Visibility = Visibility.Hidden;
             newSongsSpotify.Clear();
             newSongsYouTube.Clear();
         }

@@ -45,28 +45,25 @@ namespace Free_Spotify
         /// <summary>
         /// Function that if you click minimize button, it will minimize window. In no style window you have to create own buttons that handle those functions.
         /// </summary>
-        private async void MinimizeIcon_Click(object sender, RoutedEventArgs e)
+        private void MinimizeIcon_Click(object sender, RoutedEventArgs e)
         {
-            await Dispatcher.BeginInvoke(() => { WindowState = WindowState.Minimized; });
+            WindowState = WindowState.Minimized;
         }
 
         /// <summary>
         /// Function that if you click maximize button, it will maximize window. In no style window you have to create own buttons that handle those functions.
         /// </summary>
-        private async void MaximizedIcon_Click(object sender, RoutedEventArgs e)
+        private void MaximizedIcon_Click(object sender, RoutedEventArgs e)
         {
-            await Dispatcher.BeginInvoke(() =>
+            if (WindowState != WindowState.Maximized)
             {
-                if (WindowState != WindowState.Maximized)
-                {
-                    WindowState = WindowState.Maximized;
+                WindowState = WindowState.Maximized;
 
-                }
-                else
-                {
-                    WindowState = WindowState.Normal;
-                }
-            });
+            }
+            else
+            {
+                WindowState = WindowState.Normal;
+            }
         }
 
         /// <summary>
@@ -80,31 +77,28 @@ namespace Free_Spotify
         /// <summary>
         /// Function that handles of sorts functions of the window, like maximize, minimize. 
         /// </summary>
-        private async void WindowProcedure(object sender, EventArgs e)
+        private void WindowProcedure(object sender, EventArgs e)
         {
-            await Dispatcher.BeginInvoke(() =>
+            if (WindowState != WindowState.Maximized)
             {
-                if (WindowState != WindowState.Maximized)
-                {
-                    iconMaximizedDefault.Visibility = Visibility.Visible;
-                    iconMaximizedSelected.Visibility = Visibility.Hidden;
-                    windowBackground.Padding = new Thickness(0);
-                }
-                else
-                {
-                    iconMaximizedDefault.Visibility = Visibility.Hidden;
-                    iconMaximizedSelected.Visibility = Visibility.Visible;
-                    windowBackground.Padding = new Thickness(10);
-                }
-                if (Settings.SettingsData.musicPlayerBallonTurnOn && WindowState != WindowState.Minimized && MusicPlayerPage.Instance != null && MusicPlayerPage.Instance.ballon != null)
-                {
-                    myNotifyIcon.CloseBalloon();
-                }
-                else if (Settings.SettingsData.musicPlayerBallonTurnOn && WindowState == WindowState.Minimized && MusicPlayerPage.Instance != null && MusicPlayerPage.Instance.ballon != null)
-                {
-                    myNotifyIcon.ShowCustomBalloon(MusicPlayerPage.Instance.ballon, PopupAnimation.Slide, null);
-                }
-            });
+                iconMaximizedDefault.Visibility = Visibility.Visible;
+                iconMaximizedSelected.Visibility = Visibility.Hidden;
+                windowBackground.Padding = new Thickness(0);
+            }
+            else
+            {
+                iconMaximizedDefault.Visibility = Visibility.Hidden;
+                iconMaximizedSelected.Visibility = Visibility.Visible;
+                windowBackground.Padding = new Thickness(10);
+            }
+            if (Settings.SettingsData.musicPlayerBallonTurnOn && WindowState != WindowState.Minimized && MusicPlayerPage.Instance != null && MusicPlayerPage.Instance.ballon != null)
+            {
+                myNotifyIcon.CloseBalloon();
+            }
+            else if (Settings.SettingsData.musicPlayerBallonTurnOn && WindowState == WindowState.Minimized && MusicPlayerPage.Instance != null && MusicPlayerPage.Instance.ballon != null)
+            {
+                myNotifyIcon.ShowCustomBalloon(MusicPlayerPage.Instance.ballon, PopupAnimation.Slide, null);
+            }
         }
 
         /// <summary>
