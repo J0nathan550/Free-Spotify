@@ -7,7 +7,7 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="PlayListView">
-    <Border BorderThickness="2" BorderBrush="White" Background="Black" CornerRadius="6" RenderOptions.BitmapScalingMode="Fant">
+    <Border BorderThickness="2" BorderBrush="White" Background="Black" CornerRadius="6">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="50"/>
@@ -19,18 +19,18 @@
                     <ColumnDefinition/>
                     <ColumnDefinition Width="50"/>
                 </Grid.ColumnDefinitions>
-                <Label RenderOptions.BitmapScalingMode="Fant" VerticalContentAlignment="Center" HorizontalContentAlignment="Center">
+                <Label  VerticalContentAlignment="Center" HorizontalContentAlignment="Center">
                     <fa:FontAwesome Visibility="Visible" Icon="FolderOutlinepenOutline" FontSize="22" Foreground="White"/>
                 </Label>
-                <Label RenderOptions.BitmapScalingMode="Fant" Grid.Column="1" FontSize="12" Foreground="White" Style="{StaticResource fontLabelMontserrat}" FontWeight="Medium" VerticalContentAlignment="Center" HorizontalContentAlignment="Left">
+                <Label  Grid.Column="1" FontSize="12" Foreground="White" Style="{StaticResource fontLabelMontserrat}" FontWeight="Medium" VerticalContentAlignment="Center" HorizontalContentAlignment="Left">
                     <TextBlock Name="yourPlaylist" TextTrimming="CharacterEllipsis">Your Playlists</TextBlock>
                 </Label>
-                <Label RenderOptions.BitmapScalingMode="Fant" Cursor="Hand" Name="addPlayListItemIcon" MouseDown="AddPlayListItemIcon_MouseDown" Grid.Column="2" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Margin="0,0,5,0">
+                <Label  Cursor="Hand" Name="addPlayListItemIcon" MouseDown="AddPlayListItemIcon_MouseDown" Grid.Column="2" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Margin="0,0,5,0">
                     <fa:FontAwesome Visibility="Visible" Icon="Plus" FontSize="18" Foreground="White"/>
                 </Label>
             </Grid>
-            <ScrollViewer RenderOptions.BitmapScalingMode="Fant" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden" Grid.Row="1">
-                <StackPanel RenderOptions.BitmapScalingMode="Fant" Name="playlistRender">
+            <ScrollViewer  HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden" Grid.Row="1">
+                <StackPanel  Name="playlistRender">
                 </StackPanel>
             </ScrollViewer>
         </Grid>

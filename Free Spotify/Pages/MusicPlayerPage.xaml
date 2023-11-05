@@ -18,7 +18,7 @@
                 <ColumnDefinition Width="6*"/>
                 <ColumnDefinition Width="30"/>
             </Grid.ColumnDefinitions>
-            <Image Name="iconTrack" Margin="10" Source="/Assets/music-icon-sign-symbol-design-free-png.png" RenderOptions.BitmapScalingMode="Fant" />
+            <Image Name="iconTrack" Margin="10" Source="/Assets/music-icon-sign-symbol-design-free-png.png"  />
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
                     <RowDefinition/>

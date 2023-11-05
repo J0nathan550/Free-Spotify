@@ -2,11 +2,13 @@
 using Free_Spotify.Pages;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
 using XamlAnimatedGif;
 
 namespace Free_Spotify.Dialogs
@@ -19,6 +21,8 @@ namespace Free_Spotify.Dialogs
         public PlayListAskUserTrackDialog()
         {
             InitializeComponent();
+            Topmost = Settings.SettingsData.isWindowTopMost;
+
             addSongTitle.Text = Settings.GetLocalizationString("AddSongToPlaylistText");
             addButtonText.Text = Settings.GetLocalizationString("AddButtonText");
             cancelButtonText.Text = Settings.GetLocalizationString("CancelButtonText");
@@ -45,7 +49,7 @@ namespace Free_Spotify.Dialogs
                     Foreground = new SolidColorBrush(Colors.Gray),
                     TextTrimming = TextTrimming.CharacterEllipsis,
                 };
-                renderPlaylistPanel.Children.Add(textBlock);
+                _ = renderPlaylistPanel.Children.Add(textBlock);
                 return;
             }
             int index = 0;
@@ -83,7 +87,7 @@ namespace Free_Spotify.Dialogs
                 try
                 {
                     Uri uri = new(playlist.ImagePath, UriKind.RelativeOrAbsolute);
-
+                    FileInfo info = new(playlist.ImagePath);
                     // Create an Image
                     Image image = new()
                     {
@@ -91,8 +95,17 @@ namespace Free_Spotify.Dialogs
                         Stretch = Stretch.Uniform
                     };
 
-                    AnimationBehavior.SetSourceUri(image, uri);
-                    AnimationBehavior.SetRepeatBehavior(image, RepeatBehavior.Forever);
+                    if (info.Extension == ".gif")
+                    {
+                        AnimationBehavior.SetSourceUri(image, uri);
+                        AnimationBehavior.SetRepeatBehavior(image, RepeatBehavior.Forever);
+                    }
+                    else
+                    {
+                        image.Source = new BitmapImage(uri);
+                    }
+                    RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.Fant);
+
                     actualImage = image;
                 }
                 catch
@@ -103,11 +116,11 @@ namespace Free_Spotify.Dialogs
                     Image image = new()
                     {
                         Margin = new Thickness(5),
-                        Stretch = Stretch.Uniform
+                        Stretch = Stretch.Uniform,
+                        Source = new BitmapImage(uri)
                     };
+                    RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.Fant);
 
-                    AnimationBehavior.SetSourceUri(image, uri);
-                    AnimationBehavior.SetRepeatBehavior(image, RepeatBehavior.Forever);
                     actualImage = image;
                 }
 
@@ -166,21 +179,21 @@ namespace Free_Spotify.Dialogs
                 Grid.SetColumn(gridInColumn1, 1);
                 Grid.SetColumn(labelInColumn3, 2);
 
-                grid.Children.Add(actualImage);
-                grid.Children.Add(gridInColumn1);
-                grid.Children.Add(labelInColumn3);
+                _ = grid.Children.Add(actualImage);
+                _ = grid.Children.Add(gridInColumn1);
+                _ = grid.Children.Add(labelInColumn3);
 
                 Grid.SetRow(label1, 0);
                 Grid.SetRow(label2, 1);
 
-                gridInColumn1.Children.Add(label1);
-                gridInColumn1.Children.Add(label2);
+                _ = gridInColumn1.Children.Add(label1);
+                _ = gridInColumn1.Children.Add(label2);
 
                 // Add the grid to the border
                 border.Child = grid;
 
                 checkBoxes.Add(checkBox);
-                renderPlaylistPanel.Children.Add(border);
+                _ = renderPlaylistPanel.Children.Add(border);
                 index++;
             }
         }
@@ -211,7 +224,7 @@ namespace Free_Spotify.Dialogs
         {
             if (checkBoxes.Count == 0)
             {
-                MessageBox.Show(Settings.GetLocalizationString("ErrorNoPlaylist"), Settings.GetLocalizationString("ErrorText"), MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show(Settings.GetLocalizationString("ErrorNoPlaylist"), Settings.GetLocalizationString("ErrorText"), MessageBoxButton.OK, MessageBoxImage.Error);
                 DialogResult = true;
                 Close();
                 return;
@@ -243,7 +256,7 @@ namespace Free_Spotify.Dialogs
             }
             if (!canAdd)
             {
-                MessageBox.Show(Settings.GetLocalizationString("AddTrackErrorText"), Settings.GetLocalizationString("ErrorText"), MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show(Settings.GetLocalizationString("AddTrackErrorText"), Settings.GetLocalizationString("ErrorText"), MessageBoxButton.OK, MessageBoxImage.Error);
                 DialogResult = true;
                 Close();
                 return;

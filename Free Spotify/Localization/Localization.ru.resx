@@ -264,6 +264,12 @@
   <data name="TitlePlaylistDefaultText" xml:space="preserve">
     <value>Название:</value>
   </data>
+  <data name="TopMostWindowCheckBoxText" xml:space="preserve">
+    <value>Окно будет отображаться поверх других окон до тех пор, пока оно не будет закрыто или свернуто.</value>
+  </data>
+  <data name="TopMostWindowText" xml:space="preserve">
+    <value>Сделать окно "Самым верхним"</value>
+  </data>
   <data name="TrackDefaultText" xml:space="preserve">
     <value>Трек:</value>
   </data>

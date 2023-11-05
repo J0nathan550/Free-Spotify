@@ -20,16 +20,8 @@ namespace Free_Spotify.Classes
     /// </summary>
     public static class Settings
     {
-        private static SettingsData settingsData = new();
-        /// <summary>
-        /// Function that is used to load data from .json file
-        /// </summary>
-
-        // Used to localize project to different languages. 
-        private static ResourceManager localizationManager = new("Free_Spotify.Localization.Localization", Assembly.GetExecutingAssembly());
-
-        public static SettingsData SettingsData { get => settingsData; set => settingsData = value; }
-        public static ResourceManager LocalizationManager { get => localizationManager; set => localizationManager = value; }
+        public static SettingsData SettingsData { get; set; } = new();
+        public static ResourceManager LocalizationManager { get; set; } = new("Free_Spotify.Localization.Localization", Assembly.GetExecutingAssembly());
 
         /// <summary>
         /// Handy function to retrive codename of localization
@@ -37,8 +29,7 @@ namespace Free_Spotify.Classes
         public static string GetLocalizationString(string name)
         {
             string? word = LocalizationManager.GetString(name);
-            if (word == null) return string.Empty;
-            return word;
+            return word == null ? string.Empty : word;
         }
 
         /// <summary>
@@ -98,7 +89,7 @@ namespace Free_Spotify.Classes
                 }
                 catch
                 {
-                    MessageBox.Show(GetLocalizationString("ErrorJSONCorrupted"), GetLocalizationString("ErrorText"), MessageBoxButton.OK, MessageBoxImage.Error);
+                    _ = MessageBox.Show(GetLocalizationString("ErrorJSONCorrupted"), GetLocalizationString("ErrorText"), MessageBoxButton.OK, MessageBoxImage.Error);
                     File.Delete(Utils.savePath);
                     File.WriteAllText(Utils.savePath, JsonConvert.SerializeObject(SettingsData));
                 }
@@ -130,6 +121,7 @@ namespace Free_Spotify.Classes
         public bool discordRPC = true;
         public bool economTraffic = false;
         public bool musicPlayerBallonTurnOn = true;
+        public bool isWindowTopMost = true;
         public List<Playlist> playlists = new();
 
         /// <summary>
@@ -161,16 +153,11 @@ namespace Free_Spotify.Classes
                 }
 
                 long seconds = duration / 1000;
-                if (seconds < 60)
-                {
-                    return seconds + $" {Settings.GetLocalizationString("SecondsText")}.";
-                }
-                if (seconds < 3600)
-                {
-                    return (seconds / 60) + $" {Settings.GetLocalizationString("MinutesText")}, " + (seconds % 60) + $" {Settings.GetLocalizationString("SecondsText")}.";
-                }
-                return (seconds / 3600) + $" {Settings.GetLocalizationString("HoursText")}, " + (seconds % 3600 / 60) + $" {Settings.GetLocalizationString("MinutesText")}";
-
+                return seconds < 60
+                    ? seconds + $" {Settings.GetLocalizationString("SecondsText")}."
+                    : seconds < 3600
+                    ? (seconds / 60) + $" {Settings.GetLocalizationString("MinutesText")}, " + (seconds % 60) + $" {Settings.GetLocalizationString("SecondsText")}."
+                    : (seconds / 3600) + $" {Settings.GetLocalizationString("HoursText")}, " + (seconds % 3600 / 60) + $" {Settings.GetLocalizationString("MinutesText")}";
             }
 
             /// <summary>

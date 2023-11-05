@@ -5,7 +5,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
 using XamlAnimatedGif;
 
 namespace Free_Spotify.Dialogs
@@ -18,6 +17,8 @@ namespace Free_Spotify.Dialogs
         public PlayListAddDialog()
         {
             InitializeComponent();
+            Topmost = Settings.SettingsData.isWindowTopMost;
+
             addPlaylistText.Text = Settings.GetLocalizationString("AddPlaylistText");
             title.Text = Settings.GetLocalizationString("TitlePlaylistDefaultText");
             imageOptional.Text = Settings.GetLocalizationString("ImagePlaylistDefaultText");
@@ -88,19 +89,10 @@ namespace Free_Spotify.Dialogs
         {
             if (string.IsNullOrEmpty(titleTextBox.Text))
             {
-                MessageBox.Show(Settings.GetLocalizationString("ErrorEnterTheTitleDefaultText"), Settings.GetLocalizationString("ErrorText"), MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show(Settings.GetLocalizationString("ErrorEnterTheTitleDefaultText"), Settings.GetLocalizationString("ErrorText"), MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            string image;
-            if (!string.IsNullOrEmpty(imageTextBox.Text))
-            {
-                image = imageTextBox.Text;
-            }
-            else
-            {
-                image = Utils.DefaultImagePath;
-            }
-            
+            string image = !string.IsNullOrEmpty(imageTextBox.Text) ? imageTextBox.Text : Utils.DefaultImagePath;
             Settings.SettingsData.playlists.Add(new SettingsData.Playlist() { Title = titleTextBox.Text, ImagePath = image });
             Settings.SaveSettings();
             DialogResult = true;

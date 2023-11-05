@@ -264,6 +264,12 @@
   <data name="TitlePlaylistDefaultText" xml:space="preserve">
     <value>タイトル</value>
   </data>
+  <data name="TopMostWindowCheckBoxText" xml:space="preserve">
+    <value>ウィンドウを閉じるか最小化するまで、ウィンドウは他のウィンドウの上に表示される。</value>
+  </data>
+  <data name="TopMostWindowText" xml:space="preserve">
+    <value>ウィンドウを "一番上 "にする</value>
+  </data>
   <data name="TrackDefaultText" xml:space="preserve">
     <value>トラック：</value>
   </data>

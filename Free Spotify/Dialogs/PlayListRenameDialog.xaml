@@ -8,7 +8,7 @@
  WindowStyle="SingleBorderWindow"
  Background="Transparent"
  AllowsTransparency="False"
- Title="Rename Playlist" Height="292" Width="422" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Icon="/Assets/Square44x44Logo.altform-unplated_targetsize-32.png">
+ Title="Rename Playlist" Height="292" Width="422" ResizeMode="NoResize" Topmost="True" WindowStartupLocation="CenterScreen" Icon="/Assets/Square44x44Logo.altform-unplated_targetsize-32.png">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="30" ResizeBorderThickness="3"/>
     </WindowChrome.WindowChrome>
@@ -82,7 +82,7 @@
                         <ColumnDefinition Width="70"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Image Name="demoImagePlaylist" Margin="5" Source="/Assets/spotify-icon-png-15398-Windows.ico" Stretch="Uniform" />
+                    <Image Name="demoImagePlaylist" Margin="5" Source="/Assets/SpotifyIcon.ico" Stretch="Uniform" RenderOptions.BitmapScalingMode="Fant" />
                     <Grid Grid.Column="1">
                         <Grid.RowDefinitions>
                             <RowDefinition/>

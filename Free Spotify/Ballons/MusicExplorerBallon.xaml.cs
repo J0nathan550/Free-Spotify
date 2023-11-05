@@ -8,10 +8,6 @@ namespace Free_Spotify.Ballons
 {
     public partial class MusicExplorerBallon : UserControl
     {
-        /// <summary>
-        /// Represents a notification balloon for the Music Explorer.
-        /// </summary>
-        private static MusicExplorerBallon? instance;
 
         /// <summary>
         /// Timer for automatically closing the balloon after a period of inactivity.
@@ -28,7 +24,7 @@ namespace Free_Spotify.Ballons
         /// <summary>
         /// Gets or sets the singleton instance of MusicExplorerBallon.
         /// </summary>
-        public static MusicExplorerBallon? Instance { get => instance; set => instance = value; }
+        public static MusicExplorerBallon? Instance { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the MusicExplorerBallon.
@@ -64,7 +60,7 @@ namespace Free_Spotify.Ballons
                 {
                     if (MainWindow.Window != null)
                     {
-                        if (MainWindow.Window.WindowState == System.Windows.WindowState.Normal || MainWindow.Window.WindowState == System.Windows.WindowState.Maximized)
+                        if (MainWindow.Window.WindowState is System.Windows.WindowState.Normal or System.Windows.WindowState.Maximized)
                         {
                             countDownAFK = 5;
                             return;

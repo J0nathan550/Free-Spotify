@@ -264,6 +264,12 @@
   <data name="TitlePlaylistDefaultText" xml:space="preserve">
     <value>Title:</value>
   </data>
+  <data name="TopMostWindowCheckBoxText" xml:space="preserve">
+    <value>The window will be displayed on top of other windows until the window is closed, or minimized.</value>
+  </data>
+  <data name="TopMostWindowText" xml:space="preserve">
+    <value>Make window "Top-most"</value>
+  </data>
   <data name="TrackDefaultText" xml:space="preserve">
     <value>Track:</value>
   </data>

@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:fa="http://schemas.fontawesome.io/icons/"
              mc:Ignorable="d" 
-             d:DesignHeight="200" d:DesignWidth="300" MouseDown="Ballon_MouseDown" MouseEnter="Ballon_MouseHover">
+             d:DesignHeight="200" d:DesignWidth="300" MouseDown="Ballon_MouseDown"  MouseEnter="Ballon_MouseHover">
     <UserControl.Resources>
         <Storyboard x:Key="FadeOutAnimation">
             <DoubleAnimation Storyboard.TargetProperty="Opacity"
@@ -22,7 +22,7 @@
     </UserControl.Resources>-->
     <Border Name="entireBaloon" MaxWidth="300" MaxHeight="200" Background="Black" Opacity="1" BorderBrush="White" CornerRadius="6" BorderThickness="3">
         <Grid x:Name="mp3PlayerHolder">
-            <Image RenderOptions.BitmapScalingMode="Fant" MouseEnter="Ballon_MouseHover" Stretch="Uniform" Name="songIcon" Grid.Row="0" Grid.RowSpan="3" Grid.ColumnSpan="3" Source="/Assets/spotify-icon-png-15398-Windows.ico"/>
+            <Image  MouseEnter="Ballon_MouseHover" Stretch="Uniform" Name="songIcon" Grid.Row="0" Grid.RowSpan="3" Grid.ColumnSpan="3" Source="/Assets/spotify_icon_test.ico" RenderOptions.BitmapScalingMode="Fant"/>
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
                     <RowDefinition/>
@@ -86,7 +86,7 @@
                         <ColumnDefinition Width="50"/>
                     </Grid.ColumnDefinitions>
                     <Label MouseEnter="Ballon_MouseHover" Padding="3" Name="startOfSong" Content="0:00" Foreground="White" Style="{StaticResource fontLabelMontserrat}" HorizontalContentAlignment="Center" VerticalContentAlignment="Top"></Label>
-                    <Slider MouseEnter="Ballon_MouseHover" Cursor="Hand" Style="{StaticResource Music_Slider}" Name="musicProgress" Grid.Column="1"/>
+                    <Slider MouseEnter="Ballon_MouseHover" Cursor="Hand" Style="{StaticResource Music_Slider}" Name="musicProgress" IsMoveToPointEnabled="True" Grid.Column="1"/>
                     <Label MouseEnter="Ballon_MouseHover" Padding="3" Grid.Column="2" Name="endOfSong" Content="0:00" Foreground="White" Style="{StaticResource fontLabelMontserrat}" HorizontalContentAlignment="Center" VerticalContentAlignment="Top"></Label>
                 </Grid>
             </Grid>

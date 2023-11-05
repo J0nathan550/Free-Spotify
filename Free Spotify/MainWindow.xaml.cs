@@ -1,15 +1,12 @@
 ﻿using AutoUpdaterDotNET;
 using DiscordRPC;
 using Free_Spotify.Classes;
-using Free_Spotify.Dialogs;
 using Free_Spotify.Pages;
 using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls.Primitives;
-using System.Windows.Input;
-using System.Windows.Threading;
 
 namespace Free_Spotify
 {
@@ -18,7 +15,6 @@ namespace Free_Spotify
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static MainWindow? window;
         public DiscordRpcClient discordClient = new("1154023388805873744");
 
         public MainWindow()
@@ -31,15 +27,16 @@ namespace Free_Spotify
             Settings.UpdateLanguage();
 
             InitializeComponent();
+
+            Topmost = Settings.SettingsData.isWindowTopMost;
+
             var assembly = Assembly.GetEntryAssembly();
             currentVersion_Item.Header = $"{Settings.GetLocalizationString("AppCurrentVersionDefaultText")} {assembly?.GetName().Version}";
             settingsMenuItem.Header = Settings.GetLocalizationString("SettingsMenuItemHeader");
             checkUpdatesMenuItem.Header = Settings.GetLocalizationString("CheckUpdatesMenuItemHeader");
-            discordClient.Initialize();
+
+            _ = discordClient.Initialize();
             DiscordStatuses.IdleDiscordPresence();
-            var timer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(2) };
-            timer.Tick += delegate { CheckForUpdates(); };
-            timer.Start();
         }
 
         /// <summary>
@@ -55,15 +52,7 @@ namespace Free_Spotify
         /// </summary>
         private void MaximizedIcon_Click(object sender, RoutedEventArgs e)
         {
-            if (WindowState != WindowState.Maximized)
-            {
-                WindowState = WindowState.Maximized;
-
-            }
-            else
-            {
-                WindowState = WindowState.Normal;
-            }
+            WindowState = WindowState != WindowState.Maximized ? WindowState.Maximized : WindowState.Normal;
         }
 
         /// <summary>
@@ -114,7 +103,7 @@ namespace Free_Spotify
         /// </summary>
         private void CurrentVersion_Item_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(new ProcessStartInfo()
+            _ = Process.Start(new ProcessStartInfo()
             {
                 FileName = Utils.GithubLink,
                 UseShellExecute = true
@@ -146,7 +135,7 @@ namespace Free_Spotify
 
         private SettingsPage? settingsPage;
 
-        public static MainWindow? Window { get => window; set => window = value; }
+        public static MainWindow? Window { get; set; }
 
         /// <summary>
         /// Menu selection of settings.
@@ -159,18 +148,9 @@ namespace Free_Spotify
             }
             settingsPage = new SettingsPage();
             LoadingPagesFrame.Content = null;
-            LoadingPagesFrame.NavigationService.Navigate(null);
-            LoadingPagesFrame.NavigationService.RemoveBackEntry();
-            LoadingPagesFrame.Navigate(settingsPage);
-        }
-
-        /// <summary>
-        /// Heart icon that shows you the menu of adding favorite track to one of your playlists.
-        /// </summary>
-        private void FavoriteSongButton_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            PlayListAskUserTrackDialog playListAskUserTrackDialog = new();
-            playListAskUserTrackDialog.ShowDialog();
+            _ = LoadingPagesFrame.NavigationService.Navigate(null);
+            _ = LoadingPagesFrame.NavigationService.RemoveBackEntry();
+            _ = LoadingPagesFrame.Navigate(settingsPage);
         }
     }
 }

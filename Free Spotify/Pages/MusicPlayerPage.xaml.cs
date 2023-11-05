@@ -25,7 +25,6 @@ namespace Free_Spotify.Pages
 {
     public partial class MusicPlayerPage : Page
     {
-        private static MusicPlayerPage? instance;
 
         // Timer for rendering the progress bar of the player.
         public System.Timers.Timer progressSongTimer = new() { Interval = 1000 };
@@ -44,7 +43,7 @@ namespace Free_Spotify.Pages
         public MediaPlayer MusicMediaPlayer { get; private set; } = new();
 
         // Singleton instance of the MusicPlayerPage.
-        public static MusicPlayerPage? Instance { get => instance; set => instance = value; }
+        public static MusicPlayerPage? Instance { get; set; }
 
         // Boolean indicating if the song should repeat.
         public bool IsSongRepeat = false;
@@ -128,7 +127,7 @@ namespace Free_Spotify.Pages
 
                     if (MusicMediaPlayer.NaturalDuration.HasTimeSpan)
                     {
-                        if (Settings.SettingsData.musicPlayerBallonTurnOn && ballon != null && MainWindow.Window?.WindowState == WindowState.Minimized)
+                        if (Settings.SettingsData.musicPlayerBallonTurnOn && ballon != null)
                         {
                             MusicMediaPlayer.Position = new TimeSpan(0, 0, 0, 0, (int)ballon.musicProgress.Value);
                             PausingSong();
@@ -162,7 +161,7 @@ namespace Free_Spotify.Pages
                     if (MusicMediaPlayer.Source != null && MusicMediaPlayer.NaturalDuration.HasTimeSpan)
                     {
                         string format = MusicMediaPlayer.Position.Hours > 0 ? @"h\:mm\:ss" : @"m\:ss";
-                        if (Settings.SettingsData.musicPlayerBallonTurnOn && ballon != null && MainWindow.Window?.WindowState == WindowState.Minimized)
+                        if (Settings.SettingsData.musicPlayerBallonTurnOn && ballon != null)
                         {
                             ballon.startOfSong.Content = new TimeSpan(0, 0, 0, 0, (int)ballon.musicProgress.Value).ToString(format);
                             return;
@@ -223,8 +222,32 @@ namespace Free_Spotify.Pages
         /// </summary>
         private void MusicProgressSlider_MouseLeftButtonDownEvent(object sender, MouseButtonEventArgs e)
         {
+
             try
             {
+                //if (Settings.SettingsData.musicPlayerBallonTurnOn && ballon != null)
+                //{
+                //    MusicMediaPlayer.Position = new TimeSpan(0, 0, 0, 0, (int)ballon.musicProgress.Value);
+                //    if (!musicProgress.IsMoveToPointEnabled || musicProgress.Template.FindName("PART_Track", musicProgress) is not Track trackBallon || trackBallon.Thumb == null || trackBallon.Thumb.IsMouseOver)
+                //    {
+                //        return;
+                //    }
+                //    trackBallon.Thumb.UpdateLayout();
+                    
+                //    trackBallon.Thumb.RaiseEvent(new MouseButtonEventArgs(e.MouseDevice, e.Timestamp, MouseButton.Left)
+                //    {
+                //        RoutedEvent = MouseLeftButtonDownEvent,
+                //        Source = trackBallon.Thumb
+                //    });
+
+                //    trackBallon.Thumb.RaiseEvent(new DragDeltaEventArgs(0, 0)
+                //    {
+                //        RoutedEvent = Thumb.DragDeltaEvent,
+                //        Source = trackBallon.Thumb
+                //    });
+                //    return;
+                //}
+
                 if (!musicProgress.IsMoveToPointEnabled || musicProgress.Template.FindName("PART_Track", musicProgress) is not Track track || track.Thumb == null || track.Thumb.IsMouseOver)
                 {
                     return;
@@ -581,17 +604,17 @@ namespace Free_Spotify.Pages
         /// <summary>
         /// Updates the status and information on the player bar, including song details, duration, and album artwork. 
         /// </summary>
-        public void UpdateStatusPlayerBar()
+        public async void UpdateStatusPlayerBar(VideoSearchResult? youTubeTrack, TrackSearchResult? spotifyTrackItem)
         {
-            Dispatcher.BeginInvoke(() =>
+            await Dispatcher.BeginInvoke(async () =>
             {
                 try
                 {
-                    if (trackYouTube != null && trackYouTube.Duration != null && MainWindow.Window != null)
+                    if (youTubeTrack != null && youTubeTrack.Duration != null && MainWindow.Window != null)
                     {
                         musicToggle.Icon = FontAwesomeIcon.Pause;
-                        songTitle.Text = trackYouTube.Title;
-                        songAuthor.Text = trackYouTube.Author.ChannelTitle;
+                        songTitle.Text = youTubeTrack.Title;
+                        songAuthor.Text = youTubeTrack.Author?.ChannelTitle;
 
                         if (Settings.SettingsData.musicPlayerBallonTurnOn)
                         {
@@ -601,48 +624,48 @@ namespace Free_Spotify.Pages
 
                         if (!Settings.SettingsData.economTraffic)
                         {
-                            BitmapImage sourceImageOfTrack = new();
-                            sourceImageOfTrack.BeginInit();
-                            sourceImageOfTrack.CreateOptions = BitmapCreateOptions.None;
-                            sourceImageOfTrack.CacheOption = BitmapCacheOption.None;
-                            sourceImageOfTrack.UriSource = new Uri(trackYouTube.Thumbnails[0].Url);
-                            sourceImageOfTrack.EndInit();
-
-                            iconTrack.Source = sourceImageOfTrack;
-                            RenderOptions.SetBitmapScalingMode(iconTrack, BitmapScalingMode.Fant);
-                            if (Settings.SettingsData.musicPlayerBallonTurnOn && ballon != null) ballon.songIcon.Source = sourceImageOfTrack;
+                            if (youTubeTrack.Thumbnails != null)
+                            {
+                                iconTrack.Source = new BitmapImage(new Uri(youTubeTrack.Thumbnails[0].Url));
+                                RenderOptions.SetBitmapScalingMode(iconTrack, BitmapScalingMode.Fant);
+                                if (Settings.SettingsData.musicPlayerBallonTurnOn && ballon != null) ballon.songIcon.Source = iconTrack.Source;
+                            }
                         }
 
                         uint hourMillisecond = 3600000;
-                        double trackDuration = trackYouTube.Duration.Value.TotalMilliseconds;
+                        double trackDuration = youTubeTrack.Duration.Value.TotalMilliseconds;
                         string format = trackDuration > hourMillisecond ? @"h\:mm\:ss" : @"m\:ss";
                         endOfSong.Content = $"{TimeSpan.FromMilliseconds(trackDuration).ToString(format)}";
 
-                        if (Settings.SettingsData.musicPlayerBallonTurnOn && ballon != null)
+                        if (Settings.SettingsData.musicPlayerBallonTurnOn && ballon != null && youTubeTrack.Author != null)
                         {
-                            ballon.songDescription.Text = $"{Settings.GetLocalizationString("ArtistDefaultText")} {trackYouTube.Author.ChannelTitle}\n{Settings.GetLocalizationString("TrackDefaultText")} {trackYouTube.Title}";
-                            ballon.endOfSong.Content = endOfSong.Content;
-                            ballon.leftSong.MouseDown += LeftSong_MouseDown;
-                            ballon.rightSong.MouseDown += RightSong_MouseDown;
-                            ballon.musicToggle.MouseDown += MusicToggle_MouseDown;
-                            ballon.randomSongButton.MouseDown += RandomSongButton_MouseDown;
-                            ballon.repeatSong.MouseDown += RepeatSong_MouseDown;
-                            ballon.musicProgress.AddHandler(Thumb.DragDeltaEvent, new DragDeltaEventHandler((sender, e) =>
+                            await Dispatcher.BeginInvoke(() =>
                             {
-                                MusicProgress_DragDeltaProgress();
-                            }));
-                            ballon.musicProgress.AddHandler(Thumb.DragCompletedEvent, new DragCompletedEventHandler((sender, e) =>
-                            {
-                                MusicProgress_DragCompletedEvent();
-                            }));
+                                ballon.songDescription.Text = $"{Settings.GetLocalizationString("ArtistDefaultText")} {youTubeTrack.Author.ChannelTitle}\n{Settings.GetLocalizationString("TrackDefaultText")} {youTubeTrack.Title}";
+                                ballon.endOfSong.Content = endOfSong.Content;
+                                ballon.leftSong.MouseDown += LeftSong_MouseDown;
+                                ballon.rightSong.MouseDown += RightSong_MouseDown;
+                                ballon.musicToggle.MouseDown += MusicToggle_MouseDown;
+                                ballon.randomSongButton.MouseDown += RandomSongButton_MouseDown;
+                                ballon.repeatSong.MouseDown += RepeatSong_MouseDown;
+                                ballon.musicProgress.AddHandler(Thumb.DragDeltaEvent, new DragDeltaEventHandler((sender, e) =>
+                                {
+                                    MusicProgress_DragDeltaProgress();
+                                }));
+                                ballon.musicProgress.AddHandler(Thumb.DragCompletedEvent, new DragCompletedEventHandler((sender, e) =>
+                                {
+                                    MusicProgress_DragCompletedEvent();
+                                }));
+                            });
                             MainWindow.Window.myNotifyIcon.ShowCustomBalloon(ballon, PopupAnimation.Slide, null);
+
                         }
                     }
-                    else if (trackSpotify != null && MainWindow.Window != null)
+                    else if (spotifyTrackItem != null && MainWindow.Window != null)
                     {
                         musicToggle.Icon = FontAwesomeIcon.Pause;
-                        songTitle.Text = trackSpotify.Title;
-                        songAuthor.Text = trackSpotify.Artists[0].Name;
+                        songTitle.Text = spotifyTrackItem.Title;
+                        songAuthor.Text = spotifyTrackItem.Artists[0].Name;
 
                         if (Settings.SettingsData.musicPlayerBallonTurnOn)
                         {
@@ -652,41 +675,42 @@ namespace Free_Spotify.Pages
 
                         if (!Settings.SettingsData.economTraffic)
                         {
-                            BitmapImage sourceImageOfTrack = new();
-                            sourceImageOfTrack.BeginInit();
-                            sourceImageOfTrack.CreateOptions = BitmapCreateOptions.None;
-                            sourceImageOfTrack.CacheOption = BitmapCacheOption.None;
-                            sourceImageOfTrack.UriSource = new Uri(trackSpotify.Album.Images[0].Url);
-                            sourceImageOfTrack.EndInit();
-
-                            iconTrack.Source = sourceImageOfTrack;
+                            iconTrack.Source = new BitmapImage(new Uri(spotifyTrackItem.Album.Images[0].Url));
                             RenderOptions.SetBitmapScalingMode(iconTrack, BitmapScalingMode.Fant);
-                            if (Settings.SettingsData.musicPlayerBallonTurnOn && ballon != null) ballon.songIcon.Source = sourceImageOfTrack;
+                            if (Settings.SettingsData.musicPlayerBallonTurnOn && ballon != null) ballon.songIcon.Source = iconTrack.Source;
                         }
 
                         uint hourMillisecond = 3600000;
-                        double trackDuration = trackSpotify.DurationMs;
+                        double trackDuration = spotifyTrackItem.DurationMs;
                         string format = trackDuration > hourMillisecond ? @"h\:mm\:ss" : @"m\:ss";
-                        endOfSong.Content = TimeSpan.FromMilliseconds(trackSpotify.DurationMs).ToString(format);
+                        endOfSong.Content = TimeSpan.FromMilliseconds(spotifyTrackItem.DurationMs).ToString(format);
 
                         if (Settings.SettingsData.musicPlayerBallonTurnOn && ballon != null)
                         {
-                            ballon.songDescription.Text = $"{Settings.GetLocalizationString("ArtistDefaultText")} {trackSpotify.Artists[0].Name}\n{Settings.GetLocalizationString("TrackDefaultText")} {trackSpotify.Title}";
-                            ballon.endOfSong.Content = endOfSong.Content;
-                            ballon.leftSong.MouseDown += LeftSong_MouseDown;
-                            ballon.rightSong.MouseDown += RightSong_MouseDown;
-                            ballon.musicToggle.MouseDown += MusicToggle_MouseDown;
-                            ballon.randomSongButton.MouseDown += RandomSongButton_MouseDown;
-                            ballon.repeatSong.MouseDown += RepeatSong_MouseDown;
-                            ballon.musicProgress.AddHandler(Thumb.DragDeltaEvent, new DragDeltaEventHandler((sender, e) =>
+                            await Dispatcher.BeginInvoke(() =>
                             {
-                                MusicProgress_DragDeltaProgress();
-                            }));
-                            ballon.musicProgress.AddHandler(Thumb.DragCompletedEvent, new DragCompletedEventHandler((sender, e) =>
+                                ballon.songDescription.Text = $"{Settings.GetLocalizationString("ArtistDefaultText")} {spotifyTrackItem.Artists[0].Name}\n{Settings.GetLocalizationString("TrackDefaultText")} {spotifyTrackItem.Title}";
+                                ballon.endOfSong.Content = endOfSong.Content;
+                                ballon.leftSong.MouseDown += LeftSong_MouseDown;
+                                ballon.rightSong.MouseDown += RightSong_MouseDown;
+                                ballon.musicToggle.MouseDown += MusicToggle_MouseDown;
+                                ballon.randomSongButton.MouseDown += RandomSongButton_MouseDown;
+                                ballon.repeatSong.MouseDown += RepeatSong_MouseDown;
+                                ballon.musicProgress.AddHandler(Thumb.DragDeltaEvent, new DragDeltaEventHandler((sender, e) =>
+                                {
+                                    MusicProgress_DragDeltaProgress();
+                                }));
+                                ballon.musicProgress.AddHandler(Thumb.DragCompletedEvent, new DragCompletedEventHandler((sender, e) =>
+                                {
+                                    MusicProgress_DragCompletedEvent();
+                                }));
+                                ballon.musicProgress.AddHandler(PreviewMouseLeftButtonDownEvent, new MouseButtonEventHandler(MusicProgressSlider_MouseLeftButtonDownEvent), true);
+
+                            });
+                            await Dispatcher.BeginInvoke(() =>
                             {
-                                MusicProgress_DragCompletedEvent();
-                            }));
-                            MainWindow.Window.myNotifyIcon.ShowCustomBalloon(ballon, PopupAnimation.Slide, null);
+                                MainWindow.Window.myNotifyIcon.ShowCustomBalloon(ballon, PopupAnimation.Slide, null);
+                            });
                         }
                     }
                 }
@@ -723,12 +747,11 @@ namespace Free_Spotify.Pages
                     MainWindow.Window.progressSongTaskBar.ProgressState = TaskbarItemProgressState.None;
                     MainWindow.Window.progressSongTaskBar.ProgressValue = 0;
                 });
-                
+
             }
             catch
             {
                 ClearMusic();
-                
             }
         }
 
@@ -746,6 +769,10 @@ namespace Free_Spotify.Pages
                 trackYouTube = null;
                 await Task.Run(() =>
                 {
+                    if (spotifyTrack != null)
+                    {
+                        UpdateStatusPlayerBar(null, spotifyTrack);
+                    }
                     PlaySound();
                 });
             }
@@ -768,6 +795,10 @@ namespace Free_Spotify.Pages
                 trackSpotify = null;
                 await Task.Run(() =>
                 {
+                    if (trackYouTube != null)
+                    {
+                        UpdateStatusPlayerBar(trackYouTube, null);
+                    }
                     PlaySound();
                 });
             }
@@ -783,7 +814,6 @@ namespace Free_Spotify.Pages
         {
             try
             {
-                UpdateStatusPlayerBar();
                 await Dispatcher.BeginInvoke(() =>
                 {
                     if (Utils.IsPlayingFromPlaylist)
@@ -881,11 +911,11 @@ namespace Free_Spotify.Pages
             }
             catch (HttpRequestException request)
             {
-                if (request.Message.Contains("400"))
+                if (request.StatusCode == System.Net.HttpStatusCode.BadRequest)
                 {
                     await Dispatcher.BeginInvoke(() =>
                     {
-                        
+
                         SearchViewPage.SearchWindow?.searchVisual.Children.Clear();
                         TextBlock resultTextBlock = new()
                         {
@@ -897,14 +927,14 @@ namespace Free_Spotify.Pages
                             TextWrapping = TextWrapping.Wrap,
                             Style = (Style)FindResource("fontMontserrat")
                         };
-                        SearchViewPage.SearchWindow?.searchVisual.Children.Add(resultTextBlock);
+                        _ = (SearchViewPage.SearchWindow?.searchVisual.Children.Add(resultTextBlock));
                     });
                 }
                 else
                 {
                     await Dispatcher.BeginInvoke(() =>
                     {
-                        
+
                         SearchViewPage.SearchWindow?.searchVisual.Children.Clear();
                         TextBlock resultTextBlock = new()
                         {
@@ -916,7 +946,7 @@ namespace Free_Spotify.Pages
                             TextWrapping = TextWrapping.Wrap,
                             Style = (Style)FindResource("fontMontserrat")
                         };
-                        SearchViewPage.SearchWindow?.searchVisual.Children.Add(resultTextBlock);
+                        _ = (SearchViewPage.SearchWindow?.searchVisual.Children.Add(resultTextBlock));
                     });
                 }
                 StopSound();
@@ -927,14 +957,14 @@ namespace Free_Spotify.Pages
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"ERROR: {ex.GetType()},\n Message: {ex.Message},\n Please screenshot this error, and send me in github!\nLINK: {Utils.GithubLink}");
+                _ = MessageBox.Show($"ERROR: {ex.GetType()},\n Message: {ex.Message},\n Please screenshot this error, and send me in github!\nLINK: {Utils.GithubLink}");
                 StopSound();
             }
         }
 
         public void ClearMusic()
         {
-            Dispatcher.BeginInvoke(() =>
+            _ = Dispatcher.BeginInvoke(() =>
             {
                 StopSound();
                 MusicMediaPlayer.Close();
@@ -954,7 +984,7 @@ namespace Free_Spotify.Pages
         private void FavoriteSongButton_MouseDown(object sender, MouseButtonEventArgs e)
         {
             PlayListAskUserTrackDialog playListAskUserTrackDialog = new();
-            playListAskUserTrackDialog.ShowDialog();
+            _ = playListAskUserTrackDialog.ShowDialog();
         }
     }
 }

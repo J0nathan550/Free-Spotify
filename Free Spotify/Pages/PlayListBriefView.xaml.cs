@@ -2,13 +2,14 @@
 using Free_Spotify.Dialogs;
 using Free_Spotify.Interfaces;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using XamlAnimatedGif;
 
 namespace Free_Spotify.Pages
@@ -29,79 +30,136 @@ namespace Free_Spotify.Pages
             InitializeComponent();
             this.playListCurrentIndex = playListCurrentIndex;
             // Calls a method to populate the view with tracks from the selected playlist.
+            GC.Collect();
             CreateTracksInPlaylist();
-            Dispatcher.BeginInvoke(() =>
-            {
-                if (Utils.IsPlayingFromPlaylist) playIconPlaylist.Icon = FontAwesome.WPF.FontAwesomeIcon.Pause;
-            });
+            if (Utils.IsPlayingFromPlaylist) playIconPlaylist.Icon = FontAwesome.WPF.FontAwesomeIcon.Stop;
         }
 
         /// <summary>
         /// Updates the view to display tracks in the current playlist, including track information and context menus.
         /// </summary>
-        public void CreateTracksInPlaylist()
+        public async void CreateTracksInPlaylist()
         {
             // Update the playlist view, title, and amount of tracks.
             // Display track details and context menus for each track in the current playlist.
 
-            Dispatcher.BeginInvoke(() =>
+            PlayListView.Instance?.CreatePlaylists();
+            playListTitle.Text = Settings.SettingsData.playlists[playListCurrentIndex].Title;
+            playListAmountTracks.Text = $"{Settings.GetLocalizationString("AmountTracksDefaultText")} {Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist.Count} | {Settings.SettingsData.playlists[playListCurrentIndex].CalculateAmountOfTimeToListenWholePlayList()}";
+
+            try
             {
-
-                PlayListView.Instance?.CreatePlaylists();
-                playListTitle.Text = Settings.SettingsData.playlists[playListCurrentIndex].Title;
-                playListAmountTracks.Text = $"{Settings.GetLocalizationString("AmountTracksDefaultText")} {Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist.Count} | {Settings.SettingsData.playlists[playListCurrentIndex].CalculateAmountOfTimeToListenWholePlayList()}";
-
-                try
+                Uri uri = new(Settings.SettingsData.playlists[playListCurrentIndex].ImagePath, UriKind.RelativeOrAbsolute);
+                FileInfo info = new(Settings.SettingsData.playlists[playListCurrentIndex].ImagePath);
+                if (info.Extension == ".gif")
                 {
-                    Uri uri = new(Settings.SettingsData.playlists[playListCurrentIndex].ImagePath, UriKind.RelativeOrAbsolute);
                     AnimationBehavior.SetSourceUri(playListImage, uri);
                     AnimationBehavior.SetRepeatBehavior(playListImage, RepeatBehavior.Forever);
                 }
-                catch
+                else
                 {
-                    Uri uri = new(Utils.DefaultImagePath);
-                    AnimationBehavior.SetSourceUri(playListImage, uri);
-                    AnimationBehavior.SetRepeatBehavior(playListImage, RepeatBehavior.Forever);
+                    BitmapImage bitmapImage = new(uri);
+                    playListImage.Source = bitmapImage;
                 }
+            }
+            catch
+            {
+                Uri uri = new(Utils.DefaultImagePath);
+                BitmapImage bitmapImage = new(uri);
+                playListImage.Source = bitmapImage;
+            }
 
-                if (PlayListView.Instance != null)
+            mainVisualGrid.Children.Clear();
+            mainVisualGrid.RowDefinitions.Clear();
+            mainVisualGrid.ColumnDefinitions.Clear();
+
+            int maxColumns = 7;
+            int maxRows = Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist.Count + Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist.Count;
+
+            if (maxRows == 0)
+            {
+                return;
+            }
+
+            Dictionary<string, Image> images = new();
+
+            for (int i = 0; i < maxColumns; i++)
+            {
+                if (i % 2 != 0)
                 {
-                    trackPanelDisplay.Children.Clear();
-                    int index = 0;
-                    foreach (var track in Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist)
+                    mainVisualGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1) });
+                    GridSplitter splitter = new()
                     {
-                        // Grid
-                        Grid grid = new()
+                        Background = new SolidColorBrush(Colors.White),
+                        HorizontalAlignment = HorizontalAlignment.Stretch
+                    };
+                    Grid.SetColumn(splitter, i);
+                    Grid.SetRowSpan(splitter, maxRows);
+                    _ = mainVisualGrid.Children.Add(splitter);
+                }
+                else
+                {
+                    mainVisualGrid.ColumnDefinitions.Add(new ColumnDefinition());
+                }
+            }
+
+            int index = 0;
+            for (int i = 0; i < maxRows; i++)
+            {
+                if (i % 2 != 0)
+                {
+                    mainVisualGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1) });
+                    Border line = new()
+                    {
+                        BorderThickness = new Thickness(1),
+                        BorderBrush = new SolidColorBrush(Colors.White)
+                    };
+                    Grid.SetColumnSpan(line, maxColumns);
+                    Grid.SetRow(line, i);
+                    _ = mainVisualGrid.Children.Add(line);
+                }
+                else
+                {
+                    if (PlayListView.Instance != null)
+                    {
+                        mainVisualGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(50) });
+
+                        Grid gridToBeAdded = new()
                         {
-                            Height = 50,
                             Name = $"i{index}",
-                            Cursor = Cursors.Hand
+                            Cursor = Cursors.Hand,
+                            IsHitTestVisible = true,
+                            Background = new SolidColorBrush(Colors.Transparent)
                         };
 
-                        grid.MouseLeftButtonDown += (sender, e) =>
+
+                        gridToBeAdded.MouseLeftButtonDown += (sender, e) =>
                         {
-                            currentSongIndex = int.Parse(grid.Name[1..]);
+                            currentSongIndex = int.Parse(gridToBeAdded.Name[1..]);
                             if (Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[currentSongIndex].YouTubeTrack != null)
                             {
                                 MusicPlayerPage.Instance?.PlaySound(Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[currentSongIndex].YouTubeTrack?.GetVideoSearchResult(), Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[currentSongIndex].YouTubeTrack, this);
                                 SearchViewPage.SearchWindow?.ClearSearchView();
-                                playIconPlaylist.Icon = FontAwesome.WPF.FontAwesomeIcon.Pause;
+                                playIconPlaylist.Icon = FontAwesome.WPF.FontAwesomeIcon.Stop;
                             }
                             else if (Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[currentSongIndex].SpotifyTrack != null)
                             {
                                 MusicPlayerPage.Instance?.PlaySound(Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[currentSongIndex].SpotifyTrack?.GetTrackSearchResult(), this);
                                 SearchViewPage.SearchWindow?.ClearSearchView();
-                                playIconPlaylist.Icon = FontAwesome.WPF.FontAwesomeIcon.Pause;
+                                playIconPlaylist.Icon = FontAwesome.WPF.FontAwesomeIcon.Stop;
                             }
                             Utils.IsPlayingFromPlaylist = true;
                         };
+
+                        Grid.SetColumnSpan(gridToBeAdded, maxColumns);
+                        Grid.SetRow(gridToBeAdded, i);
+                        Grid.SetZIndex(gridToBeAdded, 1);
 
                         // ContextMenu
                         ContextMenu contextMenu = new()
                         {
                             Background = new SolidColorBrush(Colors.Black),
                             Foreground = new SolidColorBrush(Colors.White),
-
                         };
 
                         MenuItem moveUpItem = new()
@@ -113,7 +171,7 @@ namespace Free_Spotify.Pages
                         };
                         moveUpItem.Click += (o, e) =>
                         {
-                            int index = int.Parse(grid.Name[1..]);
+                            int index = int.Parse(gridToBeAdded.Name[1..]);
                             int oldIndex = index;
                             index--;
                             if (index < 0)
@@ -142,7 +200,7 @@ namespace Free_Spotify.Pages
                         };
                         moveDownItem.Click += (o, e) =>
                         {
-                            int index = int.Parse(grid.Name[1..]);
+                            int index = int.Parse(gridToBeAdded.Name[1..]);
                             int oldIndex = index;
                             index++;
                             if (index >= Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist.Count)
@@ -174,25 +232,16 @@ namespace Free_Spotify.Pages
                             PlayListRemoveDialog removeDialog = new(PlayListRemoveDialog.TypeRemove.Track);
                             if (removeDialog.ShowDialog() == true)
                             {
-                                Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist.Remove(track);
+                                _ = Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist.Remove(Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[i]);
                                 Settings.SaveSettings();
                                 CreateTracksInPlaylist();
                             }
                         };
 
-                        contextMenu.Items.Add(moveUpItem);
-                        contextMenu.Items.Add(moveDownItem);
-                        contextMenu.Items.Add(deleteTrackItem);
-                        grid.ContextMenu = contextMenu;
-
-                        // Column Definitions
-                        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(30) });
-                        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1) });
-                        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(100) });
-                        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1) });
-                        grid.ColumnDefinitions.Add(new ColumnDefinition());
-                        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1) });
-                        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(100) });
+                        _ = contextMenu.Items.Add(moveUpItem);
+                        _ = contextMenu.Items.Add(moveDownItem);
+                        _ = contextMenu.Items.Add(deleteTrackItem);
+                        gridToBeAdded.ContextMenu = contextMenu;
 
                         // Label (Column 0)
                         Label label0 = new()
@@ -209,48 +258,38 @@ namespace Free_Spotify.Pages
                                 Text = (index + 1).ToString()
                             }
                         };
+                        Grid.SetColumn(label0, 0);
+                        Grid.SetRow(label0, i);
 
-                        // Rectangle (Column 1)
-                        Rectangle rectangle1 = new()
-                        {
-                            SnapsToDevicePixels = true,
-                            Fill = Brushes.White
-                        };
+                        SettingsData.Playlist.YouTubeTrackItem? youTubeTrack = Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[index].YouTubeTrack;
+                        SettingsData.Playlist.SpotifyTrackItem? spotifyTrack = Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[index].SpotifyTrack;
 
                         // Image (Column 2)
                         Image? actualImage = new();
                         if (!Settings.SettingsData.economTraffic)
                         {
-                            RenderOptions.SetBitmapScalingMode(actualImage, BitmapScalingMode.Fant);
                             try
                             {
-                                if (track.YouTubeTrack != null && track.YouTubeTrack.Thumbnails != null)
+                                if (youTubeTrack != null && youTubeTrack.Thumbnails != null)
                                 {
-                                    Uri uri = new(track.YouTubeTrack.Thumbnails[0].Url, UriKind.RelativeOrAbsolute);
-
-                                    // Create an Image
                                     Image image = new()
                                     {
-                                        Margin = new Thickness(5),
-                                        Stretch = Stretch.Uniform
+                                        Stretch = Stretch.Uniform,
+                                        Source = new BitmapImage(new(Utils.DefaultImagePath))
                                     };
-                                    AnimationBehavior.SetSourceUri(image, uri);
-                                    AnimationBehavior.SetRepeatBehavior(image, RepeatBehavior.Forever);
+                                    images[youTubeTrack.Thumbnails[0].Url] = image;
+                                    RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.Fant);
                                     actualImage = image;
                                 }
-                                else if (track.SpotifyTrack != null)
+                                else if (spotifyTrack != null)
                                 {
-                                    Uri uri = new(track.SpotifyTrack.Album.Images[0].Url, UriKind.RelativeOrAbsolute);
-
-                                    // Create an Image
                                     Image image = new()
                                     {
-                                        Margin = new Thickness(5),
-                                        Stretch = Stretch.Uniform
+                                        Stretch = Stretch.Uniform,
+                                        Source = new BitmapImage(new(Utils.DefaultImagePath))
                                     };
-
-                                    AnimationBehavior.SetSourceUri(image, uri);
-                                    AnimationBehavior.SetRepeatBehavior(image, RepeatBehavior.Forever);
+                                    images[spotifyTrack.Album.Images[0].Url] = image;
+                                    RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.Fant);
                                     actualImage = image;
                                 }
                             }
@@ -261,30 +300,28 @@ namespace Free_Spotify.Pages
                                 // Create an Image
                                 Image image = new()
                                 {
-                                    Margin = new Thickness(5),
-                                    Stretch = Stretch.Uniform
+                                    Stretch = Stretch.Uniform,
+                                    Source = new BitmapImage(uri)
                                 };
-
-                                AnimationBehavior.SetSourceUri(image, uri);
-                                AnimationBehavior.SetRepeatBehavior(image, RepeatBehavior.Forever);
+                                RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.Fant);
                                 actualImage = image;
                             }
                         }
-
-
-                        // Rectangle (Column 3)
-                        Rectangle rectangle3 = new()
-                        {
-                            SnapsToDevicePixels = true,
-                            Fill = Brushes.White
-                        };
+                        Grid.SetColumn(actualImage, 2);
+                        Grid.SetRow(actualImage, i);
 
                         // Grid (Column 4)
                         Grid grid4 = new();
-
+                        Grid.SetColumn(grid4, 4);
+                        Grid.SetRow(grid4, i);
                         // Row Definitions
                         grid4.RowDefinitions.Add(new RowDefinition());
                         grid4.RowDefinitions.Add(new RowDefinition());
+
+                        TextBlock label4Row0TextBlock = new()
+                        {
+                            TextTrimming = TextTrimming.CharacterEllipsis
+                        };
 
                         // Label (Row 0)
                         Label label4Row0 = new()
@@ -297,14 +334,17 @@ namespace Free_Spotify.Pages
                             FontSize = 18,
                             VerticalContentAlignment = VerticalAlignment.Center,
                             HorizontalContentAlignment = HorizontalAlignment.Left,
-                            Content = new TextBlock
-                            {
-                                TextTrimming = TextTrimming.CharacterEllipsis,
-                            }
+                            Content = label4Row0TextBlock
                         };
 
-                        if (track.YouTubeTrack != null) label4Row0.Content = track.YouTubeTrack.Title;
-                        else if (track.SpotifyTrack != null) label4Row0.Content = track.SpotifyTrack.Title;
+
+                        if (youTubeTrack != null) label4Row0TextBlock.Text = youTubeTrack.Title;
+                        else if (spotifyTrack != null) label4Row0TextBlock.Text = spotifyTrack.Title;
+
+                        TextBlock label4Row1TextBlock = new()
+                        {
+                            TextTrimming = TextTrimming.CharacterEllipsis
+                        };
 
                         // Label (Row 1)
                         Label label4Row1 = new()
@@ -317,20 +357,11 @@ namespace Free_Spotify.Pages
                             FontSize = 14,
                             VerticalContentAlignment = VerticalAlignment.Center,
                             HorizontalContentAlignment = HorizontalAlignment.Left,
-                            Content = new TextBlock
-                            {
-                                TextTrimming = TextTrimming.CharacterEllipsis,
-                            }
+                            Content = label4Row1TextBlock
                         };
 
-                        if (track.YouTubeTrack != null) label4Row1.Content = track.YouTubeTrack.Author;
-                        else if (track.SpotifyTrack != null) label4Row1.Content = track.SpotifyTrack.Artists[0].Name;
-
-                        // Rectangle (Column 5)
-                        Rectangle rectangle5 = new()
-                        {
-                            Fill = Brushes.White
-                        };
+                        if (youTubeTrack != null && youTubeTrack.Author != null) label4Row1TextBlock.Text = youTubeTrack.Author.ToString();
+                        else if (spotifyTrack != null) label4Row1TextBlock.Text = spotifyTrack.Artists[0].Name;
 
                         // Label (Column 6)
                         Label label6 = new()
@@ -346,84 +377,58 @@ namespace Free_Spotify.Pages
                                 TextTrimming = TextTrimming.CharacterEllipsis,
                             }
                         };
-
+                        Grid.SetColumn(label6, 6);
+                        Grid.SetRow(label6, i);
 
                         uint hourMillisecond = 3600000;
-                        if (track.YouTubeTrack != null)
+                        if (youTubeTrack != null)
                         {
-                            if (track.YouTubeTrack.Duration != null)
+                            if (youTubeTrack.Duration != null)
                             {
-                                if (track.YouTubeTrack.Duration.Value.TotalMilliseconds > hourMillisecond)
-                                {
-                                    label6.Content = TimeSpan.FromMilliseconds(track.YouTubeTrack.Duration.Value.TotalMilliseconds).ToString(@"h\:mm\:ss");
-                                }
-                                else
-                                {
-                                    label6.Content = TimeSpan.FromMilliseconds(track.YouTubeTrack.Duration.Value.TotalMilliseconds).ToString(@"m\:ss");
-                                }
+                                label6.Content = youTubeTrack.Duration.Value.TotalMilliseconds > hourMillisecond
+                                    ? TimeSpan.FromMilliseconds(youTubeTrack.Duration.Value.TotalMilliseconds).ToString(@"h\:mm\:ss")
+                                    : (object)TimeSpan.FromMilliseconds(youTubeTrack.Duration.Value.TotalMilliseconds).ToString(@"m\:ss");
                             }
                         }
-                        else if (track.SpotifyTrack != null)
+                        else if (spotifyTrack != null)
                         {
-                            if (track.SpotifyTrack.DurationMs > hourMillisecond)
-                            {
-                                label6.Content = TimeSpan.FromMilliseconds(track.SpotifyTrack.DurationMs).ToString(@"h\:mm\:ss");
-                            }
-                            else
-                            {
-                                label6.Content = TimeSpan.FromMilliseconds(track.SpotifyTrack.DurationMs).ToString(@"m\:ss");
-                            }
+                            label6.Content = spotifyTrack.DurationMs > hourMillisecond
+                                ? TimeSpan.FromMilliseconds(spotifyTrack.DurationMs).ToString(@"h\:mm\:ss")
+                                : (object)TimeSpan.FromMilliseconds(spotifyTrack.DurationMs).ToString(@"m\:ss");
                         }
 
                         // Add elements to the grid
-                        grid.Children.Add(label0);
-                        grid.Children.Add(rectangle1);
+                        _ = mainVisualGrid.Children.Add(gridToBeAdded);
+                        _ = mainVisualGrid.Children.Add(label0);
                         if (!Settings.SettingsData.economTraffic)
                         {
-                            grid.Children.Add(actualImage);
+                            _ = mainVisualGrid.Children.Add(actualImage);
                         }
-                        grid.Children.Add(rectangle3);
-                        grid.Children.Add(grid4);
-                        grid.Children.Add(rectangle5);
-                        grid.Children.Add(label6);
+                        _ = mainVisualGrid.Children.Add(grid4);
+                        _ = mainVisualGrid.Children.Add(label6);
 
-                        Grid.SetColumn(label0, 0);
-                        Grid.SetColumn(rectangle1, 1);
                         if (!Settings.SettingsData.economTraffic)
                         {
                             Grid.SetColumn(actualImage, 2);
                         }
-                        Grid.SetColumn(actualImage, 2);
-                        Grid.SetColumn(rectangle3, 3);
-                        Grid.SetColumn(grid4, 4);
-                        Grid.SetColumn(rectangle5, 5);
-                        Grid.SetColumn(label6, 6);
 
                         Grid.SetRow(label4Row0, 0);
                         Grid.SetRow(label4Row1, 1);
 
-                        grid4.Children.Add(label4Row0);
-                        grid4.Children.Add(label4Row1);
+                        _ = grid4.Children.Add(label4Row0);
+                        _ = grid4.Children.Add(label4Row1);
 
-                        // Border
-                        Border border = new()
-                        {
-                            BorderThickness = new Thickness(0.5),
-                            BorderBrush = Brushes.White
-                        };
-
-                        // Add the grid and border to the stack panel
-                        trackPanelDisplay.Children.Add(grid);
-                        trackPanelDisplay.Children.Add(border);
                         index++;
                     }
-                    if (trackPanelDisplay.Children.Count == 0)
-                    {
-                        return;
-                    }
-                    trackPanelDisplay.Children.RemoveAt(trackPanelDisplay.Children.Count - 1);
                 }
-            });
+            }
+
+
+            foreach (string key in images.Keys)
+            {
+                images[key].Source = await Utils.LoadImageAsync(key);
+            }
+
         }
 
         /// <summary>
@@ -431,7 +436,7 @@ namespace Free_Spotify.Pages
         /// </summary>
         private void BackToSearchPage_Click(object sender, MouseButtonEventArgs e)
         {
-            Dispatcher.BeginInvoke(() =>
+            _ = Dispatcher.BeginInvoke(() =>
             {
                 if (MainWindow.Window == null)
                 {
@@ -441,9 +446,9 @@ namespace Free_Spotify.Pages
                 SearchViewPage.SearchWindow = new();
                 Content = null;
                 MainWindow.Window.LoadingPagesFrame.Content = null;
-                MainWindow.Window.LoadingPagesFrame.NavigationService.Navigate(null);
-                MainWindow.Window.LoadingPagesFrame.NavigationService.RemoveBackEntry();
-                MainWindow.Window.LoadingPagesFrame.Navigate(SearchViewPage.SearchWindow);
+                _ = MainWindow.Window.LoadingPagesFrame.NavigationService.Navigate(null);
+                _ = MainWindow.Window.LoadingPagesFrame.NavigationService.RemoveBackEntry();
+                _ = MainWindow.Window.LoadingPagesFrame.Navigate(SearchViewPage.SearchWindow);
             });
         }
 
@@ -452,7 +457,7 @@ namespace Free_Spotify.Pages
         /// </summary>
         private void PlayButtonBorder_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            Dispatcher.BeginInvoke(() =>
+            _ = Dispatcher.BeginInvoke(() =>
             {
                 // If a music player instance exists and the playlist is not empty, play the first track.
                 if (MusicPlayerPage.Instance == null)
@@ -480,7 +485,7 @@ namespace Free_Spotify.Pages
                 {
                     MusicPlayerPage.Instance.PlaySound(Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[currentSongIndex].SpotifyTrack?.GetTrackSearchResult(), this);
                 }
-                playIconPlaylist.Icon = FontAwesome.WPF.FontAwesomeIcon.Pause;
+                playIconPlaylist.Icon = FontAwesome.WPF.FontAwesomeIcon.Stop;
                 Utils.IsPlayingFromPlaylist = true;
             });
         }
@@ -490,7 +495,7 @@ namespace Free_Spotify.Pages
         /// </summary>
         public void PreviousSong()
         {
-            Dispatcher.BeginInvoke(() =>
+            _ = Dispatcher.BeginInvoke(() =>
             {
                 if (MusicPlayerPage.Instance == null)
                 {
@@ -504,12 +509,10 @@ namespace Free_Spotify.Pages
                 if (Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[currentSongIndex].YouTubeTrack != null)
                 {
                     MusicPlayerPage.Instance?.PlaySound(Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[currentSongIndex].YouTubeTrack?.GetVideoSearchResult(), Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[currentSongIndex].YouTubeTrack, this);
-                    MusicPlayerPage.Instance?.UpdateStatusPlayerBar();
                 }
                 else if (Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[currentSongIndex].SpotifyTrack != null)
                 {
                     MusicPlayerPage.Instance.PlaySound(Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[currentSongIndex].SpotifyTrack?.GetTrackSearchResult(), this);
-                    MusicPlayerPage.Instance.UpdateStatusPlayerBar();
                 }
             });
         }
@@ -519,7 +522,7 @@ namespace Free_Spotify.Pages
         /// </summary>
         public void NextSong()
         {
-            Dispatcher.BeginInvoke(() =>
+            _ = Dispatcher.BeginInvoke(() =>
             {
                 if (MusicPlayerPage.Instance == null)
                 {
@@ -533,12 +536,10 @@ namespace Free_Spotify.Pages
                 if (Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[currentSongIndex].YouTubeTrack != null)
                 {
                     MusicPlayerPage.Instance?.PlaySound(Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[currentSongIndex].YouTubeTrack?.GetVideoSearchResult(), Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[currentSongIndex].YouTubeTrack, this);
-                    MusicPlayerPage.Instance?.UpdateStatusPlayerBar();
                 }
                 else if (Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[currentSongIndex].SpotifyTrack != null)
                 {
                     MusicPlayerPage.Instance.PlaySound(Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[currentSongIndex].SpotifyTrack?.GetTrackSearchResult(), this);
-                    MusicPlayerPage.Instance.UpdateStatusPlayerBar();
                 }
             });
         }
@@ -548,7 +549,7 @@ namespace Free_Spotify.Pages
         /// </summary>
         public void ShuffleSongs()
         {
-            Dispatcher.BeginInvoke(() =>
+            _ = Dispatcher.BeginInvoke(() =>
             {
                 if (MusicPlayerPage.Instance == null)
                 {
@@ -566,13 +567,11 @@ namespace Free_Spotify.Pages
                 {
                     currentSongIndex = pos;
                     MusicPlayerPage.Instance?.PlaySound(Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[currentSongIndex].YouTubeTrack?.GetVideoSearchResult(), Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[currentSongIndex].YouTubeTrack, this);
-                    MusicPlayerPage.Instance?.UpdateStatusPlayerBar();
                 }
                 else if (Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[currentSongIndex].SpotifyTrack != null)
                 {
                     currentSongIndex = pos;
                     MusicPlayerPage.Instance.PlaySound(Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[currentSongIndex].SpotifyTrack?.GetTrackSearchResult(), this);
-                    MusicPlayerPage.Instance.UpdateStatusPlayerBar();
                 }
             });
         }

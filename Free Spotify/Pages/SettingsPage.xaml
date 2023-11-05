@@ -19,8 +19,8 @@
                     <ColumnDefinition Width="50"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <fa:FontAwesome MouseDown="BackToSearchPage_Click" Icon="LongArrowLeft" Foreground="White" FontSize="28"></fa:FontAwesome>
-                <Label RenderOptions.BitmapScalingMode="Fant" VerticalContentAlignment="Center" Style="{StaticResource fontLabelMontserrat}" Foreground="White" FontWeight="Medium" Grid.Column="1" HorizontalContentAlignment="Center" FontSize="24" Padding="0">
+                <fa:FontAwesome MouseLeftButtonDown="BackToSearchPage_Click" Icon="LongArrowLeft" Foreground="White" FontSize="28"></fa:FontAwesome>
+                <Label VerticalContentAlignment="Center" Style="{StaticResource fontLabelMontserrat}" Foreground="White" FontWeight="Medium" Grid.Column="1" HorizontalContentAlignment="Center" FontSize="24" Padding="0">
                     <TextBlock Name="settingsLabel" TextTrimming="CharacterEllipsis">Настройки</TextBlock>
                 </Label>
             </Grid>
@@ -30,7 +30,7 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Label RenderOptions.BitmapScalingMode="Fant" Foreground="White" Style="{StaticResource fontLabelMontserrat}" FontWeight="Medium">
+                    <Label Foreground="White" Style="{StaticResource fontLabelMontserrat}" FontWeight="Medium">
                         <TextBlock Name="languageLabel" TextTrimming="CharacterEllipsis">Язык:</TextBlock>
                     </Label>
                     <ComboBox Name="languageComboBox" SelectionChanged="LanguageChanged_ComboBox" HorizontalAlignment="Left" Grid.Column="1" SelectedIndex="1">
@@ -45,30 +45,30 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Label RenderOptions.BitmapScalingMode="Fant" Foreground="White" Style="{StaticResource fontLabelMontserrat}" FontWeight="Medium">
+                    <Label Foreground="White" Style="{StaticResource fontLabelMontserrat}" FontWeight="Medium">
                         <TextBlock TextTrimming="CharacterEllipsis">Discord RPC:</TextBlock>
                     </Label>
-                    <CheckBox RenderOptions.BitmapScalingMode="Fant" Name="discordRPCCheckBox" Grid.Column="1" VerticalContentAlignment="Center" IsChecked="True" Click="DiscordRPC_Option"/>
+                    <CheckBox Name="discordRPCCheckBox" Grid.Column="1" VerticalContentAlignment="Center" IsChecked="True" Click="DiscordRPC_Option"/>
                 </Grid>
                 <Grid Margin="10,0,10,10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Label RenderOptions.BitmapScalingMode="Fant" Foreground="White" Style="{StaticResource fontLabelMontserrat}" FontWeight="Medium">
+                    <Label Foreground="White" Style="{StaticResource fontLabelMontserrat}" FontWeight="Medium">
                         <TextBlock Name="trafficEconomic" TextTrimming="CharacterEllipsis">Экономия трафика:</TextBlock>
                     </Label>
-                    <CheckBox  RenderOptions.BitmapScalingMode="Fant" Click="EconomTraffic_Option" Name="trafficEconomicCheckBox" ToolTip="Убирает картинки с песен которые грузятся во время поиска песен." Grid.Column="1" VerticalContentAlignment="Center" IsChecked="False"/>
+                    <CheckBox Click="EconomTraffic_Option" Name="trafficEconomicCheckBox" ToolTip="Убирает картинки с песен которые грузятся во время поиска песен." Grid.Column="1" VerticalContentAlignment="Center" IsChecked="False"/>
                 </Grid>
                 <Grid Margin="10,0,10,10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Label RenderOptions.BitmapScalingMode="Fant" Foreground="White" Style="{StaticResource fontLabelMontserrat}" FontWeight="Medium">
+                    <Label Foreground="White" Style="{StaticResource fontLabelMontserrat}" FontWeight="Medium">
                         <TextBlock Name="searchEngineLabel" TextTrimming="CharacterEllipsis">Поисковая система:</TextBlock>
                     </Label>
-                    <ComboBox RenderOptions.BitmapScalingMode="Fant" SelectionChanged="SearchEngine_ComboBox" SelectedIndex="0" Name="searchEngineCheckBox" ToolTip="Если вы не можете найти трек который есть в YouTube вы можете спокойно поменять поисковую систему и наслаждаться музыкой с YouTube" Grid.Column="1" HorizontalAlignment="Left">
+                    <ComboBox SelectionChanged="SearchEngine_ComboBox" SelectedIndex="0" Name="searchEngineCheckBox" ToolTip="Если вы не можете найти трек который есть в YouTube вы можете спокойно поменять поисковую систему и наслаждаться музыкой с YouTube" Grid.Column="1" HorizontalAlignment="Left">
                         <ComboBoxItem Content="Spotify"/>
                         <ComboBoxItem Content="YouTube"/>
                     </ComboBox>
@@ -78,12 +78,24 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Label RenderOptions.BitmapScalingMode="Fant" Foreground="White" Style="{StaticResource fontLabelMontserrat}" FontWeight="Medium">
+                    <Label Foreground="White" Style="{StaticResource fontLabelMontserrat}" FontWeight="Medium">
                         <TextBlock Name="ballonPlayerText" TextTrimming="CharacterEllipsis">
                         Всплывающие окно проигрывателя:
                         </TextBlock>
                     </Label>
-                    <CheckBox RenderOptions.BitmapScalingMode="Fant" Click="BallonPlayerCheckBox_Click" Name="ballonPlayerCheckBox" ToolTip="Когда окно свёрнуто, при переключении песни будет вспывать плеер, который можно настроить как угодно." Grid.Column="1" VerticalContentAlignment="Center" IsChecked="True"/>
+                    <CheckBox Click="BallonPlayerCheckBox_Click" Name="ballonPlayerCheckBox" ToolTip="Когда окно свёрнуто, при переключении песни будет вспывать плеер, который можно настроить как угодно." Grid.Column="1" VerticalContentAlignment="Center" IsChecked="True"/>
+                </Grid>
+                <Grid Margin="10,0,10,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Label Foreground="White" Style="{StaticResource fontLabelMontserrat}" FontWeight="Medium">
+                        <TextBlock Name="topMostWindowText" TextTrimming="CharacterEllipsis">
+                        Сделать окно "Верхним"
+                        </TextBlock>
+                    </Label>
+                    <CheckBox Click="TopMostWindowCheckBox_Click" Name="topMostWindowCheckBox" ToolTip="Окно будет отображаться поверх других окон, пока окно не будет закрыто, или свёрнуто." Grid.Column="1" VerticalContentAlignment="Center" IsChecked="True"/>
                 </Grid>
             </StackPanel>
         </Grid>

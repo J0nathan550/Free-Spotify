@@ -15,19 +15,28 @@ namespace Free_Spotify.Pages
             InitializeComponent();
             Settings.LoadSettings();
             languageComboBox.SelectedIndex = Settings.SettingsData.languageIndex;
+
             Settings.UpdateLanguage();
+
             discordRPCCheckBox.IsChecked = Settings.SettingsData.discordRPC;
             trafficEconomicCheckBox.IsChecked = Settings.SettingsData.economTraffic;
+
             ballonPlayerCheckBox.IsChecked = Settings.SettingsData.musicPlayerBallonTurnOn;
             ballonPlayerText.Text = Settings.GetLocalizationString("BallonPlayerText");
             ballonPlayerCheckBox.ToolTip = Settings.GetLocalizationString("BallonPlayerCheckBoxToolTip");
             languageLabel.Text = Settings.GetLocalizationString("LanguageSettingsDefaultText");
+
             trafficEconomic.Text = Settings.GetLocalizationString("TrafficDefaultText");
             settingsLabel.Text = Settings.GetLocalizationString("SettingsMenuItemHeader");
             trafficEconomicCheckBox.ToolTip = Settings.GetLocalizationString("TrafficToolTipDefaultText");
+
             searchEngineLabel.Text = Settings.GetLocalizationString("SearchEngineLabelText");
             searchEngineCheckBox.ToolTip = Settings.GetLocalizationString("SearchEngineToolTipText");
             searchEngineCheckBox.SelectedIndex = Settings.SettingsData.searchEngineIndex;
+
+            topMostWindowCheckBox.IsChecked = Settings.SettingsData.isWindowTopMost;
+            topMostWindowCheckBox.ToolTip = Settings.GetLocalizationString("TopMostWindowCheckBoxText");
+            topMostWindowText.Text = Settings.GetLocalizationString("TopMostWindowText");
         }
 
         /// <summary>
@@ -45,9 +54,9 @@ namespace Free_Spotify.Pages
                 SearchViewPage.SearchWindow = new();
             }
             MainWindow.Window.LoadingPagesFrame.Content = null;
-            MainWindow.Window.LoadingPagesFrame.NavigationService.Navigate(null);
-            MainWindow.Window.LoadingPagesFrame.NavigationService.RemoveBackEntry();
-            MainWindow.Window.LoadingPagesFrame.Navigate(SearchViewPage.SearchWindow);
+            _ = MainWindow.Window.LoadingPagesFrame.NavigationService.Navigate(null);
+            _ = MainWindow.Window.LoadingPagesFrame.NavigationService.RemoveBackEntry();
+            _ = MainWindow.Window.LoadingPagesFrame.Navigate(SearchViewPage.SearchWindow);
         }
 
         private bool loadingPenalty = false; // removing null reference because this func is shit
@@ -55,59 +64,61 @@ namespace Free_Spotify.Pages
         /// Handles a selection change event for a language ComboBox. It updates the application's language settings based on the selected language and updates 
         /// various UI elements accordingly.
         /// </summary>
-        private async void LanguageChanged_ComboBox(object sender, SelectionChangedEventArgs e)
+        private void LanguageChanged_ComboBox(object sender, SelectionChangedEventArgs e)
         {
             if (!loadingPenalty)
             {
                 loadingPenalty = true;
                 return;
             }
-            await Dispatcher.BeginInvoke(() =>
+
+            Settings.SettingsData.languageIndex = languageComboBox.SelectedIndex;
+            switch (languageComboBox.SelectedIndex)
             {
-                Settings.SettingsData.languageIndex = languageComboBox.SelectedIndex;
-                switch (languageComboBox.SelectedIndex)
-                {
-                    case 0: // eng
-                        Settings.ChangeLanguage("en");
-                        break;
-                    case 1: // ru
-                        Settings.ChangeLanguage("ru");
-                        break;
-                    case 2: // ua
-                        Settings.ChangeLanguage("uk");
-                        break;
-                    case 3: // japanese
-                        Settings.ChangeLanguage("ja");
-                        break;
-                    default:
-                        Settings.SettingsData.languageIndex = 0;
-                        Settings.ChangeLanguage("en");
-                        break;
-                }
+                case 0: // eng
+                    Settings.ChangeLanguage("en");
+                    break;
+                case 1: // ru
+                    Settings.ChangeLanguage("ru");
+                    break;
+                case 2: // ua
+                    Settings.ChangeLanguage("uk");
+                    break;
+                case 3: // japanese
+                    Settings.ChangeLanguage("ja");
+                    break;
+                default:
+                    Settings.SettingsData.languageIndex = 0;
+                    Settings.ChangeLanguage("en");
+                    break;
+            }
 
-                languageLabel.Text = Settings.GetLocalizationString("LanguageSettingsDefaultText");
-                trafficEconomic.Text = Settings.GetLocalizationString("TrafficDefaultText");
-                settingsLabel.Text = Settings.GetLocalizationString("SettingsMenuItemHeader");
-                trafficEconomicCheckBox.ToolTip = Settings.GetLocalizationString("TrafficToolTipDefaultText");
-                searchEngineLabel.Text = Settings.GetLocalizationString("SearchEngineLabelText");
-                searchEngineCheckBox.ToolTip = Settings.GetLocalizationString("SearchEngineToolTipText");
-                ballonPlayerText.Text = Settings.GetLocalizationString("BallonPlayerText");
-                ballonPlayerCheckBox.ToolTip = Settings.GetLocalizationString("BallonPlayerCheckBoxToolTip");
-                if (PlayListView.Instance != null)
-                {
-                    PlayListView.Instance.yourPlaylist.Text = Settings.GetLocalizationString("YourPlaylistText");
-                }
-                var assembly = Assembly.GetEntryAssembly();
-                DiscordStatuses.IdleDiscordPresence();
+            languageLabel.Text = Settings.GetLocalizationString("LanguageSettingsDefaultText");
+            trafficEconomic.Text = Settings.GetLocalizationString("TrafficDefaultText");
+            settingsLabel.Text = Settings.GetLocalizationString("SettingsMenuItemHeader");
+            trafficEconomicCheckBox.ToolTip = Settings.GetLocalizationString("TrafficToolTipDefaultText");
+            searchEngineLabel.Text = Settings.GetLocalizationString("SearchEngineLabelText");
+            searchEngineCheckBox.ToolTip = Settings.GetLocalizationString("SearchEngineToolTipText");
+            ballonPlayerText.Text = Settings.GetLocalizationString("BallonPlayerText");
+            ballonPlayerCheckBox.ToolTip = Settings.GetLocalizationString("BallonPlayerCheckBoxToolTip");
+            topMostWindowCheckBox.ToolTip = Settings.GetLocalizationString("TopMostWindowText");
+            topMostWindowText.Text = Settings.GetLocalizationString("TopMostWindowCheckBoxText");
 
-                if (MainWindow.Window != null)
-                {
-                    MainWindow.Window.currentVersion_Item.Header = $"{Settings.GetLocalizationString("AppCurrentVersionDefaultText")} {assembly?.GetName().Version}";
-                    MainWindow.Window.settingsMenuItem.Header = Settings.GetLocalizationString("SettingsMenuItemHeader");
-                    MainWindow.Window.checkUpdatesMenuItem.Header = Settings.GetLocalizationString("CheckUpdatesMenuItemHeader");
-                }
-                Settings.SaveSettings();
-            });
+            if (PlayListView.Instance != null)
+            {
+                PlayListView.Instance.yourPlaylist.Text = Settings.GetLocalizationString("YourPlaylistText");
+                PlayListView.Instance.CreatePlaylists();
+            }
+            var assembly = Assembly.GetEntryAssembly();
+            DiscordStatuses.IdleDiscordPresence();
+
+            if (MainWindow.Window != null)
+            {
+                MainWindow.Window.currentVersion_Item.Header = $"{Settings.GetLocalizationString("AppCurrentVersionDefaultText")} {assembly?.GetName().Version}";
+                MainWindow.Window.settingsMenuItem.Header = Settings.GetLocalizationString("SettingsMenuItemHeader");
+                MainWindow.Window.checkUpdatesMenuItem.Header = Settings.GetLocalizationString("CheckUpdatesMenuItemHeader");
+            }
+            Settings.SaveSettings();
         }
 
         /// <summary>
@@ -160,6 +171,17 @@ namespace Free_Spotify.Pages
             DiscordStatuses.IdleDiscordPresence();
             ballonPlayerCheckBox.IsChecked = Settings.SettingsData.musicPlayerBallonTurnOn;
             Settings.SaveSettings();
+        }
+
+        private void TopMostWindowCheckBox_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (MainWindow.Window != null)
+            {
+                Settings.SettingsData.isWindowTopMost = !Settings.SettingsData.isWindowTopMost;
+                topMostWindowCheckBox.IsChecked = Settings.SettingsData.isWindowTopMost;
+                MainWindow.Window.Topmost = Settings.SettingsData.isWindowTopMost;
+                Settings.SaveSettings();
+            }
         }
     }
 }

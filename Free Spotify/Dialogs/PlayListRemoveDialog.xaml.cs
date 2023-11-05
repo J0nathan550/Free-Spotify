@@ -21,6 +21,8 @@ namespace Free_Spotify.Dialogs
         public PlayListRemoveDialog(TypeRemove type)
         {
             InitializeComponent();
+            Topmost = Settings.SettingsData.isWindowTopMost;
+
             removePlaylist.Text = Settings.GetLocalizationString("RemovePlaylistText");
             removeCancelText.Text = Settings.GetLocalizationString("CancelButtonText");
             removeButtonText.Text = Settings.GetLocalizationString("RemoveButtonText");
@@ -33,7 +35,7 @@ namespace Free_Spotify.Dialogs
                     whatToRemove.Content = Settings.GetLocalizationString("QuestionTrack");
                     break;
                 default:
-                    MessageBox.Show("Wrong type specified.");
+                    _ = MessageBox.Show("Wrong type specified.");
                     break;
             }
         }

@@ -6,14 +6,14 @@
     <RootNamespace>Free_Spotify</RootNamespace>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
-    <ApplicationIcon>Assets\spotify-icon-png-15398-Windows.ico</ApplicationIcon>
     <Company>J0nathan550</Company>
-    <Version>1.0.1.1</Version>
-    <AssemblyVersion>1.0.1.1</AssemblyVersion>
-    <FileVersion>1.0.1.1</FileVersion>
+    <Version>1.0.1.2</Version>
+    <AssemblyVersion>1.0.1.2</AssemblyVersion>
+    <FileVersion>1.0.1.2</FileVersion>
     <SignAssembly>False</SignAssembly>
     <Copyright>J0nathan550</Copyright>
     <NeutralLanguage>uk-UA</NeutralLanguage>
+    <ApplicationIcon>Assets\spotify_icon_test.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -30,11 +30,11 @@
     <None Remove="Assets\discord_game_sdk.dll" />
     <None Remove="Assets\music-icon-sign-symbol-design-free-png.png" />
     <None Remove="Assets\music-icon-sign-symbol-design-free-png.webp" />
-    <None Remove="Assets\SplashScreen.scale-400.png" />
     <None Remove="Assets\maximize-icon-selected.png" />
     <None Remove="Assets\maximize-icon.png" />
     <None Remove="Assets\minimize-icon.png" />
     <None Remove="Assets\spotify-icon-png-15398-Windows.ico" />
+    <None Remove="Assets\SpotifyIcon.ico" />
     <None Remove="Assets\Spotify_icon.svg-_1_.ico" />
     <None Remove="Assets\Spotify_icon.svg-_3_.ico" />
     <None Remove="Assets\spotify_icon_test.ico" />
@@ -61,12 +61,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Assets\spotify_icon_test.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Content Include="Assets\spotify-icon-png-15398-Windows.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Assets\default-playlist-icon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -90,16 +84,17 @@
 
   <ItemGroup>
     <Resource Include="Assets\close-icon.png" />
-    <Resource Include="Assets\spotify-icon-png-15398-Windows.ico" />
+    <Content Include="Assets\spotify-icon-png-15398-Windows.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Resource Include="Assets\SpotifyIcon.ico" />
+    <Resource Include="Assets\spotify_icon_test.ico" />
     <Resource Include="Fonts\Montserrat-ThinItalic.ttf">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Fonts\Montserrat-VariableFont_wght.ttf">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-    <SplashScreen Include="Assets\SplashScreen.scale-400.png">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </SplashScreen>
     <Resource Include="Assets\maximize-icon-selected.png" />
     <Resource Include="Assets\maximize-icon.png" />
     <Resource Include="Assets\minimize-icon.png" />

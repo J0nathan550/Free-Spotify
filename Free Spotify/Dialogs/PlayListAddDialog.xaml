@@ -8,7 +8,7 @@
      WindowStyle="SingleBorderWindow"
      Background="Transparent"
      AllowsTransparency="False"
-     Title="Add Playlist" Height="292" Width="422" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Icon="/Assets/Square44x44Logo.altform-unplated_targetsize-32.png">
+     Title="Add Playlist" Height="292" Width="422" ResizeMode="NoResize" Topmost="True" WindowStartupLocation="CenterScreen" Icon="/Assets/Square44x44Logo.altform-unplated_targetsize-32.png">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="30" ResizeBorderThickness="3"/>
     </WindowChrome.WindowChrome>

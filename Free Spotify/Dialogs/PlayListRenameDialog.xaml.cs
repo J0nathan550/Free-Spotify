@@ -2,10 +2,12 @@
 using Free_Spotify.Pages;
 using Microsoft.Win32;
 using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
 using XamlAnimatedGif;
 
 namespace Free_Spotify.Dialogs
@@ -23,6 +25,7 @@ namespace Free_Spotify.Dialogs
         public PlayListRenameDialog(int playListIndex)
         {
             InitializeComponent();
+            Topmost = Settings.SettingsData.isWindowTopMost;
 
             renamePlayListIndex = playListIndex;
             titleDemoPlaylist.Text = Settings.SettingsData.playlists[renamePlayListIndex].Title;
@@ -36,9 +39,18 @@ namespace Free_Spotify.Dialogs
 
             try
             {
+                FileInfo info = new(Settings.SettingsData.playlists[renamePlayListIndex].ImagePath);
                 Uri uri = new(Settings.SettingsData.playlists[renamePlayListIndex].ImagePath, UriKind.RelativeOrAbsolute);
-                AnimationBehavior.SetSourceUri(demoImagePlaylist, uri);
-                AnimationBehavior.SetRepeatBehavior(demoImagePlaylist, RepeatBehavior.Forever);
+
+                if (info.Extension == ".gif")
+                {
+                    AnimationBehavior.SetSourceUri(demoImagePlaylist, uri);
+                    AnimationBehavior.SetRepeatBehavior(demoImagePlaylist, RepeatBehavior.Forever);
+                }
+                else
+                {
+                    demoImagePlaylist.Source = new BitmapImage(uri);
+                }
             }
             catch
             {
@@ -108,18 +120,10 @@ namespace Free_Spotify.Dialogs
         {
             if (string.IsNullOrEmpty(titleTextBox.Text))
             {
-                MessageBox.Show(Settings.GetLocalizationString("ErrorEnterTheTitleDefaultText"), Settings.GetLocalizationString("ErrorText"), MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show(Settings.GetLocalizationString("ErrorEnterTheTitleDefaultText"), Settings.GetLocalizationString("ErrorText"), MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            string image;
-            if (!string.IsNullOrEmpty(imageTextBox.Text))
-            {
-                image = imageTextBox.Text;
-            }
-            else
-            {
-                image = Utils.DefaultImagePath;
-            }
+            string image = !string.IsNullOrEmpty(imageTextBox.Text) ? imageTextBox.Text : Utils.DefaultImagePath;
             Settings.SettingsData.playlists[renamePlayListIndex].ImagePath = image;
             Settings.SettingsData.playlists[renamePlayListIndex].Title = titleTextBox.Text;
             if (PlayListView.Instance != null && MainWindow.Window != null)
@@ -130,9 +134,9 @@ namespace Free_Spotify.Dialogs
                 }
                 PlayListView.Instance.playListBriefView = new(PlayListView.Instance.currentSelectedPlaylist);
                 MainWindow.Window.LoadingPagesFrame.Content = null;
-                MainWindow.Window.LoadingPagesFrame.NavigationService.Navigate(null);
-                MainWindow.Window.LoadingPagesFrame.NavigationService.RemoveBackEntry();
-                MainWindow.Window.LoadingPagesFrame.Navigate(PlayListView.Instance.playListBriefView);
+                _ = MainWindow.Window.LoadingPagesFrame.NavigationService.Navigate(null);
+                _ = MainWindow.Window.LoadingPagesFrame.NavigationService.RemoveBackEntry();
+                _ = MainWindow.Window.LoadingPagesFrame.Navigate(PlayListView.Instance.playListBriefView);
             }
             Settings.SaveSettings();
             DialogResult = true;
@@ -144,10 +148,20 @@ namespace Free_Spotify.Dialogs
         /// </summary>
         private void LoadDefaultImage()
         {
-            Uri uri = new(Utils.DefaultImagePath);
-            AnimationBehavior.SetSourceUri(demoImagePlaylist, uri);
-            AnimationBehavior.SetRepeatBehavior(demoImagePlaylist, RepeatBehavior.Forever);
             imageTextBox.Text = string.Empty;
+
+            FileInfo info = new(Settings.SettingsData.playlists[renamePlayListIndex].ImagePath);
+            Uri uri = new(Utils.DefaultImagePath);
+
+            if (info.Extension == ".gif")
+            {
+                AnimationBehavior.SetSourceUri(demoImagePlaylist, uri);
+                AnimationBehavior.SetRepeatBehavior(demoImagePlaylist, RepeatBehavior.Forever);
+            }
+            else
+            {
+                demoImagePlaylist.Source = new BitmapImage(uri);
+            }
         }
 
     }

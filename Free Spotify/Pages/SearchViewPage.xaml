@@ -12,20 +12,20 @@
             <RowDefinition Height="60"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Border RenderOptions.BitmapScalingMode="Fant" CornerRadius="6" Background="#242424" BorderThickness="2" BorderBrush="White">
+        <Border CornerRadius="6" Background="#242424" BorderThickness="2" BorderBrush="White">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="50"/>
                     <ColumnDefinition/>
                     <ColumnDefinition Width="50"/>
                 </Grid.ColumnDefinitions>
-                <fa:FontAwesome RenderOptions.BitmapScalingMode="Fant" Icon="Search" FontSize="24" Foreground="White" VerticalAlignment="Center"/>
-                <TextBox RenderOptions.BitmapScalingMode="Fant" x:Name="SearchBarTextBox" Style="{StaticResource fontTextBoxMontserrat}" Foreground="Gray" Grid.Column="1" BorderThickness="0" Background="Transparent" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" FontSize="18" FontWeight="Medium" BorderBrush="#00000000" SelectionBrush="White" SelectionTextBrush="#00000000" Margin="0,0,22,0" GotFocus="SearchTextBox_Focus" LostFocus="SearchTextBox_LostFocus" CaretBrush="#FF00FF04" TextChanged="SearchBarTextBox_TextChanged"></TextBox>
-                <fa:FontAwesome RenderOptions.BitmapScalingMode="Fant" MouseDown="RemoveEverythingFromSearchBoxButton_MouseDown" Cursor="Hand" Visibility="Hidden" Grid.Column="2" x:Name="removeEverythingFromSearchBoxButton" Icon="Remove" FontSize="24" Foreground="White" VerticalAlignment="Center"/>
+                <fa:FontAwesome Icon="Search" FontSize="24" Foreground="White" VerticalAlignment="Center"/>
+                <TextBox x:Name="SearchBarTextBox" Style="{StaticResource fontTextBoxMontserrat}" Foreground="Gray" Grid.Column="1" BorderThickness="0" Background="Transparent" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" FontSize="18" FontWeight="Medium" BorderBrush="#00000000" SelectionBrush="White" SelectionTextBrush="#00000000" Margin="0,0,22,0" GotFocus="SearchTextBox_Focus" LostFocus="SearchTextBox_LostFocus" CaretBrush="#FF00FF04" TextChanged="SearchBarTextBox_TextChanged"></TextBox>
+                <fa:FontAwesome MouseLeftButtonDown="RemoveEverythingFromSearchBoxButton_MouseDown" Cursor="Hand" Visibility="Hidden" Grid.Column="2" x:Name="removeEverythingFromSearchBoxButton" Icon="Remove" FontSize="24" Foreground="White" VerticalAlignment="Center"/>
             </Grid>
         </Border>
-        <ScrollViewer RenderOptions.BitmapScalingMode="Fant" Grid.Row="2" Margin="5" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
-            <Grid RenderOptions.BitmapScalingMode="Fant" x:Name="searchVisual">
+        <ScrollViewer Grid.Row="2" Margin="5" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
+            <Grid x:Name="searchVisual">
             </Grid>
         </ScrollViewer>
     </Grid>

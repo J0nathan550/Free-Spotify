@@ -1,18 +1,19 @@
 ﻿using Free_Spotify.Classes;
 using Free_Spotify.Dialogs;
 using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
 using XamlAnimatedGif;
 
 namespace Free_Spotify.Pages
 {
     public partial class PlayListView : Page
     {
-        private static PlayListView? instance;
 
         /// <summary>
         /// Constructor for PlayListView. Initializes the component and creates playlists.
@@ -30,7 +31,7 @@ namespace Free_Spotify.Pages
         public int currentSelectedPlaylist;
 
         // Property to get or set the instance of PlayListView.
-        public static PlayListView? Instance { get => instance; set => instance = value; }
+        public static PlayListView? Instance { get; set; }
 
         /// <summary>
         /// Creates and displays the playlists on the user interface.
@@ -53,8 +54,7 @@ namespace Free_Spotify.Pages
                     Foreground = new SolidColorBrush(Colors.Gray),
                     TextTrimming = TextTrimming.CharacterEllipsis
                 };
-                RenderOptions.SetBitmapScalingMode(textBlock, BitmapScalingMode.Fant);
-                playlistRender.Children.Add(textBlock);
+                _ = playlistRender.Children.Add(textBlock);
                 return;
             }
             int index = 0;
@@ -69,7 +69,6 @@ namespace Free_Spotify.Pages
                     Margin = new Thickness(0, 0, 0, 10),
                     Name = $"i{index}" // for interaction when you click on playlist
                 };
-                RenderOptions.SetBitmapScalingMode(border, BitmapScalingMode.Fant);
 
                 border.MouseLeftButtonDown += (o, e) =>
                 {
@@ -83,9 +82,9 @@ namespace Free_Spotify.Pages
                         playListBriefView = new(indexSelection);
                         currentSelectedPlaylist = indexSelection;
                         MainWindow.Window.LoadingPagesFrame.Content = null;
-                        MainWindow.Window.LoadingPagesFrame.NavigationService.Navigate(null);
-                        MainWindow.Window.LoadingPagesFrame.NavigationService.RemoveBackEntry();
-                        MainWindow.Window.LoadingPagesFrame.Navigate(playListBriefView);
+                        _ = MainWindow.Window.LoadingPagesFrame.NavigationService.Navigate(null);
+                        _ = MainWindow.Window.LoadingPagesFrame.NavigationService.RemoveBackEntry();
+                        _ = MainWindow.Window.LoadingPagesFrame.Navigate(playListBriefView);
                     }
                 };
 
@@ -120,9 +119,9 @@ namespace Free_Spotify.Pages
                         }
                         SearchViewPage.SearchWindow = new();
                         MainWindow.Window.LoadingPagesFrame.Content = null;
-                        MainWindow.Window.LoadingPagesFrame.NavigationService.Navigate(null);
-                        MainWindow.Window.LoadingPagesFrame.NavigationService.RemoveBackEntry();
-                        MainWindow.Window.LoadingPagesFrame.Navigate(SearchViewPage.SearchWindow);
+                        _ = MainWindow.Window.LoadingPagesFrame.NavigationService.Navigate(null);
+                        _ = MainWindow.Window.LoadingPagesFrame.NavigationService.RemoveBackEntry();
+                        _ = MainWindow.Window.LoadingPagesFrame.Navigate(SearchViewPage.SearchWindow);
                     }
                     return;
                 };
@@ -180,15 +179,14 @@ namespace Free_Spotify.Pages
                     CreatePlaylists();
                     return;
                 };
-                contextMenu.Items.Add(renameMenuItem);
-                contextMenu.Items.Add(moveUpMenuItem);
-                contextMenu.Items.Add(moveDownMenuItem);
-                contextMenu.Items.Add(deleteMenuItem);
+                _ = contextMenu.Items.Add(renameMenuItem);
+                _ = contextMenu.Items.Add(moveUpMenuItem);
+                _ = contextMenu.Items.Add(moveDownMenuItem);
+                _ = contextMenu.Items.Add(deleteMenuItem);
                 border.ContextMenu = contextMenu;
 
                 // Create a Grid
                 Grid grid = new();
-                RenderOptions.SetBitmapScalingMode(grid, BitmapScalingMode.Fant);
 
                 // Define column definitions
                 ColumnDefinition column1 = new() { Width = new GridLength(70) };
@@ -200,19 +198,34 @@ namespace Free_Spotify.Pages
                 RenderOptions.SetBitmapScalingMode(actualImage, BitmapScalingMode.Fant);
                 try
                 {
-
                     Uri uri = new(Settings.SettingsData.playlists[index].ImagePath, UriKind.RelativeOrAbsolute);
 
-                    // Create an Image
-                    Image image = new()
+                    FileInfo info = new(Settings.SettingsData.playlists[index].ImagePath);
+                    if (info.Extension == ".gif")
                     {
-                        Margin = new Thickness(5),
-                        Stretch = Stretch.Uniform
-                    };
+                        // Create an gif
+                        Image image = new()
+                        {
+                            Margin = new Thickness(5),
+                            Stretch = Stretch.Uniform,
+                        };
 
-                    AnimationBehavior.SetSourceUri(image, uri);
-                    AnimationBehavior.SetRepeatBehavior(image, RepeatBehavior.Forever);
-                    actualImage = image;
+                        AnimationBehavior.SetSourceUri(image, uri);
+                        AnimationBehavior.SetRepeatBehavior(image, RepeatBehavior.Forever);
+                        actualImage = image;
+                    }
+                    else
+                    {
+                        // Create an image
+                        Image image = new()
+                        {
+                            Margin = new Thickness(5),
+                            Stretch = Stretch.Uniform,
+                            Source = new BitmapImage(uri)
+                        };
+
+                        actualImage = image;
+                    }
                 }
                 catch
                 {
@@ -222,11 +235,10 @@ namespace Free_Spotify.Pages
                     Image image = new()
                     {
                         Margin = new Thickness(5),
-                        Stretch = Stretch.Uniform
+                        Stretch = Stretch.Uniform,
+                        Source = new BitmapImage(uri)
                     };
 
-                    AnimationBehavior.SetSourceUri(image, uri);
-                    AnimationBehavior.SetRepeatBehavior(image, RepeatBehavior.Forever);
                     actualImage = image;
                 }
 
@@ -279,18 +291,18 @@ namespace Free_Spotify.Pages
                 titleLabel.Content = titleTextBlock;
                 infoLabel.Content = infoTextBlock;
 
-                labelsGrid.Children.Add(titleLabel);
-                labelsGrid.Children.Add(infoLabel);
+                _ = labelsGrid.Children.Add(titleLabel);
+                _ = labelsGrid.Children.Add(infoLabel);
 
                 Grid.SetColumn(actualImage, 0);
                 Grid.SetColumn(labelsGrid, 1);
 
-                grid.Children.Add(actualImage);
-                grid.Children.Add(labelsGrid);
+                _ = grid.Children.Add(actualImage);
+                _ = grid.Children.Add(labelsGrid);
 
                 border.Child = grid;
 
-                playlistRender.Children.Add(border);
+                _ = playlistRender.Children.Add(border);
                 index++;
             }
         }

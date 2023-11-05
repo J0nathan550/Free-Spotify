@@ -8,7 +8,7 @@
         WindowStyle="SingleBorderWindow"
         Background="Transparent"
         AllowsTransparency="False"
-        Title="Free Spotify" Height="600" Width="800" ResizeMode="CanResizeWithGrip" WindowStartupLocation="CenterScreen" Icon="/Assets/Square44x44Logo.altform-unplated_targetsize-32.png" StateChanged="WindowProcedure">
+        Title="Free Spotify" Topmost="True" Height="600" Width="800" ResizeMode="CanResizeWithGrip" WindowStartupLocation="CenterScreen" Icon="/Assets/Square44x44Logo.altform-unplated_targetsize-32.png" StateChanged="WindowProcedure">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="30" ResizeBorderThickness="3"/>
     </WindowChrome.WindowChrome>
@@ -35,7 +35,7 @@
                     <ColumnDefinition/>
                     <ColumnDefinition Width="100"/>
                 </Grid.ColumnDefinitions>
-                <tb:TaskbarIcon x:Name="myNotifyIcon" ToolTipText="Free Spotify" Visibility="Visible" IconSource="Assets/spotify_icon_test.ico" PopupActivation="LeftClick"></tb:TaskbarIcon>
+                <tb:TaskbarIcon x:Name="myNotifyIcon" ToolTipText="Free Spotify" Visibility="Visible" IconSource="Assets/spotify_icon_test.ico"></tb:TaskbarIcon>
                 <Menu Background="Transparent" WindowChrome.IsHitTestVisibleInChrome="True" Grid.ColumnSpan="2" Cursor="Hand">
                     <MenuItem BorderThickness="0" Width="33" Height="30" Foreground="White">
                         <MenuItem Name="settingsMenuItem" BorderThickness="0" Click="Settings_Click" Header="Настройки" Cursor="Hand" Background="Black">
@@ -55,7 +55,7 @@
                         </MenuItem>
                     </MenuItem>
                 </Menu>
-                <Image Panel.ZIndex="-1" Margin="5,5,2,5" Source="/Assets/Square44x44Logo.altform-unplated_targetsize-32.png" RenderOptions.BitmapScalingMode="Fant"/>
+                <Image Panel.ZIndex="-1" Margin="5,5,2,5" Source="/Assets/Square44x44Logo.altform-unplated_targetsize-32.png" />
                 <Label Margin="3, 0, 0, 0" Grid.Column="1" Foreground="White" HorizontalContentAlignment="Left" VerticalContentAlignment="Center">
                     <TextBlock TextTrimming="CharacterEllipsis">Free Spotify</TextBlock>
                 </Label>
@@ -65,23 +65,23 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Button WindowChrome.IsHitTestVisibleInChrome="True" Grid.Column="0" Style="{StaticResource RoundedButtonStyle}" BorderThickness="0" Padding="10" Click="MinimizeIcon_Click" RenderOptions.BitmapScalingMode="Fant">
+                    <Button WindowChrome.IsHitTestVisibleInChrome="True" Grid.Column="0" Style="{StaticResource RoundedButtonStyle}" BorderThickness="0" Padding="10" Click="MinimizeIcon_Click">
                         <Image Source="/Assets/minimize-icon.png" Stretch="Uniform"/>
                     </Button>
-                    <Button WindowChrome.IsHitTestVisibleInChrome="True" Grid.Column="1" Style="{StaticResource RoundedButtonStyle}" BorderThickness="0" Padding="10" Click="MaximizedIcon_Click" RenderOptions.BitmapScalingMode="Fant">
+                    <Button WindowChrome.IsHitTestVisibleInChrome="True" Grid.Column="1" Style="{StaticResource RoundedButtonStyle}" BorderThickness="0" Padding="10" Click="MaximizedIcon_Click">
                         <Grid>
-                            <Image x:Name="iconMaximizedDefault" Source="/Assets/maximize-icon.png" Stretch="Uniform" RenderOptions.BitmapScalingMode="Fant"/>
-                            <Image Visibility="Hidden" x:Name="iconMaximizedSelected" Source="/Assets/maximize-icon-selected.png" Stretch="Uniform" RenderOptions.BitmapScalingMode="Fant"/>
+                            <Image x:Name="iconMaximizedDefault" Source="/Assets/maximize-icon.png" Stretch="Uniform" />
+                            <Image Visibility="Hidden" x:Name="iconMaximizedSelected" Source="/Assets/maximize-icon-selected.png" Stretch="Uniform" />
                         </Grid>
                     </Button>
-                    <Button WindowChrome.IsHitTestVisibleInChrome="True" Grid.Column="2" Style="{StaticResource RoundedButtonExitStyle}" BorderThickness="0" Padding="10" Click="CloseWindow_Click" RenderOptions.BitmapScalingMode="Fant">
-                        <Image RenderOptions.BitmapScalingMode="Fant" Source="/Assets/close-icon.png" Stretch="Uniform"/>
+                    <Button WindowChrome.IsHitTestVisibleInChrome="True" Grid.Column="2" Style="{StaticResource RoundedButtonExitStyle}" BorderThickness="0" Padding="10" Click="CloseWindow_Click">
+                        <Image  Source="/Assets/close-icon.png" Stretch="Uniform"/>
                     </Button>
                 </Grid>
             </Grid>
-            <Frame Grid.Column="3" Name="LoadingPagesFrame" Margin="0,0,0,5" NavigationUIVisibility="Hidden" Grid.Row="1" Source="/Pages/SearchViewPage.xaml" RenderOptions.BitmapScalingMode="Fant" />
-            <Border  CornerRadius="6" Grid.Row="2" Grid.ColumnSpan="3" Visibility="Visible" BorderBrush="LightGray" BorderThickness="3" RenderOptions.BitmapScalingMode="Fant">
-                <Frame NavigationUIVisibility="Hidden" Source="/Pages/MusicPlayerPage.xaml" RenderOptions.BitmapScalingMode="Fant"/>
+            <Frame Grid.Column="3" Name="LoadingPagesFrame" Margin="0,0,0,5" NavigationUIVisibility="Hidden" Grid.Row="1" Source="/Pages/SearchViewPage.xaml" />
+            <Border  CornerRadius="6" Grid.Row="2" Grid.ColumnSpan="3" Visibility="Visible" BorderBrush="LightGray" BorderThickness="3">
+                <Frame NavigationUIVisibility="Hidden" Source="/Pages/MusicPlayerPage.xaml"/>
             </Border>
         </Grid>
     </Border>
