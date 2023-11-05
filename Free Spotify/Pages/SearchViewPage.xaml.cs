@@ -12,15 +12,12 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using YoutubeExplode;
-using YoutubeExplode.Common;
 using YoutubeExplode.Search;
 
 namespace Free_Spotify.Pages
 {
     public partial class SearchViewPage : Page, ISongManager
     {
-        // singleton to do things in MainWindow script.
-        private static SearchViewPage? searchWindow;
 
         // used to do query every second after you typed character
         private readonly System.Timers.Timer searchFieldTimer = new() { Interval = 1000, AutoReset = false, Enabled = false };
@@ -42,7 +39,7 @@ namespace Free_Spotify.Pages
         private readonly List<TrackSearchResult> newSongsSpotify = new();
         private readonly List<VideoSearchResult> newSongsYouTube = new();
 
-        public static SearchViewPage? SearchWindow { get => searchWindow; set => searchWindow = value; }
+        public static SearchViewPage? SearchWindow { get; set; }
 
         /// <summary>
         /// Search View Page constructor.
@@ -65,7 +62,15 @@ namespace Free_Spotify.Pages
         // Timer that start to search if for the second there was no key press. 
         private void SearchFieldTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
-            SearchingSystem();
+            _ = Task.Run(async () =>
+            {
+                await Dispatcher.BeginInvoke(() =>
+                {
+                    searchFieldTimer.Stop();
+                    SearchingSystem();
+                });
+
+            });
         }
 
         /// <summary>
@@ -86,19 +91,10 @@ namespace Free_Spotify.Pages
         /// </summary>
         private void SearchBarTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (SearchBarTextBox.Text.Length != 0)
-            {
-                removeEverythingFromSearchBoxButton.Visibility = Visibility.Visible;
-                if (SearchBarTextBox.Text.Length > 2)
-                {
-                    searchFieldTimer.Start();
-                }
-            }
-            else
-            {
-                removeEverythingFromSearchBoxButton.Visibility = Visibility.Hidden;
-            }
+            searchFieldTimer?.Stop();
+            searchFieldTimer?.Start();
         }
+
 
         /// <summary>
         /// An a event that is used in search bar to represent if you are clicked it, if you have no text inside, it will remove the tip.
@@ -118,39 +114,40 @@ namespace Free_Spotify.Pages
         /// </summary>
         private void SearchingSystem()
         {
-            Dispatcher.BeginInvoke(async () =>
+            newSongsSpotify.Clear();
+            newSongsYouTube.Clear();
+            Dictionary<string, Image> images = new();
+            _ = Dispatcher.BeginInvoke(async () =>
             {
-
-                newSongsSpotify.Clear();
-                newSongsYouTube.Clear();
                 await Dispatcher.BeginInvoke(async () =>
                 {
+                    // Create Wrap panel
+                    WrapPanel wrapPanelVisual = new()
+                    {
+                        Orientation = Orientation.Horizontal
+                    };
 
-                    if (SearchBarTextBox.Text.Length < 3)
+                    if (searchVisual.Children.Count != 0)
+                    {
+                        searchVisual.Children.Clear();
+                    }
+                    _ = searchVisual.Children.Add(wrapPanelVisual);
+
+                    if (!isTextErased)
                     {
                         return;
                     }
-                    WrapPanel wrapPanelVisual = new();
-                    try
+
+
+                    if (SearchBarTextBox.Text.Length < 3)
                     {
-                        wrapPanelVisual.Orientation = Orientation.Horizontal;
-
-                        if (searchVisual.Children.Count != 0)
-                        {
-                            searchVisual.Children.Clear();
-                        }
-                        searchVisual.Children.Add(wrapPanelVisual);
-
-                        if (!isTextErased)
-                        {
-                            return;
-                        }
-
+                        removeEverythingFromSearchBoxButton.Visibility = Visibility.Hidden;
+                        return;
                     }
-                    catch
-                    {
-                        MusicPlayerPage.Instance?.StopSound();
-                    }
+
+                    removeEverythingFromSearchBoxButton.Visibility = Visibility.Visible;
+
+
                     if (Settings.SettingsData.searchEngineIndex == 1) // YouTube
                     {
                         try
@@ -184,12 +181,9 @@ namespace Free_Spotify.Pages
                                                         Width = 256,
                                                         Height = 256,
                                                     };
-                                                    RenderOptions.SetBitmapScalingMode(background, BitmapScalingMode.Fant);
 
                                                     Grid mainVisualGrid = new();
-                                                    RenderOptions.SetBitmapScalingMode(mainVisualGrid, BitmapScalingMode.Fant);
 
-                                                    background.Child = mainVisualGrid;
 
                                                     RowDefinition rowDefinition = new()
                                                     {
@@ -205,23 +199,19 @@ namespace Free_Spotify.Pages
 
                                                     if (!Settings.SettingsData.economTraffic)
                                                     {
-                                                        BitmapImage sourceImageOfTrack = new();
-                                                        sourceImageOfTrack.BeginInit();
-                                                        sourceImageOfTrack.CreateOptions = BitmapCreateOptions.None;
-                                                        sourceImageOfTrack.CacheOption = BitmapCacheOption.None;
-                                                        sourceImageOfTrack.UriSource = new Uri(video.Thumbnails[0].Url);
-                                                        sourceImageOfTrack.EndInit();
 
                                                         Image actualImageOfTrack = new()
                                                         {
-                                                            Source = sourceImageOfTrack,
+                                                            Source = new BitmapImage(new Uri(Utils.DefaultImagePath)),
                                                             HorizontalAlignment = HorizontalAlignment.Center,
                                                             VerticalAlignment = VerticalAlignment.Center,
-                                                            //actualImageOfTrack.Stretch = Stretch.Fill; later option
                                                             CacheMode = null
                                                         };
+
+                                                        images[video.Thumbnails[0].Url] = actualImageOfTrack;
+
                                                         RenderOptions.SetBitmapScalingMode(actualImageOfTrack, BitmapScalingMode.Fant);
-                                                        mainVisualGrid.Children.Add(actualImageOfTrack);
+                                                        _ = mainVisualGrid.Children.Add(actualImageOfTrack);
 
                                                         Grid.SetZIndex(actualImageOfTrack, -2);
 
@@ -233,33 +223,32 @@ namespace Free_Spotify.Pages
                                                     {
                                                         Background = new SolidColorBrush(Color.FromArgb(180, 0x00, 0x00, 0x00))
                                                     };
-                                                    RenderOptions.SetBitmapScalingMode(captionBorder, BitmapScalingMode.Fant);
 
                                                     TextBlock DescriptionOfTrack = new()
                                                     {
-                                                        Text = $"{Settings.GetLocalizationString("ArtistDefaultText")} {video.Author.ChannelTitle}\n" +
-                                                    $"{Settings.GetLocalizationString("TrackDefaultText")} {video.Title}\n",
-                                                        Foreground = new SolidColorBrush(Colors.White)
+                                                        Text = $"{Settings.GetLocalizationString("ArtistDefaultText")} {video.Author.ChannelTitle}\n{Settings.GetLocalizationString("TrackDefaultText")} {video.Title}\n",
+                                                        Foreground = new SolidColorBrush(Colors.White),
+                                                        Style = (Style)FindResource("fontMontserrat"),
+                                                        FontSize = 14,
+                                                        TextWrapping = TextWrapping.WrapWithOverflow,
+                                                        VerticalAlignment = VerticalAlignment.Center,
+                                                        HorizontalAlignment = HorizontalAlignment.Center,
+                                                        TextTrimming = TextTrimming.CharacterEllipsis,
+                                                        Padding = new Thickness(0, 10, 0, 0)
                                                     };
-                                                    RenderOptions.SetBitmapScalingMode(DescriptionOfTrack, BitmapScalingMode.Fant);
-                                                    DescriptionOfTrack.Style = (Style)DescriptionOfTrack.FindResource("fontMontserrat");
-                                                    DescriptionOfTrack.FontSize = 14;
-                                                    DescriptionOfTrack.TextWrapping = TextWrapping.WrapWithOverflow;
-                                                    DescriptionOfTrack.VerticalAlignment = VerticalAlignment.Center;
-                                                    DescriptionOfTrack.HorizontalAlignment = HorizontalAlignment.Center;
-                                                    DescriptionOfTrack.TextTrimming = TextTrimming.CharacterEllipsis;
-                                                    DescriptionOfTrack.Padding = new Thickness(0, 10, 0, 0);
 
                                                     Grid.SetZIndex(captionBorder, -1);
                                                     Grid.SetZIndex(DescriptionOfTrack, 1);
 
-                                                    mainVisualGrid.Children.Add(captionBorder);
-                                                    mainVisualGrid.Children.Add(DescriptionOfTrack);
+                                                    _ = mainVisualGrid.Children.Add(captionBorder);
+                                                    _ = mainVisualGrid.Children.Add(DescriptionOfTrack);
                                                     Grid.SetRow(captionBorder, 1);
                                                     Grid.SetRow(DescriptionOfTrack, 1);
-                                                    wrapPanelVisual.Children.Add(background);
+                                                    _ = wrapPanelVisual.Children.Add(background);
+                                                    background.Child = mainVisualGrid;
 
-                                                    background.MouseDown += new MouseButtonEventHandler(async (o, i) =>
+
+                                                    background.MouseLeftButtonDown += new MouseButtonEventHandler(async (o, i) =>
                                                     {
                                                         await Dispatcher.BeginInvoke(() =>
                                                         {
@@ -300,7 +289,6 @@ namespace Free_Spotify.Pages
                                                                     Utils.IsPlayingFromPlaylist = false;
 
                                                                     MusicPlayerPage.Instance.PlaySound(trackYouTubeList[currentSongIndex], null, this);
-                                                                    MusicPlayerPage.Instance.UpdateStatusPlayerBar();
                                                                 }
                                                             }
                                                             catch
@@ -320,7 +308,6 @@ namespace Free_Spotify.Pages
                                         {
                                             await Dispatcher.InvokeAsync(() =>
                                             {
-                                                
                                                 searchVisual.Children.Clear();
                                                 TextBlock resultTextBlock = new()
                                                 {
@@ -333,7 +320,7 @@ namespace Free_Spotify.Pages
                                                     TextTrimming = TextTrimming.CharacterEllipsis,
                                                     Style = (Style)FindResource("fontMontserrat")
                                                 };
-                                                searchVisual.Children.Add(resultTextBlock);
+                                                _ = searchVisual.Children.Add(resultTextBlock);
                                             });
                                             break;
                                         }
@@ -343,11 +330,10 @@ namespace Free_Spotify.Pages
                         }
                         catch (HttpRequestException request)
                         {
-                            if (request.Message.Contains("400"))
+                            if (request.StatusCode == System.Net.HttpStatusCode.BadRequest)
                             {
                                 await Dispatcher.BeginInvoke(() =>
                                 {
-                                    
                                     searchVisual.Children.Clear();
                                     TextBlock resultTextBlock = new()
                                     {
@@ -360,14 +346,14 @@ namespace Free_Spotify.Pages
                                         TextTrimming = TextTrimming.CharacterEllipsis,
                                         Style = (Style)FindResource("fontMontserrat")
                                     };
-                                    searchVisual.Children.Add(resultTextBlock);
+                                    _ = searchVisual.Children.Add(resultTextBlock);
                                 });
                             }
                             else
                             {
                                 await Dispatcher.BeginInvoke(() =>
                                 {
-                                    
+
                                     searchVisual.Children.Clear();
                                     TextBlock resultTextBlock = new()
                                     {
@@ -380,7 +366,7 @@ namespace Free_Spotify.Pages
                                         TextTrimming = TextTrimming.CharacterEllipsis,
                                         Style = (Style)FindResource("fontMontserrat")
                                     };
-                                    searchVisual.Children.Add(resultTextBlock);
+                                    _ = searchVisual.Children.Add(resultTextBlock);
                                 });
                             }
                         }
@@ -395,6 +381,12 @@ namespace Free_Spotify.Pages
                         catch
                         {
                             NextSong();
+                        }
+
+
+                        foreach (string key in images.Keys)
+                        {
+                            images[key].Source = await Utils.LoadImageAsync(key);
                         }
                     }
                     else
@@ -429,12 +421,9 @@ namespace Free_Spotify.Pages
                                                             Width = 256,
                                                             Height = 256
                                                         };
-                                                        RenderOptions.SetBitmapScalingMode(background, BitmapScalingMode.Fant);
 
                                                         Grid mainVisualGrid = new();
-                                                        RenderOptions.SetBitmapScalingMode(mainVisualGrid, BitmapScalingMode.Fant);
 
-                                                        background.Child = mainVisualGrid;
 
                                                         RowDefinition rowDefinition = new()
                                                         {
@@ -450,23 +439,17 @@ namespace Free_Spotify.Pages
 
                                                         if (!Settings.SettingsData.economTraffic)
                                                         {
-                                                            BitmapImage sourceImageOfTrack = new();
-                                                            sourceImageOfTrack.BeginInit();
-                                                            sourceImageOfTrack.CreateOptions = BitmapCreateOptions.None;
-                                                            sourceImageOfTrack.CacheOption = BitmapCacheOption.None;
-                                                            sourceImageOfTrack.UriSource = new Uri(track.Album.Images[0].Url);
-                                                            sourceImageOfTrack.EndInit();
 
                                                             Image actualImageOfTrack = new()
                                                             {
-                                                                Source = sourceImageOfTrack,
+                                                                Source = new BitmapImage(new Uri(Utils.DefaultImagePath)),
                                                                 HorizontalAlignment = HorizontalAlignment.Center,
                                                                 VerticalAlignment = VerticalAlignment.Center,
-                                                                //actualImageOfTrack.Stretch = Stretch.Fill; later option
                                                                 CacheMode = null
                                                             };
+                                                            images[track.Album.Images[0].Url] = actualImageOfTrack;
                                                             RenderOptions.SetBitmapScalingMode(actualImageOfTrack, BitmapScalingMode.Fant);
-                                                            mainVisualGrid.Children.Add(actualImageOfTrack);
+                                                            _ = mainVisualGrid.Children.Add(actualImageOfTrack);
 
                                                             Grid.SetZIndex(actualImageOfTrack, -2);
 
@@ -478,34 +461,33 @@ namespace Free_Spotify.Pages
                                                         {
                                                             Background = new SolidColorBrush(Color.FromArgb(180, 0x00, 0x00, 0x00))
                                                         };
-                                                        RenderOptions.SetBitmapScalingMode(captionBorder, BitmapScalingMode.Fant);
 
                                                         TextBlock DescriptionOfTrack = new()
                                                         {
-                                                            Text = $"{Settings.GetLocalizationString("ArtistDefaultText")} {track.Artists[0].Name}\n" +
-                                                        $"{Settings.GetLocalizationString("TrackDefaultText")} {track.Title}\n",
-                                                            Foreground = new SolidColorBrush(Colors.White)
+                                                            Text = $"{Settings.GetLocalizationString("ArtistDefaultText")} {track.Artists[0].Name}\n{Settings.GetLocalizationString("TrackDefaultText")} {track.Title}\n",
+                                                            Foreground = new SolidColorBrush(Colors.White),
+                                                            Style = (Style)FindResource("fontMontserrat"),
+                                                            FontSize = 14,
+                                                            TextWrapping = TextWrapping.WrapWithOverflow,
+                                                            VerticalAlignment = VerticalAlignment.Center,
+                                                            HorizontalAlignment = HorizontalAlignment.Center,
+                                                            TextTrimming = TextTrimming.CharacterEllipsis,
+                                                            Padding = new Thickness(0, 10, 0, 0)
                                                         };
-                                                        DescriptionOfTrack.Style = (Style)DescriptionOfTrack.FindResource("fontMontserrat");
-                                                        DescriptionOfTrack.FontSize = 14;
-                                                        DescriptionOfTrack.TextWrapping = TextWrapping.WrapWithOverflow;
-                                                        DescriptionOfTrack.VerticalAlignment = VerticalAlignment.Center;
-                                                        DescriptionOfTrack.HorizontalAlignment = HorizontalAlignment.Center;
-                                                        DescriptionOfTrack.TextTrimming = TextTrimming.CharacterEllipsis;
-                                                        DescriptionOfTrack.Padding = new Thickness(0, 10, 0, 0);
-                                                        RenderOptions.SetBitmapScalingMode(DescriptionOfTrack, BitmapScalingMode.Fant);
 
                                                         Grid.SetZIndex(captionBorder, -1);
                                                         Grid.SetZIndex(DescriptionOfTrack, 1);
 
-                                                        mainVisualGrid.Children.Add(captionBorder);
-                                                        mainVisualGrid.Children.Add(DescriptionOfTrack);
+                                                        _ = mainVisualGrid.Children.Add(captionBorder);
+                                                        _ = mainVisualGrid.Children.Add(DescriptionOfTrack);
                                                         Grid.SetRow(captionBorder, 1);
                                                         Grid.SetRow(DescriptionOfTrack, 1);
-                                                        wrapPanelVisual.Children.Add(background);
+                                                        _ = wrapPanelVisual.Children.Add(background);
+                                                        background.Child = mainVisualGrid;
 
-                                                        background.MouseDown += new MouseButtonEventHandler(async (o, i) =>
+                                                        background.MouseLeftButtonDown += new MouseButtonEventHandler(async (o, i) =>
                                                         {
+
                                                             if (MusicPlayerPage.Instance != null)
                                                             {
                                                                 MusicPlayerPage.Instance.favoriteSongButton.Visibility = Visibility.Visible;
@@ -544,7 +526,6 @@ namespace Free_Spotify.Pages
                                                                             Utils.IsPlayingFromPlaylist = false;
 
                                                                             MusicPlayerPage.Instance.PlaySound(trackSpotifyList[currentSongIndex], this);
-                                                                            MusicPlayerPage.Instance.UpdateStatusPlayerBar();
                                                                         });
                                                                     }
                                                                 }
@@ -565,7 +546,6 @@ namespace Free_Spotify.Pages
                                             {
                                                 await Dispatcher.InvokeAsync(() =>
                                                 {
-                                                    
                                                     searchVisual.Children.Clear();
                                                     TextBlock resultTextBlock = new()
                                                     {
@@ -578,7 +558,7 @@ namespace Free_Spotify.Pages
                                                         TextTrimming = TextTrimming.CharacterEllipsis,
                                                         Style = (Style)FindResource("fontMontserrat")
                                                     };
-                                                    searchVisual.Children.Add(resultTextBlock);
+                                                    _ = searchVisual.Children.Add(resultTextBlock);
                                                 });
                                                 break;
                                             }
@@ -592,7 +572,7 @@ namespace Free_Spotify.Pages
 
                                 await Dispatcher.BeginInvoke(() =>
                                 {
-                                    
+
                                     searchVisual.Children.Clear();
                                     TextBlock resultTextBlock = new()
                                     {
@@ -605,18 +585,18 @@ namespace Free_Spotify.Pages
                                         TextTrimming = TextTrimming.CharacterEllipsis,
                                         Style = (Style)FindResource("fontMontserrat")
                                     };
-                                    searchVisual.Children.Add(resultTextBlock);
+                                    _ = searchVisual.Children.Add(resultTextBlock);
                                 });
                             }
 
                         }
                         catch (HttpRequestException request)
                         {
-                            if (request.Message.Contains("400"))
+                            if (request.StatusCode == System.Net.HttpStatusCode.BadRequest)
                             {
                                 await Dispatcher.BeginInvoke(() =>
                                 {
-                                    
+
                                     searchVisual.Children.Clear();
                                     TextBlock resultTextBlock = new()
                                     {
@@ -629,14 +609,14 @@ namespace Free_Spotify.Pages
                                         TextTrimming = TextTrimming.CharacterEllipsis,
                                         Style = (Style)FindResource("fontMontserrat")
                                     };
-                                    searchVisual.Children.Add(resultTextBlock);
+                                    _ = searchVisual.Children.Add(resultTextBlock);
                                 });
                             }
                             else
                             {
                                 await Dispatcher.BeginInvoke(() =>
                                 {
-                                    
+
                                     searchVisual.Children.Clear();
                                     TextBlock resultTextBlock = new()
                                     {
@@ -649,7 +629,7 @@ namespace Free_Spotify.Pages
                                         TextTrimming = TextTrimming.CharacterEllipsis,
                                         Style = (Style)FindResource("fontMontserrat")
                                     };
-                                    searchVisual.Children.Add(resultTextBlock);
+                                    _ = searchVisual.Children.Add(resultTextBlock);
                                 });
                             }
                         }
@@ -664,6 +644,12 @@ namespace Free_Spotify.Pages
                         catch
                         {
                         }
+
+                        foreach (string key in images.Keys)
+                        {
+                            images[key].Source = await Utils.LoadImageAsync(key);
+                        }
+
                     }
                 });
             });
@@ -706,7 +692,6 @@ namespace Free_Spotify.Pages
                         currentSongIndex = trackYouTubeList.Count - 1;
                     }
                     MusicPlayerPage.Instance.PlaySound(trackYouTubeList[currentSongIndex], null, this);
-                    MusicPlayerPage.Instance.UpdateStatusPlayerBar();
                 }
                 else
                 {
@@ -715,10 +700,7 @@ namespace Free_Spotify.Pages
                         currentSongIndex = trackSpotifyList.Count - 1;
                     }
                     MusicPlayerPage.Instance.PlaySound(trackSpotifyList[currentSongIndex], this);
-                    MusicPlayerPage.Instance.UpdateStatusPlayerBar();
                 }
-                newSongsSpotify.Clear();
-                newSongsYouTube.Clear();
             }
             catch
             {
@@ -747,7 +729,6 @@ namespace Free_Spotify.Pages
                         currentSongIndex = 0;
                     }
                     MusicPlayerPage.Instance.PlaySound(trackYouTubeList[currentSongIndex], null, this);
-                    MusicPlayerPage.Instance.UpdateStatusPlayerBar();
                 }
                 else
                 {
@@ -756,10 +737,7 @@ namespace Free_Spotify.Pages
                         currentSongIndex = 0;
                     }
                     MusicPlayerPage.Instance.PlaySound(trackSpotifyList[currentSongIndex], this);
-                    MusicPlayerPage.Instance.UpdateStatusPlayerBar();
                 }
-                newSongsSpotify.Clear();
-                newSongsYouTube.Clear();
             }
             catch
             {
@@ -794,7 +772,6 @@ namespace Free_Spotify.Pages
                     }
                     currentSongIndex = pos;
                     MusicPlayerPage.Instance.PlaySound(trackYouTubeList[currentSongIndex], null, this);
-                    MusicPlayerPage.Instance.UpdateStatusPlayerBar();
                 }
                 else
                 {
@@ -807,10 +784,7 @@ namespace Free_Spotify.Pages
                     }
                     currentSongIndex = pos;
                     MusicPlayerPage.Instance.PlaySound(trackSpotifyList[currentSongIndex], this);
-                    MusicPlayerPage.Instance.UpdateStatusPlayerBar();
                 }
-                newSongsSpotify.Clear();
-                newSongsYouTube.Clear();
             }
             catch
             {
