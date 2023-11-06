@@ -1,10 +1,13 @@
 ﻿using Free_Spotify.Classes;
 using Microsoft.Win32;
 using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
 using XamlAnimatedGif;
 
 namespace Free_Spotify.Dialogs
@@ -55,8 +58,18 @@ namespace Free_Spotify.Dialogs
                 if (ofd.ShowDialog() == true)
                 {
                     uri = new Uri(ofd.FileName, UriKind.RelativeOrAbsolute);
-                    AnimationBehavior.SetSourceUri(demoImagePlaylist, uri);
-                    AnimationBehavior.SetRepeatBehavior(demoImagePlaylist, RepeatBehavior.Forever);
+                    FileInfo info = new(ofd.FileName);
+                    if (info.Extension == ".gif")
+                    {
+                        AnimationBehavior.SetSourceUri(demoImagePlaylist, uri);
+                        AnimationBehavior.SetRepeatBehavior(demoImagePlaylist, RepeatBehavior.Forever);
+                    }
+                    else
+                    {
+                        demoImagePlaylist.Source = new BitmapImage(uri);
+                        RenderOptions.SetBitmapScalingMode(demoImagePlaylist, BitmapScalingMode.Fant);
+                    }
+  
                     imageTextBox.Text = ofd.FileName;
 
                     return;
@@ -105,8 +118,7 @@ namespace Free_Spotify.Dialogs
         private void LoadDefaultImage()
         {
             Uri uri = new(Utils.DefaultImagePath);
-            AnimationBehavior.SetSourceUri(demoImagePlaylist, uri);
-            AnimationBehavior.SetRepeatBehavior(demoImagePlaylist, RepeatBehavior.Forever);
+            demoImagePlaylist.Source = new BitmapImage(uri);
             imageTextBox.Text = string.Empty;
         }
 

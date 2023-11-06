@@ -1,4 +1,5 @@
 ﻿using Free_Spotify.Classes;
+using System.Configuration;
 using System.Reflection;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -44,19 +45,13 @@ namespace Free_Spotify.Pages
         /// </summary>
         private void BackToSearchPage_Click(object sender, MouseButtonEventArgs e)
         {
-            if (MainWindow.Window == null)
+            if (MainWindow.Window != null)
             {
-                return;
+                MainWindow.Window.LoadingPagesFrame.Content = null;
+                _ = MainWindow.Window.LoadingPagesFrame.NavigationService.Navigate(null);
+                _ = MainWindow.Window.LoadingPagesFrame.NavigationService.RemoveBackEntry();
+                _ = MainWindow.Window.LoadingPagesFrame.Navigate(SearchViewPage.SearchWindow);
             }
-            if (SearchViewPage.SearchWindow != null)
-            {
-                SearchViewPage.SearchWindow = null;
-                SearchViewPage.SearchWindow = new();
-            }
-            MainWindow.Window.LoadingPagesFrame.Content = null;
-            _ = MainWindow.Window.LoadingPagesFrame.NavigationService.Navigate(null);
-            _ = MainWindow.Window.LoadingPagesFrame.NavigationService.RemoveBackEntry();
-            _ = MainWindow.Window.LoadingPagesFrame.Navigate(SearchViewPage.SearchWindow);
         }
 
         private bool loadingPenalty = false; // removing null reference because this func is shit

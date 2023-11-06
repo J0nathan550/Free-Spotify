@@ -195,7 +195,6 @@ namespace Free_Spotify.Pages
                 grid.ColumnDefinitions.Add(column2);
 
                 Image actualImage = new();
-                RenderOptions.SetBitmapScalingMode(actualImage, BitmapScalingMode.Fant);
                 try
                 {
                     Uri uri = new(Settings.SettingsData.playlists[index].ImagePath, UriKind.RelativeOrAbsolute);
@@ -212,6 +211,8 @@ namespace Free_Spotify.Pages
 
                         AnimationBehavior.SetSourceUri(image, uri);
                         AnimationBehavior.SetRepeatBehavior(image, RepeatBehavior.Forever);
+                        RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.Fant);
+
                         actualImage = image;
                     }
                     else
@@ -223,6 +224,8 @@ namespace Free_Spotify.Pages
                             Stretch = Stretch.Uniform,
                             Source = new BitmapImage(uri)
                         };
+                        RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.Fant);
+
 
                         actualImage = image;
                     }
@@ -238,6 +241,7 @@ namespace Free_Spotify.Pages
                         Stretch = Stretch.Uniform,
                         Source = new BitmapImage(uri)
                     };
+                    RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.Fant);
 
                     actualImage = image;
                 }

@@ -133,7 +133,7 @@ namespace Free_Spotify
 
         }
 
-        private SettingsPage? settingsPage;
+        private SettingsPage settingsPage = new SettingsPage();
 
         public static MainWindow? Window { get; set; }
 
@@ -142,11 +142,6 @@ namespace Free_Spotify
         /// </summary>
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
-            if (settingsPage != null)
-            {
-                settingsPage = null;
-            }
-            settingsPage = new SettingsPage();
             LoadingPagesFrame.Content = null;
             _ = LoadingPagesFrame.NavigationService.Navigate(null);
             _ = LoadingPagesFrame.NavigationService.RemoveBackEntry();

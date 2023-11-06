@@ -95,6 +95,7 @@ namespace Free_Spotify.Pages
                     };
                     Grid.SetColumn(splitter, i);
                     Grid.SetRowSpan(splitter, maxRows);
+                    Grid.SetZIndex(splitter, 2);
                     _ = mainVisualGrid.Children.Add(splitter);
                 }
                 else
@@ -139,13 +140,11 @@ namespace Free_Spotify.Pages
                             if (Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[currentSongIndex].YouTubeTrack != null)
                             {
                                 MusicPlayerPage.Instance?.PlaySound(Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[currentSongIndex].YouTubeTrack?.GetVideoSearchResult(), Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[currentSongIndex].YouTubeTrack, this);
-                                SearchViewPage.SearchWindow?.ClearSearchView();
                                 playIconPlaylist.Icon = FontAwesome.WPF.FontAwesomeIcon.Stop;
                             }
                             else if (Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[currentSongIndex].SpotifyTrack != null)
                             {
                                 MusicPlayerPage.Instance?.PlaySound(Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[currentSongIndex].SpotifyTrack?.GetTrackSearchResult(), this);
-                                SearchViewPage.SearchWindow?.ClearSearchView();
                                 playIconPlaylist.Icon = FontAwesome.WPF.FontAwesomeIcon.Stop;
                             }
                             Utils.IsPlayingFromPlaylist = true;
@@ -232,7 +231,7 @@ namespace Free_Spotify.Pages
                             PlayListRemoveDialog removeDialog = new(PlayListRemoveDialog.TypeRemove.Track);
                             if (removeDialog.ShowDialog() == true)
                             {
-                                _ = Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist.Remove(Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[i]);
+                                _ = Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist.Remove(Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[int.Parse(gridToBeAdded.Name.Substring(1))]);
                                 Settings.SaveSettings();
                                 CreateTracksInPlaylist();
                             }
@@ -436,20 +435,13 @@ namespace Free_Spotify.Pages
         /// </summary>
         private void BackToSearchPage_Click(object sender, MouseButtonEventArgs e)
         {
-            _ = Dispatcher.BeginInvoke(() =>
+            if (MainWindow.Window != null)
             {
-                if (MainWindow.Window == null)
-                {
-                    return;
-                }
-                SearchViewPage.SearchWindow = null;
-                SearchViewPage.SearchWindow = new();
-                Content = null;
                 MainWindow.Window.LoadingPagesFrame.Content = null;
                 _ = MainWindow.Window.LoadingPagesFrame.NavigationService.Navigate(null);
                 _ = MainWindow.Window.LoadingPagesFrame.NavigationService.RemoveBackEntry();
                 _ = MainWindow.Window.LoadingPagesFrame.Navigate(SearchViewPage.SearchWindow);
-            });
+            }
         }
 
         /// <summary>
@@ -471,7 +463,6 @@ namespace Free_Spotify.Pages
                     Utils.IsPlayingFromPlaylist = false;
                     return;
                 }
-                SearchViewPage.SearchWindow?.ClearSearchView();
                 currentSongIndex = 0;
                 if (Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist.Count == 0)
                 {
