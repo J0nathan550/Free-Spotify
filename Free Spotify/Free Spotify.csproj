@@ -7,9 +7,9 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <Company>J0nathan550</Company>
-    <Version>1.0.1.3</Version>
-    <AssemblyVersion>1.0.1.3</AssemblyVersion>
-    <FileVersion>1.0.1.3</FileVersion>
+    <Version>1.0.1.4</Version>
+    <AssemblyVersion>1.0.1.4</AssemblyVersion>
+    <FileVersion>1.0.1.4</FileVersion>
     <SignAssembly>False</SignAssembly>
     <Copyright>J0nathan550</Copyright>
     <NeutralLanguage>uk-UA</NeutralLanguage>

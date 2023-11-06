@@ -791,5 +791,13 @@ namespace Free_Spotify.Pages
                 MusicPlayerPage.Instance?.StopSound();
             }
         }
+
+        public void ClearListsWhenPlayingInPlaylist()
+        {
+            newSongsSpotify.Clear();
+            newSongsYouTube.Clear();
+            trackSpotifyList.Clear();
+            trackYouTubeList.Clear();
+        }
     }
 }

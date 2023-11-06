@@ -21,18 +21,26 @@ namespace Free_Spotify.Classes
         public static string DefaultImagePath { get; set; } = $@"{System.AppDomain.CurrentDomain.BaseDirectory}\Assets\default-playlist-icon.png";
         public static async Task<BitmapImage> LoadImageAsync(string imageUrl)
         {
-            using HttpClient client = new();
-            byte[] imageData = await client.GetByteArrayAsync(imageUrl);
             BitmapImage image = new();
-
-            using (MemoryStream stream = new(imageData))
+            try
             {
-                image.BeginInit();
-                image.CacheOption = BitmapCacheOption.OnLoad;
-                image.StreamSource = stream;
-                image.EndInit();
+                using HttpClient client = new();
+                byte[] imageData = await client.GetByteArrayAsync(imageUrl);
+
+                using (MemoryStream stream = new(imageData))
+                {
+                    image.BeginInit();
+                    image.CacheOption = BitmapCacheOption.OnLoad;
+                    image.StreamSource = stream;
+                    image.EndInit();
+                }
+                return image;
             }
-            return image;
+            catch
+            {
+                image.UriSource = new System.Uri(Utils.DefaultImagePath);
+                return image;
+            }
         }
     }
 }

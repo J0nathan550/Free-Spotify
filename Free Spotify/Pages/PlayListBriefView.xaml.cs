@@ -42,7 +42,6 @@ namespace Free_Spotify.Pages
         {
             // Update the playlist view, title, and amount of tracks.
             // Display track details and context menus for each track in the current playlist.
-
             PlayListView.Instance?.CreatePlaylists();
             playListTitle.Text = Settings.SettingsData.playlists[playListCurrentIndex].Title;
             playListAmountTracks.Text = $"{Settings.GetLocalizationString("AmountTracksDefaultText")} {Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist.Count} | {Settings.SettingsData.playlists[playListCurrentIndex].CalculateAmountOfTimeToListenWholePlayList()}";
@@ -137,6 +136,7 @@ namespace Free_Spotify.Pages
                         gridToBeAdded.MouseLeftButtonDown += (sender, e) =>
                         {
                             currentSongIndex = int.Parse(gridToBeAdded.Name[1..]);
+                            SearchViewPage.SearchWindow?.ClearListsWhenPlayingInPlaylist();
                             if (Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[currentSongIndex].YouTubeTrack != null)
                             {
                                 MusicPlayerPage.Instance?.PlaySound(Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[currentSongIndex].YouTubeTrack?.GetVideoSearchResult(), Settings.SettingsData.playlists[playListCurrentIndex].TracksInPlaylist[currentSongIndex].YouTubeTrack, this);
@@ -451,6 +451,7 @@ namespace Free_Spotify.Pages
         {
             _ = Dispatcher.BeginInvoke(() =>
             {
+                SearchViewPage.SearchWindow?.ClearListsWhenPlayingInPlaylist();
                 // If a music player instance exists and the playlist is not empty, play the first track.
                 if (MusicPlayerPage.Instance == null)
                 {
