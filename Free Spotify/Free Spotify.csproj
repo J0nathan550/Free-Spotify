@@ -71,15 +71,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autoupdater.NET.Official" Version="1.8.4" />
+    <PackageReference Include="Autoupdater.NET.Official" Version="1.8.5" />
     <PackageReference Include="DiscordRichPresence" Version="1.2.1.24" />
     <PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" />
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
+    <PackageReference Include="ModernWpfUI" Version="0.9.6" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="SpotifyExplode" Version="1.0.7" />
     <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />
-    <PackageReference Include="XamlAnimatedGif" Version="2.2.0" />
-    <PackageReference Include="YoutubeExplode" Version="6.3.4" />
+    <PackageReference Include="XamlAnimatedGif" Version="2.2.3" />
+    <PackageReference Include="YoutubeExplode" Version="6.3.13" />
   </ItemGroup>
 
   <ItemGroup>

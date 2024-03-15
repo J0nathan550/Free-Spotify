@@ -729,7 +729,7 @@ namespace Free_Spotify.Pages
             try
             {
                 DiscordStatuses.IdleDiscordPresence();
-                IsSongPaused = true;
+                IsSongPaused = false;
                 PausingSong();
                 await Dispatcher.BeginInvoke(() =>
                 {

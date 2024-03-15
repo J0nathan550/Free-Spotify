@@ -6,16 +6,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:tb="http://www.hardcodet.net/taskbar"
         mc:Ignorable="d"
         WindowStyle="SingleBorderWindow"
-        Background="Transparent"
-        AllowsTransparency="False"
-        Title="Free Spotify" Topmost="True" Height="600" Width="800" ResizeMode="CanResizeWithGrip" WindowStartupLocation="CenterScreen" Icon="/Assets/Square44x44Logo.altform-unplated_targetsize-32.png" StateChanged="WindowProcedure">
-    <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="30" ResizeBorderThickness="3"/>
-    </WindowChrome.WindowChrome>
+        Background="Black"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        ui:WindowHelper.UseModernWindowStyle="True"
+        ui:TitleBar.ExtendViewIntoTitleBar="True"
+        ui:TitleBar.Background="Black"
+        ui:TitleBar.Foreground="White"
+        Title="Free Spotify" Topmost="True" Height="600" Width="800" ResizeMode="CanResizeWithGrip" WindowStartupLocation="CenterScreen" Icon="/Assets/Square44x44Logo.altform-unplated_targetsize-32.png">
     <Window.TaskbarItemInfo>
         <TaskbarItemInfo x:Name="progressSongTaskBar" />
     </Window.TaskbarItemInfo>
-    <Border Name="windowBackground" Background="Black"  BorderThickness="1" BorderBrush="Gray">
+    <Border Name="windowBackground" BorderThickness="1">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
@@ -33,7 +34,6 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="32"/>
                     <ColumnDefinition/>
-                    <ColumnDefinition Width="100"/>
                 </Grid.ColumnDefinitions>
                 <tb:TaskbarIcon x:Name="myNotifyIcon" ToolTipText="Free Spotify" Visibility="Visible" IconSource="Assets/spotify_icon_test.ico"></tb:TaskbarIcon>
                 <Menu Background="Transparent" WindowChrome.IsHitTestVisibleInChrome="True" Grid.ColumnSpan="2" Cursor="Hand">
@@ -57,27 +57,8 @@
                 </Menu>
                 <Image Panel.ZIndex="-1" Margin="5,5,2,5" Source="/Assets/Square44x44Logo.altform-unplated_targetsize-32.png" />
                 <Label Margin="3, 0, 0, 0" Grid.Column="1" Foreground="White" HorizontalContentAlignment="Left" VerticalContentAlignment="Center">
-                    <TextBlock TextTrimming="CharacterEllipsis">Free Spotify</TextBlock>
+                    <TextBlock FontSize="12" TextTrimming="CharacterEllipsis">Free Spotify</TextBlock>
                 </Label>
-                <Grid Grid.Column="2">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <Button WindowChrome.IsHitTestVisibleInChrome="True" Grid.Column="0" Style="{StaticResource RoundedButtonStyle}" BorderThickness="0" Padding="10" Click="MinimizeIcon_Click">
-                        <Image Source="/Assets/minimize-icon.png" Stretch="Uniform"/>
-                    </Button>
-                    <Button WindowChrome.IsHitTestVisibleInChrome="True" Grid.Column="1" Style="{StaticResource RoundedButtonStyle}" BorderThickness="0" Padding="10" Click="MaximizedIcon_Click">
-                        <Grid>
-                            <Image x:Name="iconMaximizedDefault" Source="/Assets/maximize-icon.png" Stretch="Uniform" />
-                            <Image Visibility="Hidden" x:Name="iconMaximizedSelected" Source="/Assets/maximize-icon-selected.png" Stretch="Uniform" />
-                        </Grid>
-                    </Button>
-                    <Button WindowChrome.IsHitTestVisibleInChrome="True" Grid.Column="2" Style="{StaticResource RoundedButtonExitStyle}" BorderThickness="0" Padding="10" Click="CloseWindow_Click">
-                        <Image  Source="/Assets/close-icon.png" Stretch="Uniform"/>
-                    </Button>
-                </Grid>
             </Grid>
             <Frame Grid.Column="3" Name="LoadingPagesFrame" Margin="0,0,0,5" NavigationUIVisibility="Hidden" Grid.Row="1" Source="/Pages/SearchViewPage.xaml" />
             <Border  CornerRadius="6" Grid.Row="2" Grid.ColumnSpan="3" Visibility="Visible" BorderBrush="LightGray" BorderThickness="3">

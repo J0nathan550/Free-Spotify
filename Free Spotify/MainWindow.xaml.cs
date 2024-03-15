@@ -64,33 +64,6 @@ namespace Free_Spotify
         }
 
         /// <summary>
-        /// Function that handles of sorts functions of the window, like maximize, minimize. 
-        /// </summary>
-        private void WindowProcedure(object sender, EventArgs e)
-        {
-            if (WindowState != WindowState.Maximized)
-            {
-                iconMaximizedDefault.Visibility = Visibility.Visible;
-                iconMaximizedSelected.Visibility = Visibility.Hidden;
-                windowBackground.Padding = new Thickness(0);
-            }
-            else
-            {
-                iconMaximizedDefault.Visibility = Visibility.Hidden;
-                iconMaximizedSelected.Visibility = Visibility.Visible;
-                windowBackground.Padding = new Thickness(10);
-            }
-            if (Settings.SettingsData.musicPlayerBallonTurnOn && WindowState != WindowState.Minimized && MusicPlayerPage.Instance != null && MusicPlayerPage.Instance.ballon != null)
-            {
-                myNotifyIcon.CloseBalloon();
-            }
-            else if (Settings.SettingsData.musicPlayerBallonTurnOn && WindowState == WindowState.Minimized && MusicPlayerPage.Instance != null && MusicPlayerPage.Instance.ballon != null)
-            {
-                myNotifyIcon.ShowCustomBalloon(MusicPlayerPage.Instance.ballon, PopupAnimation.Slide, null);
-            }
-        }
-
-        /// <summary>
         /// Check for the updates. If you click in the menu on check updates (it will hopefully start the update)
         /// </summary>
         private void CheckForUpdates_Click(object sender, RoutedEventArgs e)
