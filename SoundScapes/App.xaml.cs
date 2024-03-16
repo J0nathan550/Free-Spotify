@@ -1,9 +1,10 @@
-﻿using Free_Spotify.Views;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SoundScapes.ViewModels;
+using SoundScapes.Views;
 using System.Windows;
 
-namespace Free_Spotify;
+namespace SoundScapes;
 
 public partial class App : Application
 {
@@ -14,7 +15,20 @@ public partial class App : Application
         AppHost = Host.CreateDefaultBuilder()
         .ConfigureServices((hostContext, services) =>
         {
+            // Views
             services.AddSingleton<MainWindow>();
+            services.AddSingleton<MainView>();
+            services.AddSingleton<MusicPlayerView>();
+            services.AddSingleton<PlaylistView>();
+            services.AddSingleton<SearchView>();
+            services.AddSingleton<SettingsView>();
+
+            // ViewModels
+            services.AddTransient<MainViewModel>();
+            services.AddTransient<MusicPlayerViewModel>();
+            services.AddTransient<PlaylistViewModel>();
+            services.AddTransient<SearchViewModel>();
+            services.AddTransient<SettingsViewModel>();
         })
         .Build();
     }
@@ -34,4 +48,5 @@ public partial class App : Application
         await AppHost!.StopAsync();
         base.OnExit(e);
     }
+
 }

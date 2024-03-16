@@ -1,16 +1,16 @@
-﻿<Application x:Class="Free_Spotify.App"
+﻿<Application x:Class="SoundScapes.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Free_Spotify"
              xmlns:ui="http://schemas.modernwpf.com/2019">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ui:ThemeResources RequestedTheme="Dark" />
+                <ui:ThemeResources RequestedTheme="Dark" AccentColor="White" />
                 <ui:XamlControlsResources />
                 <!-- Other merged dictionaries here -->
             </ResourceDictionary.MergedDictionaries>
             <!-- Other app resources here -->
+            <SolidColorBrush x:Key="NavigationViewDefaultPaneBackground" Color="#050505" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

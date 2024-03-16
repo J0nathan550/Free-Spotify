@@ -3,15 +3,20 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
-    <RootNamespace>Free_Spotify</RootNamespace>
+    <RootNamespace>SoundScapes</RootNamespace>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <AssemblyName>Free Spotify</AssemblyName>
+    <AssemblyName>SoundScapes</AssemblyName>
     <Version>1.0.0.0</Version>
     <Company>J0nathan550</Company>
+    <ApplicationIcon>Assets\SoundScapesIcon.ico</ApplicationIcon>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Content Include="Assets\SoundScapesIcon.ico" />
+  </ItemGroup>
+	
   <ItemGroup>
     <PackageReference Include="Autoupdater.NET.Official" Version="1.8.5" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
