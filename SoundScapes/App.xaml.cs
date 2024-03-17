@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using LibVLCSharp.Shared;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SoundScapes.Interfaces;
 using SoundScapes.Services;
@@ -14,6 +15,8 @@ public partial class App : Application
 
     public App()
     {
+        Core.Initialize();
+        Environment.SetEnvironmentVariable("SLAVA_UKRAINI", "1");
         AppHost = Host.CreateDefaultBuilder()
         .ConfigureServices((hostContext, services) =>
         {

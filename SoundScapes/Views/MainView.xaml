@@ -17,7 +17,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="36"/>
             <RowDefinition/>
-            <RowDefinition Height="70"/>
+            <RowDefinition Height="80"/>
         </Grid.RowDefinitions>
 
         <Grid Panel.ZIndex="1" Grid.RowSpan="2">
