@@ -14,6 +14,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\SoundScapesIconResource.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\SoundScapesIconResource.ico" />
     <Content Include="Assets\SoundScapesIcon.ico" />
   </ItemGroup>
 	
@@ -21,6 +26,7 @@
     <PackageReference Include="Autoupdater.NET.Official" Version="1.8.5" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
     <PackageReference Include="DiscordRichPresence" Version="1.2.1.24" />
+    <PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="ModernWpfUI" Version="0.9.6" />

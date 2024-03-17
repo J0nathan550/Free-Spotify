@@ -1,8 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace SoundScapes.ViewModels
+namespace SoundScapes.ViewModels;
+
+public class SettingsViewModel : ObservableObject
 {
-    public class SettingsViewModel : ObservableObject
-    {
-    }
 }

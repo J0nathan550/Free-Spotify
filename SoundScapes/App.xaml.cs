@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SoundScapes.Interfaces;
+using SoundScapes.Services;
 using SoundScapes.ViewModels;
 using SoundScapes.Views;
 using System.Windows;
@@ -23,12 +25,14 @@ public partial class App : Application
             services.AddSingleton<SearchView>();
             services.AddSingleton<SettingsView>();
 
-            // ViewModels
-            services.AddTransient<MainViewModel>();
-            services.AddTransient<MusicPlayerViewModel>();
-            services.AddTransient<PlaylistViewModel>();
-            services.AddTransient<SearchViewModel>();
-            services.AddTransient<SettingsViewModel>();
+            // View Models
+            services.AddSingleton<SearchViewModel>();
+            services.AddSingleton<SettingsViewModel>();
+            services.AddSingleton<PlaylistViewModel>();
+            services.AddSingleton<MusicPlayerViewModel>();
+
+            // Services
+            services.AddSingleton<IMusicPlayer, MusicPlayerService>();
         })
         .Build();
     }

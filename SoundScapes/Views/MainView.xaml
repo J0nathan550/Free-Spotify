@@ -6,7 +6,6 @@
              xmlns:ui="http://schemas.modernwpf.com/2019"
              xmlns:views="clr-namespace:SoundScapes.Views" 
              xmlns:viewsmodels="clr-namespace:SoundScapes.ViewModels" 
-             d:DataContext="{d:DesignInstance Type=viewsmodels:MainViewModel}"
              mc:Ignorable="d" 
              d:Background="Black"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -18,6 +17,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="36"/>
             <RowDefinition/>
+            <RowDefinition Height="70"/>
         </Grid.RowDefinitions>
 
         <Grid Panel.ZIndex="1" Grid.RowSpan="2">
@@ -36,5 +36,6 @@
 
         <ui:Frame Grid.Row="1" Grid.ColumnSpan="2" Name="ContentFrame"/>
 
+        <views:MusicPlayerView Grid.Row="2" Grid.ColumnSpan="2"/>
     </Grid>
 </UserControl>
