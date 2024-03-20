@@ -2,6 +2,7 @@
 using SoundScapes.Interfaces;
 using SoundScapes.Models;
 using SpotifyExplode;
+using System.Diagnostics;
 using YoutubeExplode;
 using YoutubeExplode.Videos.Streams;
 
@@ -9,76 +10,83 @@ namespace SoundScapes.Services;
 
 public class MusicPlayerService : IMusicPlayer
 {
-    public List<SongModel> Songs { get; set; } = [];
-    public SongModel CurrentSong { get; set; } = new SongModel();
-    public LibVLC LibVLC { get; } = new();
+    public LibVLC LibVLC { get; private set; } = new();
     public MediaPlayer MediaPlayer { get; private set; }
-    public YoutubeClient YoutubeClient { get; private set; } = new YoutubeClient();
-    public SpotifyClient SpotifyClient { get; private set; } = new SpotifyClient();
+    public YoutubeClient YoutubeClient { get; private set; } = new();
+    public SpotifyClient SpotifyClient { get; private set; } = new();
+    public CancellationTokenSource CancellationTokenSourcePlay { get; private set; } = new();
+    public bool IsPaused { get; private set; }
+    public bool IsRepeating { get; private set; }
+    public bool IsShuffling { get; private set; }
+    public MusicPlayerService() => MediaPlayer = new(LibVLC);
 
-    public event EventHandler<SongModel>? SongChanged;
-
-    public MusicPlayerService()
+    public async Task OnPlaySong(SongModel currentSong)
     {
-        MediaPlayer = new MediaPlayer(LibVLC);
-    }
-
-    public void ChangeVolume(double volume)
-    {
-        MediaPlayer.Volume = (int)volume;
-    }
-
-    public void NextSong()
-    {
-        SongChanged?.Invoke(this, CurrentSong);
-    }
-
-    public void Pause()
-    {
-
-    }
-
-    public async void Play()
-    {
-        Stop();
-        await Task.Run(() =>
+        try
         {
-            var youTubeID = SpotifyClient.Tracks.GetYoutubeIdAsync(CurrentSong.SongID).Result;
-            if (youTubeID != null)
-            {
-                var streamManifest = YoutubeClient.Videos.Streams.GetManifestAsync(youTubeID);
-                var streamInfo = streamManifest.Result.GetAudioStreams().GetWithHighestBitrate();
-                var audioMedia = new Media(LibVLC, streamInfo.Url, FromType.FromLocation);
-                audioMedia.AddOption(":no-video");
-                MediaPlayer.Media = audioMedia;
-                MediaPlayer.Play();
-                SongChanged?.Invoke(this, CurrentSong);
-            }
-        });
+            // Cancel any existing tasks
+            CancellationTokenSourcePlay?.Cancel();
+            CancellationTokenSourcePlay = new CancellationTokenSource();
+
+            CancelPlayingMusic();
+
+            // Get YouTube ID and stream info
+            var youtubeID = await SpotifyClient.Tracks.GetYoutubeIdAsync(currentSong.SongID, CancellationTokenSourcePlay.Token);
+            var streamInfo = await YoutubeClient.Videos.Streams.GetManifestAsync($"https://youtube.com/watch?v={youtubeID}", CancellationTokenSourcePlay.Token);
+
+            // If cancellation was requested, stop playback and return
+            CancelPlayingMusic();
+
+            // Get the audio stream with the highest bitrate
+            var content = streamInfo.GetAudioStreams().GetWithHighestBitrate();
+
+            // If cancellation was requested, stop playback and return
+            CancelPlayingMusic();
+
+            // Create media and set options
+            var media = new Media(LibVLC, content.Url, FromType.FromLocation);
+            media.AddOption(":no-video");
+
+            // If cancellation was requested, stop playback and return
+            CancelPlayingMusic();
+
+            // Set media and start playback
+            MediaPlayer.Media = media;
+            MediaPlayer.Play();
+
+            // If cancellation was requested, stop playback and return
+            CancelPlayingMusic();
+        }
+        catch (Exception ex)
+        {
+            Trace.WriteLine(ex.Message);
+        }
     }
 
-    public void PreviousSong()
+    public void CancelPlayingMusic()
     {
-        SongChanged?.Invoke(this, CurrentSong);
-    }
-
-    public void RepeatSong()
-    {
-
-    }
-
-    public void ShuffleSong()
-    {
-        SongChanged?.Invoke(this, CurrentSong);
-    }
-
-    public void Stop()
-    {
-        Task.Run(() =>
+        if (CancellationTokenSourcePlay.IsCancellationRequested)
         {
             MediaPlayer.Stop();
             MediaPlayer.Media?.Dispose();
-            SongChanged?.Invoke(this, CurrentSong);
-        });
+        }
+    }
+
+    public void OnPauseSong()
+    {
+        IsPaused = !IsPaused;
+        MediaPlayer.SetPause(IsPaused);
+    }
+
+    public void OnRepeatingSong()
+    {
+        if (IsShuffling) return;
+        IsRepeating = !IsRepeating;
+    }
+
+    public void OnShufflingSong()
+    {
+        if (IsRepeating) return;
+        IsShuffling = !IsShuffling;
     }
 }

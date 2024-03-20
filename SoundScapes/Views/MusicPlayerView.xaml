@@ -14,14 +14,14 @@
                 <ImageBrush ImageSource="{Binding CurrentSong.Icon}" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="Fant" Opacity="0.15"/>
             </Grid.Background>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition MinWidth="250"/>
+                <ColumnDefinition MinWidth="220"/>
                 <ColumnDefinition MinWidth="220"/>
                 <ColumnDefinition MinWidth="220"/>
             </Grid.ColumnDefinitions>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"/>
-                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition/>
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
                 <Image Grid.Column="0" Source="{Binding CurrentSong.Icon}" HorizontalAlignment="Left" Margin="15,10,10,10" RenderOptions.BitmapScalingMode="Fant"/>
@@ -30,10 +30,12 @@
                         <RowDefinition/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <TextBlock Text="{Binding CurrentSong.Title, TargetNullValue=...}" MaxWidth="500" FontWeight="Bold" VerticalAlignment="Bottom" TextTrimming="CharacterEllipsis" Foreground="White" FontSize="18" FontFamily="Arial"/>
-                    <TextBlock Grid.Row="1" Text="{Binding CurrentSong.Artist, TargetNullValue=...}" MaxWidth="500" FontWeight="Bold" TextTrimming="CharacterEllipsis" Foreground="White" FontSize="14" FontFamily="Arial"/>
+                    <TextBlock Text="{Binding CurrentSong.Title, TargetNullValue=...}" FontWeight="Bold" VerticalAlignment="Bottom" TextTrimming="CharacterEllipsis" Foreground="White" FontSize="18" FontFamily="Arial"/>
+                    <TextBlock Grid.Row="1" Text="{Binding CurrentSong.Artist, TargetNullValue=...}" FontWeight="Bold" TextTrimming="CharacterEllipsis" Foreground="White" FontSize="14" FontFamily="Arial"/>
                 </Grid>
-                <fa:FontAwesome Grid.Column="2" Margin="20,0,0,0" VerticalAlignment="Center" Icon="HeartOutline" Foreground="White" FontSize="16" />
+                <Button Grid.Column="2" Margin="20,0,20,0" VerticalAlignment="Center" Background="Transparent">
+                    <fa:FontAwesome Icon="HeartOutline" Foreground="White" FontSize="16" />
+                </Button>
             </Grid>
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
@@ -48,20 +50,20 @@
                         <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0" Padding="0" Background="Transparent" Command="{Binding ShuffleSongCommand}">
-                        <fa:FontAwesome VerticalAlignment="Center" Margin="10, 5, 10, 0" Icon="Random" Foreground="White" FontSize="19" />
+                    <Button Grid.Column="0" Background="Transparent" Command="{Binding ShuffleSongCommand}">
+                        <fa:FontAwesome Icon="Random" Foreground="{Binding ShuffleMediaBrush}" FontSize="19" />
                     </Button>
-                    <Button Grid.Column="1" Padding="0" Background="Transparent" Command="{Binding PreviousSongCommand}">
-                        <fa:FontAwesome VerticalAlignment="Center" Margin="10, 5, 10, 0" Icon="ToggleLeft" Foreground="White" FontSize="19" />
+                    <Button Grid.Column="1" Background="Transparent" Command="{Binding PreviousSongCommand}">
+                        <fa:FontAwesome Icon="ToggleLeft" Foreground="White" FontSize="19" />
                     </Button>
-                    <Button Grid.Column="2" Padding="0" Background="Transparent" Command="{Binding PlaySongCommand}">
-                        <fa:FontAwesome VerticalAlignment="Center" Margin="10, 5, 10, 0" Icon="Play" Foreground="White" FontSize="19" />
+                    <Button Grid.Column="2" Background="Transparent" Command="{Binding PlaySongCommand}">
+                        <fa:FontAwesome Icon="{Binding PlayMediaIcon}" Foreground="White" FontSize="19" />
                     </Button>
-                    <Button Grid.Column="3" Padding="0" Background="Transparent" Command="{Binding NextSongCommand}">
-                        <fa:FontAwesome VerticalAlignment="Center" Margin="10, 5, 10, 0" Icon="ToggleRight" Foreground="White" FontSize="19" />
+                    <Button Grid.Column="3" Background="Transparent" Command="{Binding NextSongCommand}">
+                        <fa:FontAwesome Icon="ToggleRight" Foreground="White" FontSize="19" />
                     </Button>
-                    <Button Grid.Column="4" Padding="0" Background="Transparent" Command="{Binding RepeatSongCommand}">
-                        <fa:FontAwesome VerticalAlignment="Center" Margin="10, 5, 10, 0" Icon="Repeat" Foreground="White" FontSize="19" />
+                    <Button Grid.Column="4" Background="Transparent" Command="{Binding RepeatSongCommand}">
+                        <fa:FontAwesome Icon="Repeat" Foreground="{Binding RepeatMediaBrush}" FontSize="19" />
                     </Button>
                 </Grid>
                 <Grid Grid.Row="1">
@@ -70,8 +72,8 @@
                         <ColumnDefinition/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="{Binding CurrentSong.Duration, TargetNullValue=0:00}" Margin="0,7,10,0" Foreground="White" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
-                    <Slider Grid.Column="1" Value="50" Maximum="100"/>
+                    <TextBlock Text="{Binding SongDuration, TargetNullValue=0:00}" Margin="0,7,10,0" Foreground="White" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
+                    <Slider Grid.Column="1" Value="{Binding MusicPosition, Mode=TwoWay}" Maximum="1"/>
                     <TextBlock Grid.Column="2" Text="{Binding CurrentSong.Duration, TargetNullValue=0:00}" Margin="10,7,0,0" Foreground="White" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
                 </Grid>
             </Grid>

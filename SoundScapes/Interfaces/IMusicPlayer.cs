@@ -7,19 +7,17 @@ namespace SoundScapes.Interfaces;
 
 public interface IMusicPlayer
 {
-    List<SongModel> Songs { get; set; }
-    public SongModel CurrentSong { get; set; }
-    event EventHandler<SongModel> SongChanged;
     LibVLC LibVLC { get; }
     MediaPlayer MediaPlayer { get; }
     YoutubeClient YoutubeClient { get; }
     SpotifyClient SpotifyClient { get; }
-    void Play();
-    void Stop();
-    void Pause();
-    void NextSong();
-    void PreviousSong();
-    void ShuffleSong();
-    void RepeatSong();
-    void ChangeVolume(double volume);
+    CancellationTokenSource CancellationTokenSourcePlay { get; }
+    bool IsPaused { get; }
+    bool IsRepeating { get; }
+    bool IsShuffling { get; }
+    Task OnPlaySong(SongModel currentSong);
+    void OnPauseSong();
+    void OnRepeatingSong();
+    void OnShufflingSong();
+    void CancelPlayingMusic();
 }
