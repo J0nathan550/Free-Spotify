@@ -8,7 +8,9 @@ public partial class MusicPlayerView : UserControl
 {
     public MusicPlayerView()
     {
-        DataContext = App.AppHost?.Services.GetService<MusicPlayerViewModel>();
+        var model = App.AppHost?.Services.GetService<MusicPlayerViewModel>();
+        DataContext = model;
         InitializeComponent();
+        model?.RegisterMusicSlider(musicSlider);
     }
 }

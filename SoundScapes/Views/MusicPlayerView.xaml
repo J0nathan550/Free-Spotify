@@ -33,7 +33,7 @@
                     <TextBlock Text="{Binding CurrentSong.Title, TargetNullValue=...}" FontWeight="Bold" VerticalAlignment="Bottom" TextTrimming="CharacterEllipsis" Foreground="White" FontSize="18" FontFamily="Arial"/>
                     <TextBlock Grid.Row="1" Text="{Binding CurrentSong.Artist, TargetNullValue=...}" FontWeight="Bold" TextTrimming="CharacterEllipsis" Foreground="White" FontSize="14" FontFamily="Arial"/>
                 </Grid>
-                <Button Grid.Column="2" Margin="20,0,20,0" VerticalAlignment="Center" Background="Transparent">
+                <Button Grid.Column="2" Margin="20,0,20,0" VerticalAlignment="Center" Background="Transparent" Cursor="Hand">
                     <fa:FontAwesome Icon="HeartOutline" Foreground="White" FontSize="16" />
                 </Button>
             </Grid>
@@ -50,19 +50,19 @@
                         <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0" Background="Transparent" Command="{Binding ShuffleSongCommand}">
+                    <Button Grid.Column="0" Background="Transparent" Command="{Binding ShuffleSongCommand}" Cursor="Hand">
                         <fa:FontAwesome Icon="Random" Foreground="{Binding ShuffleMediaBrush}" FontSize="19" />
                     </Button>
-                    <Button Grid.Column="1" Background="Transparent" Command="{Binding PreviousSongCommand}">
+                    <Button Grid.Column="1" Background="Transparent" Command="{Binding PreviousSongCommand}" Cursor="Hand">
                         <fa:FontAwesome Icon="ToggleLeft" Foreground="White" FontSize="19" />
                     </Button>
-                    <Button Grid.Column="2" Background="Transparent" Command="{Binding PlaySongCommand}">
+                    <Button Grid.Column="2" Background="Transparent" Command="{Binding PlaySongCommand}" Cursor="Hand">
                         <fa:FontAwesome Icon="{Binding PlayMediaIcon}" Foreground="White" FontSize="19" />
                     </Button>
-                    <Button Grid.Column="3" Background="Transparent" Command="{Binding NextSongCommand}">
+                    <Button Grid.Column="3" Background="Transparent" Command="{Binding NextSongCommand}" Cursor="Hand">
                         <fa:FontAwesome Icon="ToggleRight" Foreground="White" FontSize="19" />
                     </Button>
-                    <Button Grid.Column="4" Background="Transparent" Command="{Binding RepeatSongCommand}">
+                    <Button Grid.Column="4" Background="Transparent" Command="{Binding RepeatSongCommand}" Cursor="Hand">
                         <fa:FontAwesome Icon="Repeat" Foreground="{Binding RepeatMediaBrush}" FontSize="19" />
                     </Button>
                 </Grid>
@@ -73,7 +73,7 @@
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="{Binding SongDuration, TargetNullValue=0:00}" Margin="0,7,10,0" Foreground="White" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
-                    <Slider Grid.Column="1" Value="{Binding MusicPosition, Mode=TwoWay}" Maximum="1"/>
+                    <Slider Name="musicSlider" Cursor="Hand" Grid.Column="1" Value="{Binding MusicPosition, Mode=TwoWay}" Maximum="1"/>
                     <TextBlock Grid.Column="2" Text="{Binding CurrentSong.Duration, TargetNullValue=0:00}" Margin="10,7,0,0" Foreground="White" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
                 </Grid>
             </Grid>
@@ -83,7 +83,7 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <fa:FontAwesome Grid.Column="0" VerticalAlignment="Center" Margin="10" Icon="VolumeUp" Foreground="White" FontSize="19" />
-                <Slider Grid.Column="1" VerticalAlignment="Center" Value="{Binding VolumeValue, Mode=TwoWay}" Maximum="100" Margin="5" Width="200"/>
+                <Slider Grid.Column="1" VerticalAlignment="Center" Cursor="Hand" Value="{Binding VolumeValue, Mode=TwoWay}" Maximum="100" Margin="5" Width="200"/>
             </Grid>
         </Grid>
     </Border>

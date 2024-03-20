@@ -4,6 +4,8 @@ using FontAwesome.WPF;
 using SoundScapes.Classes;
 using SoundScapes.Interfaces;
 using SoundScapes.Models;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 
 namespace SoundScapes.ViewModels;
@@ -38,6 +40,7 @@ public partial class MusicPlayerViewModel : ObservableObject
     [ObservableProperty]
     private string _songDuration = "0:00";
     public event EventHandler<SongModel>? SongChanged;
+    private int LastSongIndex = 0;
 
 
     public MusicPlayerViewModel(IMusicPlayer musicPlayer)
@@ -54,9 +57,14 @@ public partial class MusicPlayerViewModel : ObservableObject
 
     private void MediaPlayer_PositionChanged(object? sender, LibVLCSharp.Shared.MediaPlayerPositionChangedEventArgs e)
     {
+        CheckMediaPlayerPosition();
+    }
+
+    public void CheckMediaPlayerPosition()
+    {
         SongDuration = TimeConverter.ConvertMsToTime(_musicPlayer.MediaPlayer.Time);
-        MusicPosition = e.Position;
-        if (e.Position > 0.99f)
+        MusicPosition = _musicPlayer.MediaPlayer.Position;
+        if (_musicPlayer.MediaPlayer.Position > 0.99f)
         {
             if (_musicPlayer.IsRepeating)
             {
@@ -95,9 +103,19 @@ public partial class MusicPlayerViewModel : ObservableObject
         Task.Run(() =>
         {
             Random rng = new();
-            int index = rng.Next(0, SongsList.Count);
-            CurrentSong = SongsList[index];
-            SongChanged?.Invoke(this, CurrentSong);
+            int times = 0;
+            while (times < 10000)
+            {
+                int index = rng.Next(0, SongsList.Count);
+                if (index == LastSongIndex)
+                {
+                    times++;
+                    continue;
+                }
+                CurrentSong = SongsList[index];
+                SongChanged?.Invoke(this, CurrentSong);
+                break;
+            }
         });
     }
 
@@ -105,6 +123,9 @@ public partial class MusicPlayerViewModel : ObservableObject
     {
         _musicPlayer.CancellationTokenSourcePlay.Cancel();
         _musicPlayer.CancelPlayingMusic();
+        SongDuration = "0:00";
+        MusicPosition = 0;
+        _musicPlayer.MediaPlayer.Position = 0;
         _musicPlayer.OnPlaySong(CurrentSong);
     }
 
@@ -146,6 +167,25 @@ public partial class MusicPlayerViewModel : ObservableObject
             return;
         }
         ShuffleMediaBrush = new SolidColorBrush(Colors.White);
+    }
+
+    public void RegisterMusicSlider(Slider slider)
+    {
+        slider.AddHandler(Thumb.DragStartedEvent, new DragStartedEventHandler((o, e) =>
+        {
+            _musicPlayer.MediaPlayer.SetPause(true);
+        }));
+        slider.AddHandler(Thumb.DragDeltaEvent, new DragDeltaEventHandler((o,e) =>
+        {
+            long progress = (long)(MusicPosition * _musicPlayer.MediaPlayer.Length);
+            SongDuration = TimeConverter.ConvertMsToTime(progress);
+        }));
+        slider.AddHandler(Thumb.DragCompletedEvent, new DragCompletedEventHandler((o,e) =>
+        {
+            _musicPlayer.MediaPlayer.Position = (float)MusicPosition;
+            CheckMediaPlayerPosition();
+            _musicPlayer.MediaPlayer.SetPause(false);
+        }));
     }
 
     partial void OnVolumeValueChanging(double value)
