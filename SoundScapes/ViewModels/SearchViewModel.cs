@@ -22,7 +22,7 @@ public partial class SearchViewModel : ObservableObject
     [ObservableProperty]
     private Visibility? _resultsBoxVisibility = Visibility.Visible;
     [ObservableProperty]
-    private List<SongModel> _songsList = [];
+    private List<SongModel>? _songsList = [];
     [ObservableProperty]
     private SongModel _currentSong = new();
 
@@ -32,6 +32,12 @@ public partial class SearchViewModel : ObservableObject
         _musicPlayerView.SongChanged += (o, e) =>
         {
             CurrentSong = e;
+        };
+        _musicPlayerView.SongsChanged += (o, e) =>
+        {
+            SongsList = null;
+            Task.Delay(100);
+            SongsList = e;
         };
     }
 
@@ -45,7 +51,7 @@ public partial class SearchViewModel : ObservableObject
         }
     }
 
-    partial void OnSongsListChanged(List<SongModel> value)
+    partial void OnSongsListChanged(List<SongModel>? value)
     {
         if (value != null) _musicPlayerView.SongsList = value;
     }

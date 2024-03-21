@@ -3,7 +3,6 @@ using SoundScapes.Interfaces;
 using SoundScapes.Models;
 using SpotifyExplode;
 using System.Diagnostics;
-using System.Windows.Threading;
 using YoutubeExplode;
 using YoutubeExplode.Videos.Streams;
 
@@ -36,10 +35,8 @@ public class MusicPlayerService : IMusicPlayer
 
             // If cancellation was requested, stop playback and return
             CancelPlayingMusic();
-
             // Get the audio stream with the highest bitrate
             var content = streamInfo.GetAudioStreams().GetWithHighestBitrate();
-
             // If cancellation was requested, stop playback and return
             CancelPlayingMusic();
 

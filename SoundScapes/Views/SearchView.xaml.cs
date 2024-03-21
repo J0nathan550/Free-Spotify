@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ModernWpf.Controls;
 using SoundScapes.ViewModels;
 using System.Windows.Controls;
 

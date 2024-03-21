@@ -31,7 +31,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="ModernWpfUI" Version="0.9.6" />
-    <PackageReference Include="SpotifyExplode" Version="1.0.7" />
+    <PackageReference Include="SpotifyExplode" Version="1.0.8" />
     <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.20" />
     <PackageReference Include="YoutubeExplode" Version="6.3.13" />
   </ItemGroup>

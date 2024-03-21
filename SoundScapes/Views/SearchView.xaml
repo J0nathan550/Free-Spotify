@@ -28,7 +28,7 @@
             </ListBox.ItemContainerStyle>
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="models:SongModel">
-                    <Border BorderBrush="#99FFFFFF" BorderThickness="1">
+                    <Border Cursor="Hand" BorderBrush="#99FFFFFF" BorderThickness="1">
                         <Grid>
                             <Grid.Background>
                                 <ImageBrush ImageSource="{Binding Icon}" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="Fant" Opacity="0.5" RenderOptions.CachingHint="Unspecified"/>

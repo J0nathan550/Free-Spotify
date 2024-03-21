@@ -4,7 +4,6 @@ using FontAwesome.WPF;
 using SoundScapes.Classes;
 using SoundScapes.Interfaces;
 using SoundScapes.Models;
-using System.Timers;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
@@ -43,6 +42,7 @@ public partial class MusicPlayerViewModel : ObservableObject
     [ObservableProperty]
     private string _songDuration = "0:00";
     public event EventHandler<SongModel>? SongChanged;
+    public event EventHandler<List<SongModel>>? SongsChanged;
     private readonly System.Timers.Timer _musicPositionUpdate = new() { Interval = 500 };
 
     public MusicPlayerViewModel(IMusicPlayer musicPlayer)
@@ -54,12 +54,10 @@ public partial class MusicPlayerViewModel : ObservableObject
         _shuffleSongCommand = new RelayCommand(ShuffleSongCommand_Execute);
         _repeatSongCommand = new RelayCommand(RepeatSongCommand_Execute);
         _musicPlayer.MediaPlayer.Volume = (int)VolumeValue;
-        _musicPositionUpdate.Elapsed += _MusicPositionUpdate_Elapsed;
-    }
-
-    private void _MusicPositionUpdate_Elapsed(object? sender, ElapsedEventArgs e)
-    {
-        CheckMediaPlayerPosition();
+        _musicPositionUpdate.Elapsed += (o,e) =>
+        {
+            CheckMediaPlayerPosition();
+        };
     }
 
     public void CheckMediaPlayerPosition()
@@ -159,16 +157,17 @@ public partial class MusicPlayerViewModel : ObservableObject
             {
                 int a = rand.Next(0, SongsList.Count - 1);
                 int b = rand.Next(0, SongsList.Count - 1);
-                var temp = SongsList[a];
-                SongsList[a] = SongsList[b];
-                SongsList[b] = temp;
+                (SongsList[b], SongsList[a]) = (SongsList[a], SongsList[b]);
             }
+            SongsChanged?.Invoke(this, SongsList);
             ShuffleMediaBrush = new SolidColorBrush(Colors.Lime);
         }
         else
         {
             SongsList.Clear();
             SongsList.AddRange(_originalSongsList);
+            _originalSongsList.Clear();
+            SongsChanged?.Invoke(this, SongsList);
             ShuffleMediaBrush = new SolidColorBrush(Colors.White);
         }
     }
