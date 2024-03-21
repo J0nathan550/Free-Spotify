@@ -14,10 +14,8 @@ public interface IMusicPlayer
     CancellationTokenSource CancellationTokenSourcePlay { get; }
     bool IsPaused { get; }
     bool IsRepeating { get; }
-    bool IsShuffling { get; }
     Task OnPlaySong(SongModel currentSong);
     void OnPauseSong();
     void OnRepeatingSong();
-    void OnShufflingSong();
     void CancelPlayingMusic();
 }

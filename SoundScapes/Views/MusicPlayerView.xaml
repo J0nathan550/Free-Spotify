@@ -73,7 +73,7 @@
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="{Binding SongDuration, TargetNullValue=0:00}" Margin="0,7,10,0" Foreground="White" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
-                    <Slider Name="musicSlider" Cursor="Hand" Grid.Column="1" Value="{Binding MusicPosition, Mode=TwoWay}" Maximum="1"/>
+                    <Slider Name="musicSlider" IsMoveToPointEnabled="True" Cursor="Hand" Grid.Column="1" Value="{Binding MusicPosition, Mode=TwoWay}" Maximum="1"/>
                     <TextBlock Grid.Column="2" Text="{Binding CurrentSong.Duration, TargetNullValue=0:00}" Margin="10,7,0,0" Foreground="White" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
                 </Grid>
             </Grid>
@@ -83,7 +83,7 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <fa:FontAwesome Grid.Column="0" VerticalAlignment="Center" Margin="10" Icon="VolumeUp" Foreground="White" FontSize="19" />
-                <Slider Grid.Column="1" VerticalAlignment="Center" Cursor="Hand" Value="{Binding VolumeValue, Mode=TwoWay}" Maximum="100" Margin="5" Width="200"/>
+                <Slider Grid.Column="1" IsMoveToPointEnabled="True" VerticalAlignment="Center" Cursor="Hand" Value="{Binding VolumeValue, Mode=TwoWay}" Maximum="100" Margin="5" Width="200"/>
             </Grid>
         </Grid>
     </Border>

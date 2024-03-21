@@ -3,6 +3,7 @@ using SoundScapes.Interfaces;
 using SoundScapes.Models;
 using SpotifyExplode;
 using System.Diagnostics;
+using System.Windows.Threading;
 using YoutubeExplode;
 using YoutubeExplode.Videos.Streams;
 
@@ -17,7 +18,6 @@ public class MusicPlayerService : IMusicPlayer
     public CancellationTokenSource CancellationTokenSourcePlay { get; private set; } = new();
     public bool IsPaused { get; private set; }
     public bool IsRepeating { get; private set; }
-    public bool IsShuffling { get; private set; }
     public MusicPlayerService() => MediaPlayer = new(LibVLC);
 
     public async Task OnPlaySong(SongModel currentSong)
@@ -78,15 +78,5 @@ public class MusicPlayerService : IMusicPlayer
         MediaPlayer.SetPause(IsPaused);
     }
 
-    public void OnRepeatingSong()
-    {
-        if (IsShuffling) return;
-        IsRepeating = !IsRepeating;
-    }
-
-    public void OnShufflingSong()
-    {
-        if (IsRepeating) return;
-        IsShuffling = !IsShuffling;
-    }
+    public void OnRepeatingSong() => IsRepeating = !IsRepeating;
 }

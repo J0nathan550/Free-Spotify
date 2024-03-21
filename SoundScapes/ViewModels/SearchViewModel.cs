@@ -2,9 +2,7 @@
 using FontAwesome.WPF;
 using ModernWpf.Controls;
 using SoundScapes.Classes;
-using SoundScapes.Interfaces;
 using SoundScapes.Models;
-using SoundScapes.Views;
 using SpotifyExplode;
 using System.Net.Http;
 using System.Windows;
