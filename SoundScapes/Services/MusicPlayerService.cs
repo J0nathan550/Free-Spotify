@@ -36,7 +36,7 @@ public class MusicPlayerService : IMusicPlayer
             // If cancellation was requested, stop playback and return
             CancelPlayingMusic();
             // Get the audio stream with the highest bitrate
-            var content = streamInfo.GetAudioStreams().GetWithHighestBitrate();
+            var content = streamInfo.GetAudioOnlyStreams().GetWithHighestBitrate();
             // If cancellation was requested, stop playback and return
             CancelPlayingMusic();
 
