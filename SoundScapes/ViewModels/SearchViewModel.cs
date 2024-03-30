@@ -36,7 +36,6 @@ public partial class SearchViewModel : ObservableObject
         _musicPlayerView.SongsChanged += (o, e) =>
         {
             SongsList = null;
-            Task.Delay(100);
             SongsList = e;
         };
     }

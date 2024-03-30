@@ -2,13 +2,19 @@
 using CommunityToolkit.Mvvm.Input;
 using ModernWpf.Controls;
 using SoundScapes.Models;
+using System.Windows;
 
 namespace SoundScapes.ViewModels;
 
 public partial class PlaylistViewModel : ObservableObject
 {
     [ObservableProperty]
-    private List<PlaylistModel> _playlists = [new PlaylistModel() { Duration = "1:00", Title = "Meow", SongsInside = "Meow" }];
+    private List<PlaylistModel>? _playlists = 
+    [
+        new PlaylistModel() { Duration = "1:00", Title = "Meow", SongsInside = "Meow" },
+        new PlaylistModel() { Duration = "1:00", Title = "Meow", SongsInside = "Meow1" },
+        new PlaylistModel() { Duration = "1:00", Title = "Meow", SongsInside = "Meow2" }
+    ];
     [ObservableProperty]
     private PlaylistModel? currentPlaylistSelected = null;
     [ObservableProperty]
@@ -19,17 +25,22 @@ public partial class PlaylistViewModel : ObservableObject
     private RelayCommand _installPlaylistCommand;
     [ObservableProperty]
     private RelayCommand _removePlaylistCommand;
+    [ObservableProperty]
+    private Visibility _playlistResultVisibility = Visibility.Visible;
 
     public PlaylistViewModel()
     {
         AddPlaylistCommand = new RelayCommand(AddPlaylistCommand_Execute);
         EditPlaylistCommand = new RelayCommand(EditPlaylistCommand_Execute);
         InstallPlaylistCommand = new RelayCommand(InstallPlaylistCommand_Execute);
-        RemovePlaylistCommand = new RelayCommand(RemovePlaylistCommand_Execute);
+        RemovePlaylistCommand = new RelayCommand(RemovePlaylistCommand_ExecuteAsync);
     }
-
-    private void RemovePlaylistCommand_Execute()
+    private void RemovePlaylistCommand_ExecuteAsync()
     {
+        var temp = Playlists;
+        temp?.Remove(CurrentPlaylistSelected!);
+        Playlists = null;
+        Playlists = temp;
     }
 
     private void InstallPlaylistCommand_Execute()
