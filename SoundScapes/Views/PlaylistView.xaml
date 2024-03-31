@@ -15,8 +15,8 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <ui:AutoSuggestBox Name="SearchPlaylistBox" ui:ControlHelper.PlaceholderForeground="White" ui:ControlHelper.PlaceholderText="Напишіть назву плейлиста..." QueryIcon="Find" Margin="5"/>
-        <TextBlock Grid.Row="1" Visibility="Collapsed" Text="У вас нема жодного створеного плейлиста! Створіть його натиснувши праву клавишу миші, та обрати у меню 'Додати плейлист...'" Foreground="White" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" TextWrapping="WrapWithOverflow" TextAlignment="Center"/>
-        <ListBox Grid.Row="1" Background="Transparent" ItemsSource="{Binding Playlists, Mode=TwoWay}" SelectedItem="{Binding CurrentPlaylistSelected}" Visibility="{Binding PlaylistResultVisibility}">
+        <TextBlock Grid.Row="1" Visibility="{Binding ErrorTextVisibility}" Text="{Binding ErrorText}" Foreground="White" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" TextWrapping="WrapWithOverflow" TextAlignment="Center"/>
+        <ListBox Grid.Row="1" Background="Transparent" ItemsSource="{Binding Playlists, Mode=TwoWay}" SelectedItem="{Binding CurrentPlaylistSelected}">
             <ListBox.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Додати плейлист..." Command="{Binding AddPlaylistCommand}">
@@ -33,29 +33,48 @@
                     <Setter Property="VerticalAlignment" Value="Stretch"/>
                     <Setter Property="VerticalContentAlignment" Value="Stretch"/>
                     <Setter Property="Padding" Value="0"></Setter>
+                    <Style.Triggers>
+                        <EventTrigger RoutedEvent="Loaded">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation From="0" To="1" Duration="0:0:0.5" Storyboard.TargetProperty="Opacity"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Style.Triggers>
                 </Style>
             </ListBox.ItemContainerStyle>
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="models:PlaylistModel">
                     <Border Cursor="Hand" BorderBrush="#99FFFFFF" BorderThickness="1">
-                            <Border.ContextMenu>
+                        <Border.ContextMenu>
                             <ContextMenu DataContext="{Binding DataContext, Source={extensions:RootObject}}">
-                                    <MenuItem Header="Редагувати плейлист..." Command="{Binding EditPlaylistCommand}">
-                                        <MenuItem.Icon>
-                                            <ui:SymbolIcon Symbol="Edit"/>
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                    <MenuItem Header="Завантажити пісні з плейлиста..." Command="{Binding InstallPlaylistCommand}">
-                                        <MenuItem.Icon>
-                                            <ui:SymbolIcon Symbol="Download"/>
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                    <MenuItem Header="Видалити плейлист..." Command="{Binding RemovePlaylistCommand}">
-                                        <MenuItem.Icon>
-                                            <ui:SymbolIcon Symbol="Delete"/>
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                </ContextMenu>
+                                <MenuItem Header="Редагувати плейлист..." Command="{Binding EditPlaylistCommand}">
+                                    <MenuItem.Icon>
+                                        <ui:SymbolIcon Symbol="Edit"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Передвинути плейлист вверх..." Command="{Binding MoveUpPlaylistCommand}">
+                                    <MenuItem.Icon>
+                                        <ui:SymbolIcon Symbol="Up"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Передвинути плейлист вниз..." Command="{Binding MoveDownPlaylistCommand}">
+                                    <MenuItem.Icon>
+                                        <ui:SymbolIcon Symbol="DockBottom"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Завантажити пісні з плейлиста..." Command="{Binding InstallPlaylistCommand}">
+                                    <MenuItem.Icon>
+                                        <ui:SymbolIcon Symbol="Download"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Видалити плейлист..." Command="{Binding RemovePlaylistCommand}">
+                                    <MenuItem.Icon>
+                                        <ui:SymbolIcon Symbol="Delete"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </ContextMenu>
                         </Border.ContextMenu>
                         <Grid>
                             <Grid.Background>
