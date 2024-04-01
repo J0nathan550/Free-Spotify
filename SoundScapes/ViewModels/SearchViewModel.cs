@@ -24,7 +24,7 @@ public partial class SearchViewModel : ObservableObject
     [ObservableProperty]
     private List<SongModel>? _songsList = [];
     [ObservableProperty]
-    private SongModel _currentSong = new();
+    private SongModel? _currentSong = null;
 
     public SearchViewModel(MusicPlayerViewModel musicPlayerView)
     {
@@ -40,7 +40,7 @@ public partial class SearchViewModel : ObservableObject
         };
     }
 
-    partial void OnCurrentSongChanged(SongModel value)
+    partial void OnCurrentSongChanged(SongModel? value)
     {
         if (value != null) // when the list in search is getting changed it can send null
         {
@@ -71,7 +71,7 @@ public partial class SearchViewModel : ObservableObject
                 List<SongModel> trackList = [];
                 foreach (var track in tracks)
                 {
-                    trackList.Add(new SongModel() { Title = track.Title, Artist = ArtistConverter.FormatArtists(track.Artists), SongID = track.Id, Duration = TimeConverter.ConvertMsToTime(track.DurationMs), Icon = track.Album.Images[0].Url });
+                    trackList.Add(new SongModel() { Title = track.Title, Artist = ArtistConverter.FormatArtists(track.Artists), SongID = track.Id, Duration = TimeConverter.ConvertMsToTime(track.DurationMs), Icon = track.Album.Images[0].Url, DurationLong = track.DurationMs });
                 }
                 if (trackList.Count > 1)
                 {

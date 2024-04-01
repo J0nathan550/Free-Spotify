@@ -17,9 +17,9 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <ui:AutoSuggestBox Grid.Row="0" Name="SearchBox" ui:ControlHelper.PlaceholderText="Що ви хочете сьогодні послухати?" Text="{Binding SearchText, Mode=TwoWay}" QueryIcon="Find" />
-        <ListBox Grid.Row="1" Visibility="{Binding ResultsBoxVisibility}" ItemsSource="{Binding SongsList}" SelectedItem="{Binding CurrentSong}" Background="Black" Margin="0,5,0,0">
-            <ListBox.ItemContainerStyle>
-                <Style TargetType="ListBoxItem">
+        <ui:ListView Grid.Row="1" Visibility="{Binding ResultsBoxVisibility}" ItemsSource="{Binding SongsList}" SelectedItem="{Binding CurrentSong}" Background="Black" Margin="0,5,0,0">
+            <ui:ListView.ItemContainerStyle>
+                <Style TargetType="ui:ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                     <Setter Property="HorizontalAlignment" Value="Stretch"/>
                     <Setter Property="VerticalAlignment" Value="Stretch"/>
@@ -35,10 +35,10 @@
                         </EventTrigger>
                     </Style.Triggers>
                 </Style>
-            </ListBox.ItemContainerStyle>
-            <ListBox.ItemTemplate>
+            </ui:ListView.ItemContainerStyle>
+            <ui:ListView.ItemTemplate>
                 <DataTemplate DataType="models:SongModel">
-                    <Border Cursor="Hand" BorderBrush="#99FFFFFF" BorderThickness="1">
+                    <Border Margin="2" Cursor="Hand" BorderBrush="#99FFFFFF" BorderThickness="1">
                         <Grid>
                             <Grid.Background>
                                 <ImageBrush ImageSource="{Binding Icon}" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="Fant" Opacity="0.5" RenderOptions.CachingHint="Unspecified"/>
@@ -61,8 +61,8 @@
                         </Grid>
                     </Border>
                 </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+            </ui:ListView.ItemTemplate>
+        </ui:ListView>
         <TextBlock Grid.Row="1" Text="{Binding ErrorText}" Visibility="{Binding ErrorTextVisibility}" Foreground="White" FontWeight="Bold" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
     </Grid>
 </UserControl>

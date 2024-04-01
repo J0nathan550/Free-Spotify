@@ -33,7 +33,7 @@
                     <TextBlock Text="{Binding CurrentSong.Title, TargetNullValue=...}" FontWeight="Bold" VerticalAlignment="Bottom" TextTrimming="CharacterEllipsis" Foreground="White" FontSize="18" FontFamily="Arial"/>
                     <TextBlock Grid.Row="1" Text="{Binding CurrentSong.Artist, TargetNullValue=...}" FontWeight="Bold" TextTrimming="CharacterEllipsis" Foreground="White" FontSize="14" FontFamily="Arial"/>
                 </Grid>
-                <Button Grid.Column="2" Margin="20,0,20,0" VerticalAlignment="Center" Background="Transparent" Cursor="Hand">
+                <Button Grid.Column="2" Margin="20,0,20,0" VerticalAlignment="Center" Command="{Binding AddFavoriteSongCommand}" Background="Transparent" Cursor="Hand">
                     <fa:FontAwesome Icon="HeartOutline" Foreground="White" FontSize="16" />
                 </Button>
             </Grid>

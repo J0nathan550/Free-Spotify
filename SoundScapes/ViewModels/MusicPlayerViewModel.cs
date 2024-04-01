@@ -1,9 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FontAwesome.WPF;
+using Microsoft.Extensions.DependencyInjection;
+using ModernWpf.Controls;
 using SoundScapes.Classes;
 using SoundScapes.Interfaces;
 using SoundScapes.Models;
+using SoundScapes.Views.Dialogs;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
@@ -36,6 +39,8 @@ public partial class MusicPlayerViewModel : ObservableObject
     [ObservableProperty]
     private RelayCommand _repeatSongCommand;
     [ObservableProperty]
+    private IAsyncRelayCommand _addFavoriteSongCommand;
+    [ObservableProperty]
     private double _volumeValue = 100.0;
     [ObservableProperty]
     private double _musicPosition = 0.0;
@@ -53,6 +58,7 @@ public partial class MusicPlayerViewModel : ObservableObject
         _previousSongCommand = new RelayCommand(PreviousSongCommand_Execute);
         _shuffleSongCommand = new RelayCommand(ShuffleSongCommand_Execute);
         _repeatSongCommand = new RelayCommand(RepeatSongCommand_Execute);
+        _addFavoriteSongCommand = new AsyncRelayCommand(AddFavoriteSongCommand_Execute);
         _musicPlayer.MediaPlayer.Volume = (int)VolumeValue;
         _musicPositionUpdate.Elapsed += (o,e) =>
         {
@@ -60,10 +66,42 @@ public partial class MusicPlayerViewModel : ObservableObject
         };
     }
 
+    private async Task AddFavoriteSongCommand_Execute()
+    {
+        var searchViewModel = App.AppHost?.Services.GetService<SearchViewModel>();
+        var playlistsViewModel = App.AppHost?.Services.GetService<PlaylistViewModel>();
+        var contentAddDialog = App.AppHost?.Services.GetService<PlaylistAddSongItemView>();
+
+        if (searchViewModel?.CurrentSong == null || contentAddDialog?.viewModel == null || playlistsViewModel?.OriginalPlaylists == null)
+            return;
+
+        var result = await contentAddDialog!.ShowAsync();
+
+        if (result != ContentDialogResult.Primary)
+            return;
+
+        var playlistsSelected = contentAddDialog.viewModel.PlaylistsSelected;
+        var originalPlaylists = playlistsViewModel.OriginalPlaylists;
+
+        foreach (var item in playlistsSelected)
+        {
+            int index = originalPlaylists.FindIndex(m => m.Title == item.Title && m.Duration == item.Duration);
+            if (index != -1) originalPlaylists[index].SongsInPlaylist.Add(CurrentSong);
+        }
+        if (playlistsViewModel.IsInsidePlaylist)
+        {
+            playlistsViewModel.Songs = null;
+            playlistsViewModel.Songs = playlistsViewModel.CurrentPlaylistSelected?.SongsInPlaylist;
+        }
+        playlistsViewModel.CheckAmountOfItemsInPlaylist();
+        playlistsViewModel.RecalculatePlaylists();
+    }
+
     public void CheckMediaPlayerPosition()
     {
         SongDuration = TimeConverter.ConvertMsToTime(_musicPlayer.MediaPlayer.Time);
         MusicPosition = _musicPlayer.MediaPlayer.Position;
+        _musicPlayer.MediaPlayer.Volume = (int)VolumeValue;
         if (_musicPlayer.MediaPlayer.Position >= 0.99f)
         {
             if (_musicPlayer.IsRepeating)

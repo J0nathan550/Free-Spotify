@@ -14,5 +14,7 @@ public partial class SongModel : ObservableObject
     [ObservableProperty]
     private string _duration = "0:00";
     [ObservableProperty]
+    private long _durationLong = 0;
+    [ObservableProperty]
     private TrackId _songID;
 }
