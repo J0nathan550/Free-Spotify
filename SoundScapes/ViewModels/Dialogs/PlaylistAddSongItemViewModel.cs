@@ -29,6 +29,10 @@ public partial class PlaylistAddSongItemViewModel : ObservableObject
         var model = App.AppHost?.Services.GetService<PlaylistViewModel>();
         if (model == null || model.OriginalPlaylists == null) return;
         Playlists = null;
+        foreach (var item in model.OriginalPlaylists)
+        {
+            item.IsChecked = false;
+        }
         PlaylistsOriginal = model.OriginalPlaylists;
         if (PlaylistsOriginal.Count == 0)
         {

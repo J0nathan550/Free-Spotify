@@ -68,6 +68,20 @@ public partial class PlaylistViewModel : ObservableObject
         CheckAmountOfItemsInPlaylist();
         RecalculatePlaylists();
         _musicPlayer = musicPlayer;
+        _musicPlayer.SongChanged += (o, e) =>
+        {
+            if (!_musicPlayer.IsPlayingFromPlaylist) return;
+            CurrentSongSelected = e;
+        };
+        _musicPlayer.SongsChanged += (o, e) =>
+        {
+            if (!_musicPlayer.IsPlayingFromPlaylist) return;
+            if (OriginalPlaylists == null) return;
+            int index = OriginalPlaylists.FindIndex(m => m == CurrentPlaylistSelected);
+            OriginalPlaylists[index].SongsInPlaylist = e;
+            Songs = null;
+            Songs = OriginalPlaylists[index].SongsInPlaylist;
+        };
     }
 
     private void OpenPlaylistCommand_Execute()
@@ -80,8 +94,12 @@ public partial class PlaylistViewModel : ObservableObject
             Songs = CurrentPlaylistSelected?.SongsInPlaylist;
             MusicListBoxVisibility = Visibility.Visible;
             PlaylistListBoxVisibility = Visibility.Collapsed;
+            if (OriginalPlaylists == null || CurrentPlaylistSelected == null) return;
+            int index = OriginalPlaylists.FindIndex(m => m.Title == CurrentPlaylistSelected.Title && m.Duration == CurrentPlaylistSelected.Duration);
+            _musicPlayer.SongsList = OriginalPlaylists[index].SongsInPlaylist;
             RecalculatePlaylists();
             CheckAmountOfItemsInPlaylist();
+            IsInsidePlaylist = true;
             return;
         }
         PlaceholderText = "Напишіть назву плейлиста...";
@@ -89,6 +107,7 @@ public partial class PlaylistViewModel : ObservableObject
         PlaylistListBoxVisibility = Visibility.Visible;
         RecalculatePlaylists();
         CheckAmountOfItemsInPlaylist();
+        IsInsidePlaylist = false;
     }
 
     private void MoveUpPlaylistCommand_Execute()
@@ -370,8 +389,8 @@ public partial class PlaylistViewModel : ObservableObject
         {
             _musicPlayer.CurrentSong = value;
             _musicPlayer.PlayMediaIcon = FontAwesomeIcon.Pause;
+            _musicPlayer.IsPlayingFromPlaylist = true;
             _musicPlayer.PlaySong();
         }
     }
-
 }

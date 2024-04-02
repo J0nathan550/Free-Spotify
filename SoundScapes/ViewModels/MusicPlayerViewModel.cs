@@ -46,6 +46,9 @@ public partial class MusicPlayerViewModel : ObservableObject
     private double _musicPosition = 0.0;
     [ObservableProperty]
     private string _songDuration = "0:00";
+    [ObservableProperty]
+    private bool _isPlayingFromPlaylist = false;
+    
     public event EventHandler<SongModel>? SongChanged;
     public event EventHandler<List<SongModel>>? SongsChanged;
     private readonly System.Timers.Timer _musicPositionUpdate = new() { Interval = 500 };

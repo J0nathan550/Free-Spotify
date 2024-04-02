@@ -31,10 +31,12 @@ public partial class SearchViewModel : ObservableObject
         _musicPlayerView = musicPlayerView;
         _musicPlayerView.SongChanged += (o, e) =>
         {
+            if (_musicPlayerView.IsPlayingFromPlaylist) return;
             CurrentSong = e;
         };
         _musicPlayerView.SongsChanged += (o, e) =>
         {
+            if (_musicPlayerView.IsPlayingFromPlaylist) return;
             SongsList = null;
             SongsList = e;
         };
@@ -47,12 +49,13 @@ public partial class SearchViewModel : ObservableObject
             _musicPlayerView.CurrentSong = value;
             _musicPlayerView.PlayMediaIcon = FontAwesomeIcon.Pause;
             _musicPlayerView.PlaySong();
+            _musicPlayerView.IsPlayingFromPlaylist = false;
         }
     }
 
     partial void OnSongsListChanged(List<SongModel>? value)
     {
-        if (value != null) _musicPlayerView.SongsList = value;
+        if (value != null && !_musicPlayerView.IsPlayingFromPlaylist) _musicPlayerView.SongsList = value;
     }
 
     public void RegisterSearchBox(AutoSuggestBox searchBox) => searchBox!.QuerySubmitted += SearchBox_QuerySubmitted;
