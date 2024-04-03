@@ -20,9 +20,6 @@ public partial class MusicPlayerViewModel : ObservableObject
     [ObservableProperty]
     private SongModel _currentSong = new();
     [ObservableProperty]
-    private List<SongModel> _songsList = [];
-    private readonly List<SongModel> _originalSongsList = [];
-    [ObservableProperty]
     private FontAwesomeIcon _playMediaIcon = FontAwesomeIcon.Play;
     [ObservableProperty]
     private SolidColorBrush _shuffleMediaBrush = new(Colors.White);
@@ -50,9 +47,9 @@ public partial class MusicPlayerViewModel : ObservableObject
     private bool _isPlayingFromPlaylist = false;
     
     public event EventHandler<SongModel>? SongChanged;
-    public event EventHandler<List<SongModel>>? SongsChanged;
+    public event EventHandler<SongModel>? SongPlaylistChanged;
     private readonly System.Timers.Timer _musicPositionUpdate = new() { Interval = 500 };
-
+    
     public MusicPlayerViewModel(IMusicPlayer musicPlayer)
     {
         _musicPlayer = musicPlayer;
@@ -71,33 +68,46 @@ public partial class MusicPlayerViewModel : ObservableObject
 
     private async Task AddFavoriteSongCommand_Execute()
     {
-        var searchViewModel = App.AppHost?.Services.GetService<SearchViewModel>();
-        var playlistsViewModel = App.AppHost?.Services.GetService<PlaylistViewModel>();
         var contentAddDialog = App.AppHost?.Services.GetService<PlaylistAddSongItemView>();
+        var searchViewModel = App.AppHost?.Services.GetService<SearchViewModel>();
+        var playlistViewModel = App.AppHost?.Services.GetService<PlaylistViewModel>();
 
-        if (searchViewModel?.CurrentSong == null || contentAddDialog?.viewModel == null || playlistsViewModel?.OriginalPlaylists == null)
-            return;
+        // Check if any necessary service or data is missing
+        if (searchViewModel?.CurrentSong == null || contentAddDialog?.viewModel == null || playlistViewModel?.OriginalPlaylists == null) return;
 
+        // Show the dialog and wait for the result
         var result = await contentAddDialog!.ShowAsync();
 
-        if (result != ContentDialogResult.Primary)
-            return;
+        // If the user didn't confirm the dialog, return
+        if (result != ContentDialogResult.Primary) return;
 
         var playlistsSelected = contentAddDialog.viewModel.PlaylistsSelected;
-        var originalPlaylists = playlistsViewModel.OriginalPlaylists;
+        var originalPlaylists = playlistViewModel.OriginalPlaylists;
 
-        foreach (var item in playlistsSelected)
+        // Iterate over selected playlists and add the current song to each playlist
+        foreach (var playlist in playlistsSelected)
         {
-            int index = originalPlaylists.FindIndex(m => m.Title == item.Title && m.Duration == item.Duration);
-            if (index != -1) originalPlaylists[index].SongsInPlaylist.Add(CurrentSong);
+            // Find the index of the playlist in the original playlists list
+            var index = originalPlaylists.FindIndex(p => p.Title == playlist.Title && p.Duration == playlist.Duration);
+            if (index != -1)
+            {
+                // Add the current song to the playlist
+                originalPlaylists[index].SongsInPlaylist.Add(CurrentSong);
+            }
         }
-        if (playlistsViewModel.IsInsidePlaylist)
+
+        // If inside a specific playlist, update the songs list
+        if (playlistViewModel.IsInsidePlaylist)
         {
-            playlistsViewModel.Songs = null;
-            playlistsViewModel.Songs = playlistsViewModel.CurrentPlaylistSelected?.SongsInPlaylist;
+            playlistViewModel.Songs = null;
+            playlistViewModel.Songs = playlistViewModel.CurrentPlaylistSelected?.SongsInPlaylist;
         }
-        playlistsViewModel.CheckAmountOfItemsInPlaylist();
-        playlistsViewModel.RecalculatePlaylists();
+
+        // Check and update the amount of items in the playlist
+        playlistViewModel.CheckAmountOfItemsInPlaylist();
+
+        // Recalculate the playlists
+        playlistViewModel.RecalculatePlaylists();
     }
 
     public void CheckMediaPlayerPosition()
@@ -119,14 +129,9 @@ public partial class MusicPlayerViewModel : ObservableObject
     private void PlaySongCommand_Execute()
     {
         _musicPlayer.OnPauseSong();
-        if (_musicPlayer.IsPaused)
-        {
-            PlayMediaIcon = FontAwesomeIcon.Play;
-            _musicPositionUpdate.Stop();
-            return;
-        }
-        PlayMediaIcon = FontAwesomeIcon.Pause;
-        _musicPositionUpdate.Start();
+        PlayMediaIcon = _musicPlayer.IsPaused ? FontAwesomeIcon.Play : FontAwesomeIcon.Pause;
+        if (_musicPlayer.IsPaused) _musicPositionUpdate.Stop();
+        else _musicPositionUpdate.Start();
     }
 
     private void RepeatSong()
@@ -138,11 +143,11 @@ public partial class MusicPlayerViewModel : ObservableObject
 
     public void PlaySong()
     {
+        SongDuration = "0:00";
+        MusicPosition = 0;
         _musicPositionUpdate.Stop();
         _musicPlayer.CancellationTokenSourcePlay.Cancel();
         _musicPlayer.CancelPlayingMusic();
-        SongDuration = "0:00";
-        MusicPosition = 0;
         _musicPlayer.MediaPlayer.Position = 0;
         _musicPlayer.OnPlaySong(CurrentSong);
         _musicPositionUpdate.Start();
@@ -150,105 +155,162 @@ public partial class MusicPlayerViewModel : ObservableObject
 
     private void NextSongCommand_Execute()
     {
-        int index = SongsList.FindIndex(n => n == CurrentSong);
-        index++;
-        if (index > SongsList.Count - 1) index = 0;
-        CurrentSong = SongsList[index];
+        List<SongModel>? songs = IsPlayingFromPlaylist ? App.AppHost?.Services.GetService<PlaylistViewModel>()?.Songs : App.AppHost?.Services.GetService<SearchViewModel>()?.SongsList;
+
+        if (songs == null || songs.Count == 0) return;
+
+        int currentIndex = songs.FindIndex(n => n == CurrentSong);
+
+        // Find the index of the next unique song
+        int index = currentIndex;
+        do
+        {
+            index = (index + 1) % songs.Count;
+            if (index == currentIndex) // If all songs are duplicates, exit loop to prevent infinite loop
+                return;
+        } while (songs[index] == CurrentSong);
+
+        CurrentSong = songs[index];
         SongDuration = "0:00";
         MusicPosition = 0;
         _musicPlayer.MediaPlayer.Position = 0;
-        SongChanged?.Invoke(this, CurrentSong);
+
+        if (IsPlayingFromPlaylist) SongPlaylistChanged?.Invoke(this, CurrentSong);
+        else SongChanged?.Invoke(this, CurrentSong);
     }
 
     private void PreviousSongCommand_Execute()
     {
-        int index = SongsList.FindIndex(n => n == CurrentSong);
-        index--;
-        if (index < 0) index = SongsList.Count - 1;
-        CurrentSong = SongsList[index];
+        List<SongModel>? songs = IsPlayingFromPlaylist ? App.AppHost?.Services.GetService<PlaylistViewModel>()?.Songs : App.AppHost?.Services.GetService<SearchViewModel>()?.SongsList;
+
+        if (songs == null || songs.Count == 0) return;
+
+        int currentIndex = songs.FindIndex(n => n == CurrentSong);
+
+        // Find the index of the previous unique song
+        int index = currentIndex;
+        do
+        {
+            index = (index - 1 + songs.Count) % songs.Count;
+            if (index == currentIndex) // If all songs are duplicates, exit loop to prevent infinite loop
+                return;
+        } while (songs[index] == CurrentSong);
+
+        CurrentSong = songs[index];
         SongDuration = "0:00";
         MusicPosition = 0;
         _musicPlayer.MediaPlayer.Position = 0;
-        SongChanged?.Invoke(this, CurrentSong);
+
+        if (IsPlayingFromPlaylist) SongPlaylistChanged?.Invoke(this, CurrentSong);
+        else SongChanged?.Invoke(this, CurrentSong);
     }
 
     private void RepeatSongCommand_Execute()
     {
         _musicPlayer.OnRepeatingSong();
-        if (_musicPlayer.IsRepeating)
-        {
-            RepeatMediaBrush = new SolidColorBrush(Colors.Lime);
-            return;
-        }
-        RepeatMediaBrush = new SolidColorBrush(Colors.White);
+        RepeatMediaBrush = _musicPlayer.IsRepeating ? new SolidColorBrush(Colors.Lime) : new SolidColorBrush(Colors.White);
     }
 
     private bool IsShuffling = false;
+
     private void ShuffleSongCommand_Execute()
     {
-        IsShuffling = !IsShuffling;
-        if (_originalSongsList.Count == 0)
+        // Check if not playing from playlist
+        if (!IsPlayingFromPlaylist)
         {
-            _originalSongsList.AddRange(SongsList);
+            var searchViewModel = App.AppHost?.Services.GetService<SearchViewModel>();
+            if (searchViewModel == null || searchViewModel.SongsList == null) return;
+
+            ToggleShuffle(searchViewModel.SongsList);
         }
+        else
+        {
+            var playlistViewModel = App.AppHost?.Services.GetService<PlaylistViewModel>();
+            if (playlistViewModel == null || playlistViewModel.Songs == null) return;
+
+            ToggleShuffle(playlistViewModel.Songs);
+        }
+    }
+
+    private void ToggleShuffle(List<SongModel> songs)
+    {
+        IsShuffling = !IsShuffling;
+        List<SongModel> temp = new(songs); // Create a copy of the list
+
         if (IsShuffling)
         {
-            Random rand = new();
-            for (int i = 0; i < SongsList.Count * 2; i++)
-            {
-                int a = rand.Next(0, SongsList.Count - 1);
-                int b = rand.Next(0, SongsList.Count - 1);
-                (SongsList[b], SongsList[a]) = (SongsList[a], SongsList[b]);
-            }
-            SongsChanged?.Invoke(this, SongsList);
+            ShuffleList(temp);
             ShuffleMediaBrush = new SolidColorBrush(Colors.Lime);
         }
         else
         {
-            SongsList.Clear();
-            SongsList.AddRange(_originalSongsList);
-            _originalSongsList.Clear();
-            SongsChanged?.Invoke(this, SongsList);
+            temp.Sort((a, b) => a.Index.CompareTo(b.Index));
             ShuffleMediaBrush = new SolidColorBrush(Colors.White);
+        }
+
+        songs.Clear(); // Clear the original list
+        songs.AddRange(temp); // Update the original list with the shuffled or unshuffled temp list
+        UpdateViewList();
+    }
+
+    private static void ShuffleList(List<SongModel> list)
+    {
+        Random rand = new();
+        for (int i = 0; i < list.Count * 2; i++)
+        {
+            int a = rand.Next(0, list.Count - 1);
+            int b = rand.Next(0, list.Count - 1);
+            (list[b], list[a]) = (list[a], list[b]);
+        }
+    }
+
+    private void UpdateViewList()
+    {
+        if (!IsPlayingFromPlaylist)
+        {
+            var searchViewModel = App.AppHost?.Services.GetService<SearchViewModel>();
+            searchViewModel?.UpdateViewList();
+        }
+        else
+        {
+            var playlistViewModel = App.AppHost?.Services.GetService<PlaylistViewModel>();
+            playlistViewModel?.UpdateViewList();
         }
     }
 
     public void RegisterMusicSlider(Slider slider)
     {
+        // Event handlers for drag start, delta, and completion
         slider.AddHandler(Thumb.DragStartedEvent, new DragStartedEventHandler((o, e) =>
         {
-            if (_musicPlayer.MediaPlayer.State == LibVLCSharp.Shared.VLCState.NothingSpecial || _musicPlayer.MediaPlayer.State == LibVLCSharp.Shared.VLCState.Stopped || _musicPlayer.MediaPlayer.State == LibVLCSharp.Shared.VLCState.Ended || _musicPlayer.MediaPlayer.State == LibVLCSharp.Shared.VLCState.Error)
-            {
-                return;
-            }
+            if (!IsValidMediaPlayerState()) return;
             _musicPlayer.MediaPlayer.SetPause(true);
             _musicPositionUpdate.Stop();
         }));
-        slider.AddHandler(Thumb.DragDeltaEvent, new DragDeltaEventHandler((o,e) =>
+
+        slider.AddHandler(Thumb.DragDeltaEvent, new DragDeltaEventHandler((o, e) =>
         {
-            if (_musicPlayer.MediaPlayer.State == LibVLCSharp.Shared.VLCState.NothingSpecial || _musicPlayer.MediaPlayer.State == LibVLCSharp.Shared.VLCState.Stopped || _musicPlayer.MediaPlayer.State == LibVLCSharp.Shared.VLCState.Ended || _musicPlayer.MediaPlayer.State == LibVLCSharp.Shared.VLCState.Error)
-            {
-                return;
-            }
+            if (!IsValidMediaPlayerState()) return;
             long progress = (long)(MusicPosition * _musicPlayer.MediaPlayer.Length);
             SongDuration = TimeConverter.ConvertMsToTime(progress);
         }));
-        slider.AddHandler(Thumb.DragCompletedEvent, new DragCompletedEventHandler((o,e) =>
+
+        slider.AddHandler(Thumb.DragCompletedEvent, new DragCompletedEventHandler((o, e) =>
         {
-            if (_musicPlayer.MediaPlayer.State == LibVLCSharp.Shared.VLCState.NothingSpecial || _musicPlayer.MediaPlayer.State == LibVLCSharp.Shared.VLCState.Stopped || _musicPlayer.MediaPlayer.State == LibVLCSharp.Shared.VLCState.Ended || _musicPlayer.MediaPlayer.State == LibVLCSharp.Shared.VLCState.Error)
-            {
-                return;
-            }
+            if (!IsValidMediaPlayerState()) return;
             _musicPlayer.MediaPlayer.Position = (float)MusicPosition;
             CheckMediaPlayerPosition();
             _musicPlayer.MediaPlayer.SetPause(false);
             _musicPositionUpdate.Start();
         }));
+
+        // Handle mouse left button down event for smoother dragging
         slider.AddHandler(System.Windows.UIElement.PreviewMouseLeftButtonDownEvent, new MouseButtonEventHandler((o, e) =>
         {
-            if (!slider.IsMoveToPointEnabled || slider.Template.FindName("PART_Track", slider) is not Track track || track.Thumb == null || track.Thumb.IsMouseOver) return;
-            track.Thumb.UpdateLayout();
+            if (!IsValidMediaPlayerState() || !slider.IsMoveToPointEnabled) return;
+            if (slider.Template.FindName("PART_Track", slider) is not Track track || track.Thumb == null || track.Thumb.IsMouseOver) return;
 
+            track.Thumb.UpdateLayout();
             track.Thumb.RaiseEvent(new MouseButtonEventArgs(e.MouseDevice, e.Timestamp, MouseButton.Left)
             {
                 RoutedEvent = System.Windows.UIElement.MouseLeftButtonDownEvent,
@@ -261,6 +323,14 @@ public partial class MusicPlayerViewModel : ObservableObject
                 Source = track.Thumb
             });
         }), true);
+    }
+
+    private bool IsValidMediaPlayerState()
+    {
+        return _musicPlayer.MediaPlayer.State != LibVLCSharp.Shared.VLCState.NothingSpecial &&
+               _musicPlayer.MediaPlayer.State != LibVLCSharp.Shared.VLCState.Stopped &&
+               _musicPlayer.MediaPlayer.State != LibVLCSharp.Shared.VLCState.Ended &&
+               _musicPlayer.MediaPlayer.State != LibVLCSharp.Shared.VLCState.Error;
     }
 
     partial void OnVolumeValueChanging(double value)

@@ -19,7 +19,7 @@
         </Grid.RowDefinitions>
         <ui:AutoSuggestBox Name="SearchPlaylistBox" PlaceholderText="Напишіть назву плейлиста..." Margin="5" Visibility="{Binding SearchTextVisibility}"/>
         <TextBlock Grid.Row="1" Text="Схоже у вас нема жодного плейлиста..." HorizontalAlignment="Center" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Visibility="{Binding ErrorTextVisibility}"/>
-        <ui:ListView Grid.Row="1" ScrollViewer.CanContentScroll="True" ui:ScrollViewerHelper.AutoHideScrollBars="False" Background="Transparent" ItemsSource="{Binding Playlists, Mode=TwoWay}" SelectedItem="{Binding CurrentSelectedPlaylist, Mode=TwoWay}">
+        <ui:ListView Grid.Row="1" ScrollViewer.CanContentScroll="True" Background="Transparent" ItemsSource="{Binding Playlists, Mode=TwoWay}" SelectedItem="{Binding CurrentSelectedPlaylist, Mode=TwoWay}" ui:ScrollViewerHelper.AutoHideScrollBars="False">
             <ui:ListView.ItemContainerStyle>
                 <Style TargetType="ui:ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>

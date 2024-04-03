@@ -6,6 +6,8 @@ namespace SoundScapes.Models;
 public partial class SongModel : ObservableObject
 {
     [ObservableProperty]
+    private int _index;
+    [ObservableProperty]
     private string _title = "...";
     [ObservableProperty]
     private string _artist = "...";
@@ -17,4 +19,9 @@ public partial class SongModel : ObservableObject
     private long _durationLong = 0;
     [ObservableProperty]
     private TrackId _songID;
+
+    public override string ToString()
+    {
+        return $"{Index} {Title}";
+    }
 }

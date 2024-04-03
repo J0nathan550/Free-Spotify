@@ -12,7 +12,7 @@
              ui:Title="Зміна Плейлиста"
              d:DesignHeight="400" d:DesignWidth="800">
     <Grid>
-        <ScrollViewer Grid.Row="0">
+        <ScrollViewer Grid.Row="0" ui:ScrollViewerHelper.AutoHideScrollBars="False">
             <StackPanel>
                 <TextBox Name="TitleTextBox" Margin="5" Text="{Binding Title, Mode=TwoWay}" ui:ControlHelper.PlaceholderForeground="White" ui:ControlHelper.PlaceholderText="Напишіть назву плейлиста..."/>
                 <Grid>

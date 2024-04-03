@@ -17,7 +17,7 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <ui:AutoSuggestBox Grid.Row="0" Name="SearchBox" ui:ControlHelper.PlaceholderText="Що ви хочете сьогодні послухати?" Text="{Binding SearchText, Mode=TwoWay}" QueryIcon="Find" />
-        <ui:ListView Grid.Row="1" Visibility="{Binding ResultsBoxVisibility}" ItemsSource="{Binding SongsList}" SelectedItem="{Binding CurrentSong}" Background="Black" Margin="0,5,0,0">
+        <ui:ListView Grid.Row="1" Visibility="{Binding ResultsBoxVisibility}" ItemsSource="{Binding SongsList}" SelectedItem="{Binding CurrentSong}" Background="Black" Margin="0,5,0,0" ui:ScrollViewerHelper.AutoHideScrollBars="False">
             <ui:ListView.ItemContainerStyle>
                 <Style TargetType="ui:ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>

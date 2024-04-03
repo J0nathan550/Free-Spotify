@@ -4,11 +4,8 @@ using FontAwesome.WPF;
 using Microsoft.Extensions.DependencyInjection;
 using ModernWpf.Controls;
 using SoundScapes.Classes;
-using SoundScapes.Interfaces;
 using SoundScapes.Models;
-using SoundScapes.Views;
 using SoundScapes.Views.Dialogs;
-using System.Text;
 using System.Windows;
 
 namespace SoundScapes.ViewModels;
@@ -24,7 +21,8 @@ public partial class PlaylistViewModel : ObservableObject
     [ObservableProperty]
     private PlaylistModel? _currentPlaylistSelected = null;
     [ObservableProperty]
-    private SongModel? _currentSongSelected = null;
+    private SongModel? _currentSong = null;
+    private int CurrentSongIndex = -1;
     [ObservableProperty]
     private RelayCommand _openPlaylistCommand;
     [ObservableProperty]
@@ -54,7 +52,7 @@ public partial class PlaylistViewModel : ObservableObject
     [ObservableProperty]
     private bool _isInsidePlaylist = false;
 
-    private readonly MusicPlayerViewModel _musicPlayer;
+    private readonly MusicPlayerViewModel _musicPlayerView;
 
     public PlaylistViewModel(MusicPlayerViewModel musicPlayer)
     {
@@ -67,52 +65,31 @@ public partial class PlaylistViewModel : ObservableObject
         OpenPlaylistCommand = new RelayCommand(OpenPlaylistCommand_Execute);
         CheckAmountOfItemsInPlaylist();
         RecalculatePlaylists();
-        _musicPlayer = musicPlayer;
-        _musicPlayer.SongChanged += (o, e) =>
+        _musicPlayerView = musicPlayer;
+        _musicPlayerView.SongPlaylistChanged += (o, e) =>
         {
-            if (!_musicPlayer.IsPlayingFromPlaylist) return;
-            CurrentSongSelected = e;
-        };
-        _musicPlayer.SongsChanged += (o, e) =>
-        {
-            if (!_musicPlayer.IsPlayingFromPlaylist) return;
-            if (OriginalPlaylists == null) return;
-            int index = OriginalPlaylists.FindIndex(m => m == CurrentPlaylistSelected);
-            OriginalPlaylists[index].SongsInPlaylist = e;
-            Songs = null;
-            Songs = OriginalPlaylists[index].SongsInPlaylist;
+            CurrentSong = e;
         };
     }
 
     private void OpenPlaylistCommand_Execute()
     {
         IsInsidePlaylist = !IsInsidePlaylist;
-        if (IsInsidePlaylist)
-        {
-            PlaceholderText = "Напишіть назву треку...";
-            Songs = null;
-            Songs = CurrentPlaylistSelected?.SongsInPlaylist;
-            MusicListBoxVisibility = Visibility.Visible;
-            PlaylistListBoxVisibility = Visibility.Collapsed;
-            if (OriginalPlaylists == null || CurrentPlaylistSelected == null) return;
-            int index = OriginalPlaylists.FindIndex(m => m.Title == CurrentPlaylistSelected.Title && m.Duration == CurrentPlaylistSelected.Duration);
-            _musicPlayer.SongsList = OriginalPlaylists[index].SongsInPlaylist;
-            RecalculatePlaylists();
-            CheckAmountOfItemsInPlaylist();
-            IsInsidePlaylist = true;
-            return;
-        }
-        PlaceholderText = "Напишіть назву плейлиста...";
-        MusicListBoxVisibility = Visibility.Collapsed;
-        PlaylistListBoxVisibility = Visibility.Visible;
+
+        PlaceholderText = IsInsidePlaylist ? "Напишіть назву треку..." : "Напишіть назву плейлиста...";
+        MusicListBoxVisibility = IsInsidePlaylist ? Visibility.Visible : Visibility.Collapsed;
+        PlaylistListBoxVisibility = IsInsidePlaylist ? Visibility.Collapsed : Visibility.Visible;
+
+        if (IsInsidePlaylist) Songs = CurrentPlaylistSelected?.SongsInPlaylist;
+
         RecalculatePlaylists();
         CheckAmountOfItemsInPlaylist();
-        IsInsidePlaylist = false;
     }
 
     private void MoveUpPlaylistCommand_Execute()
     {
-        if (CurrentPlaylistSelected == null || CurrentSongSelected == null || OriginalPlaylists == null || Playlists == null || Playlists.Count == 0) return;
+        
+        if (CurrentPlaylistSelected == null || OriginalPlaylists == null || Playlists == null || Playlists.Count == 0) return;
         if (!IsInsidePlaylist)
         {
             var temp = OriginalPlaylists;
@@ -135,21 +112,16 @@ public partial class PlaylistViewModel : ObservableObject
         }
         else
         {
-            var temp = CurrentPlaylistSelected.SongsInPlaylist;
-            int currentIndex = temp.IndexOf(CurrentSongSelected);
-            if (currentIndex == 0)
+            List<SongModel> list = new(Songs!);
+            if (CurrentSongIndex == 0)
             {
-                // If trying to move up but already at the start, move to the end
-                temp.Remove(CurrentSongSelected);
-                temp.Add(CurrentSongSelected);
+                return;
             }
-            else
-            {
-                temp.RemoveAt(currentIndex);
-                temp.Insert(currentIndex - 1, CurrentSongSelected);
-            }
+            var song = list[CurrentSongIndex];
+            list.RemoveAt(CurrentSongIndex);
+            list.Insert(CurrentSongIndex - 1, song);
             Songs = null;
-            CurrentPlaylistSelected.SongsInPlaylist = temp;
+            CurrentPlaylistSelected.SongsInPlaylist = list;
             Songs = CurrentPlaylistSelected.SongsInPlaylist;
             RecalculatePlaylists();
         }
@@ -157,7 +129,7 @@ public partial class PlaylistViewModel : ObservableObject
 
     private void MoveDownPlaylistCommand_Execute()
     {
-        if (CurrentPlaylistSelected == null || CurrentSongSelected == null || OriginalPlaylists == null || Playlists == null || Playlists.Count == 0) return;
+        if (CurrentPlaylistSelected == null || OriginalPlaylists == null || Playlists == null || Playlists.Count == 0) return;
         if (!IsInsidePlaylist)
         {
             var temp = OriginalPlaylists;
@@ -179,20 +151,16 @@ public partial class PlaylistViewModel : ObservableObject
         }
         else
         {
-            var temp = CurrentPlaylistSelected.SongsInPlaylist;
-            int currentIndex = temp.IndexOf(CurrentSongSelected);
-            if (currentIndex == temp.Count - 1)
+            List<SongModel> list = new(Songs!);
+            if (CurrentSongIndex == Songs?.Count - 1)
             {
-                temp.Remove(CurrentSongSelected);
-                temp.Insert(0, CurrentSongSelected);
+                return;
             }
-            else
-            {
-                temp.RemoveAt(currentIndex);
-                temp.Insert(currentIndex + 1, CurrentSongSelected);
-            }
+            var song = list[CurrentSongIndex];
+            list.RemoveAt(CurrentSongIndex);
+            list.Insert(CurrentSongIndex + 1, song);
             Songs = null;
-            CurrentPlaylistSelected.SongsInPlaylist = temp;
+            CurrentPlaylistSelected.SongsInPlaylist = list;
             Songs = CurrentPlaylistSelected.SongsInPlaylist;
             RecalculatePlaylists();
         }
@@ -200,43 +168,48 @@ public partial class PlaylistViewModel : ObservableObject
 
     private async Task RemovePlaylistCommand_ExecuteAsync()
     {
+        ContentDialog removeDialog;
         if (!IsInsidePlaylist)
         {
-            ContentDialog removeDialog = new() { Title = "Видалення плейлиста", Content = "Ви впевнені у тому щоб видалити цей плейлист?", PrimaryButtonText = "Так", SecondaryButtonText = "Ні" };
-            var result = await removeDialog.ShowAsync();
-            if (result == ContentDialogResult.Primary)
+            removeDialog = new ContentDialog
             {
-                var temp = OriginalPlaylists;
-                temp?.Remove(CurrentPlaylistSelected!);
-                Playlists = null;
-                OriginalPlaylists = temp;
-                Playlists = OriginalPlaylists;
-                CheckAmountOfItemsInPlaylist();
-                RecalculatePlaylists();
-            }
+                Title = "Видалення плейлиста",
+                Content = "Ви впевнені у тому щоб видалити цей плейлист?",
+                PrimaryButtonText = "Так",
+                SecondaryButtonText = "Ні"
+            };
         }
         else
         {
-            ContentDialog removeDialog = new() { Title = "Видалення трека з плейлиста", Content = "Ви впевнені у тому щоб видалити цей трек з плейлиста?", PrimaryButtonText = "Так", SecondaryButtonText = "Ні" };
-            var result = await removeDialog.ShowAsync();
-            if (result == ContentDialogResult.Primary)
+            removeDialog = new ContentDialog
             {
-                if (CurrentPlaylistSelected == null) return;
-                var temp = CurrentPlaylistSelected.SongsInPlaylist;
-                temp.Remove(CurrentSongSelected!);
-                Songs = null;
-                CurrentPlaylistSelected.SongsInPlaylist = temp;
-                Songs = CurrentPlaylistSelected.SongsInPlaylist;
-                CheckAmountOfItemsInPlaylist();
-                RecalculatePlaylists();
-            }
+                Title = "Видалення трека з плейлиста",
+                Content = "Ви впевнені у тому щоб видалити цей трек з плейлиста?",
+                PrimaryButtonText = "Так",
+                SecondaryButtonText = "Ні"
+            };
         }
+
+        var result = await removeDialog.ShowAsync();
+        if (result != ContentDialogResult.Primary) return;
+
+        if (!IsInsidePlaylist)
+        {
+            OriginalPlaylists?.Remove(CurrentPlaylistSelected!);
+            Playlists = OriginalPlaylists;
+        }
+        else if (CurrentPlaylistSelected != null)
+        {
+            CurrentPlaylistSelected.SongsInPlaylist.RemoveAt(CurrentSongIndex);
+            Songs = CurrentPlaylistSelected.SongsInPlaylist;
+        }
+
+        CheckAmountOfItemsInPlaylist();
+        RecalculatePlaylists();
     }
 
-    private async Task InstallPlaylistCommand_ExecuteAsync()
-    {
-        await Task.Delay(1);
-    }
+
+    private async Task InstallPlaylistCommand_ExecuteAsync() => await Task.Delay(1);
 
     private async Task EditPlaylistCommand_ExecuteAsync()
     {
@@ -280,34 +253,35 @@ public partial class PlaylistViewModel : ObservableObject
     {
         if (!IsInsidePlaylist)
         {
-            if (OriginalPlaylists?.Count == 0)
+            if (OriginalPlaylists == null || OriginalPlaylists.Count == 0)
             {
                 ErrorText = "У вас нема жодного створеного плейлиста!\nСтворіть його натиснувши праву клавишу миші, та обрати у меню 'Додати плейлист...'";
                 ErrorTextVisibility = Visibility.Visible;
                 return;
             }
-            if (OriginalPlaylists?.Count > 0 && Playlists?.Count == 0)
+            if (OriginalPlaylists.Count > 0 && (Playlists == null || Playlists.Count == 0))
             {
                 ErrorText = $"По запиту '{QueryText}' нічого не було знайдено!";
                 ErrorTextVisibility = Visibility.Visible;
                 return;
             }
-            ErrorText = string.Empty;
-            ErrorTextVisibility = Visibility.Collapsed;
-            return;
         }
-        if (Songs?.Count == 0)
+        else
         {
-            ErrorText = "У вас нема жодного треку!\nДодайте пісню у пошуку натиснувши на сердце!";
-            ErrorTextVisibility = Visibility.Visible;
-            return;
+            if (Songs == null || Songs.Count == 0)
+            {
+                ErrorText = "У вас нема жодного треку!\nДодайте пісню у пошуку натиснувши на сердце!";
+                ErrorTextVisibility = Visibility.Visible;
+                return;
+            }
+            if (CurrentPlaylistSelected?.SongsInPlaylist.Count > 0 && (Songs == null || Songs.Count == 0))
+            {
+                ErrorText = $"По запиту '{QueryText}' нічого не було знайдено!";
+                ErrorTextVisibility = Visibility.Visible;
+                return;
+            }
         }
-        if (CurrentPlaylistSelected?.SongsInPlaylist.Count > 0 && Songs?.Count == 0)
-        {
-            ErrorText = $"По запиту '{QueryText}' нічого не було знайдено!";
-            ErrorTextVisibility = Visibility.Visible;
-            return;
-        }
+
         ErrorText = string.Empty;
         ErrorTextVisibility = Visibility.Collapsed;
     }
@@ -319,33 +293,11 @@ public partial class PlaylistViewModel : ObservableObject
             string query = e.QueryText.ToLower();
             if (!IsInsidePlaylist)
             {
-                Playlists = OriginalPlaylists;
-                if (Playlists == null) return;
-                List<PlaylistModel> listPlaylist = [];
-                foreach (var item in Playlists)
-                {
-                    if (item.Title.Contains(query, StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        listPlaylist.Add(item);
-                    }
-                }
-                Playlists = null;
-                Playlists = listPlaylist;
+                Playlists = OriginalPlaylists?.Where(p => p.Title.Contains(query, StringComparison.InvariantCultureIgnoreCase)).ToList();
                 return;
             }
-            Songs = CurrentPlaylistSelected?.SongsInPlaylist;
-            if (Songs == null) return;
-            List<SongModel> listSongs = [];
-            foreach (var item in Songs)
-            {
-                if (item.Title.Contains(query, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    listSongs.Add(item);
-                }
-            }
+            Songs = CurrentPlaylistSelected?.SongsInPlaylist?.Where(s => s.Title.Contains(query, StringComparison.InvariantCultureIgnoreCase)).ToList();
             RecalculatePlaylists();
-            Songs = null;
-            Songs = listSongs;
         };
     }
 
@@ -356,41 +308,35 @@ public partial class PlaylistViewModel : ObservableObject
         foreach (var playlist in OriginalPlaylists)
         {
             long totalTime = 0;
-            StringBuilder authorsBuilder = new();
             HashSet<string> uniqueAuthors = [];
 
             foreach (var song in playlist.SongsInPlaylist)
             {
                 totalTime += song.DurationLong;
-                string[] songAuthors = song.Artist.Split(',');
-                foreach (var author in songAuthors)
+                foreach (var author in song.Artist.Split(','))
                 {
                     uniqueAuthors.Add(author.Trim());
                 }
             }
 
-            foreach (var author in uniqueAuthors)
-            {
-                if (authorsBuilder.Length > 0) authorsBuilder.Append(", ");
-                authorsBuilder.Append(author);
-            }
-
-            if (authorsBuilder.Length > 0) authorsBuilder.Append('.');
-            else authorsBuilder.Append("...");
-
             playlist.Duration = TimeConverter.ConvertMsToTime(totalTime);
-            playlist.Authors = authorsBuilder.ToString();
+            playlist.Authors = uniqueAuthors.Count != 0 ? string.Join(", ", uniqueAuthors) + "." : "...";
         }
     }
 
-    partial void OnCurrentSongSelectedChanged(SongModel? value)
+    public void UpdateViewList()
     {
-        if (value != null) // when the list in search is getting changed it can send null
-        {
-            _musicPlayer.CurrentSong = value;
-            _musicPlayer.PlayMediaIcon = FontAwesomeIcon.Pause;
-            _musicPlayer.IsPlayingFromPlaylist = true;
-            _musicPlayer.PlaySong();
-        }
+        var temp = Songs;
+        Songs = null;
+        Songs = temp;
+    }
+
+    partial void OnCurrentSongChanged(SongModel? value)
+    {
+        if (value == null) return;
+        _musicPlayerView.CurrentSong = value;
+        _musicPlayerView.PlayMediaIcon = FontAwesomeIcon.Pause;
+        _musicPlayerView.PlaySong();
+        CurrentSongIndex = Songs?.IndexOf(value) ?? -1;
     }
 }

@@ -6,6 +6,7 @@ using SoundScapes.Models;
 using SpotifyExplode;
 using System.Net.Http;
 using System.Windows;
+using System.Windows.Media;
 
 namespace SoundScapes.ViewModels;
 
@@ -25,20 +26,14 @@ public partial class SearchViewModel : ObservableObject
     private List<SongModel>? _songsList = [];
     [ObservableProperty]
     private SongModel? _currentSong = null;
+    private int globalIndex = 0;
 
     public SearchViewModel(MusicPlayerViewModel musicPlayerView)
     {
         _musicPlayerView = musicPlayerView;
         _musicPlayerView.SongChanged += (o, e) =>
         {
-            if (_musicPlayerView.IsPlayingFromPlaylist) return;
             CurrentSong = e;
-        };
-        _musicPlayerView.SongsChanged += (o, e) =>
-        {
-            if (_musicPlayerView.IsPlayingFromPlaylist) return;
-            SongsList = null;
-            SongsList = e;
         };
     }
 
@@ -49,16 +44,17 @@ public partial class SearchViewModel : ObservableObject
             _musicPlayerView.CurrentSong = value;
             _musicPlayerView.PlayMediaIcon = FontAwesomeIcon.Pause;
             _musicPlayerView.PlaySong();
-            _musicPlayerView.IsPlayingFromPlaylist = false;
         }
     }
-
-    partial void OnSongsListChanged(List<SongModel>? value)
-    {
-        if (value != null && !_musicPlayerView.IsPlayingFromPlaylist) _musicPlayerView.SongsList = value;
-    }
-
+    
     public void RegisterSearchBox(AutoSuggestBox searchBox) => searchBox!.QuerySubmitted += SearchBox_QuerySubmitted;
+
+    public void UpdateViewList()
+    {
+        var temp = SongsList;
+        SongsList = null;
+        SongsList = temp;
+    }
 
     private async void SearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
     {
@@ -67,14 +63,13 @@ public partial class SearchViewModel : ObservableObject
             ErrorText = "Завантаження...";
             ErrorTextVisibility = Visibility.Visible;
             ResultsBoxVisibility = Visibility.Collapsed;
-            GC.Collect();
             try
             {
                 var tracks = await _spotifyClient.Search.GetTracksAsync(SearchText);
                 List<SongModel> trackList = [];
                 foreach (var track in tracks)
                 {
-                    trackList.Add(new SongModel() { Title = track.Title, Artist = ArtistConverter.FormatArtists(track.Artists), SongID = track.Id, Duration = TimeConverter.ConvertMsToTime(track.DurationMs), Icon = track.Album.Images[0].Url, DurationLong = track.DurationMs });
+                    trackList.Add(new SongModel() { Index = globalIndex++, Title = track.Title, Artist = ArtistConverter.FormatArtists(track.Artists), SongID = track.Id, Duration = TimeConverter.ConvertMsToTime(track.DurationMs), Icon = track.Album.Images[0].Url, DurationLong = track.DurationMs });
                 }
                 if (trackList.Count > 1)
                 {
