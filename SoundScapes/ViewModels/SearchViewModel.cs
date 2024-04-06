@@ -6,7 +6,6 @@ using SoundScapes.Models;
 using SpotifyExplode;
 using System.Net.Http;
 using System.Windows;
-using System.Windows.Media;
 
 namespace SoundScapes.ViewModels;
 

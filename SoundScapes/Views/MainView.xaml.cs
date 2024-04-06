@@ -13,6 +13,7 @@ namespace SoundScapes.Views
         public MainView()
         {
             InitializeComponent();
+
             ContentFrame.Navigate(typeof(SearchView));
             NavigationView.SelectedItem = NavigationView.MenuItems[0];
             lastPageOpened = typeof(SearchView);
@@ -23,8 +24,7 @@ namespace SoundScapes.Views
         {
             Type? pageType = null;
 
-            if (args.IsSettingsInvoked) pageType = typeof(SettingsView);
-            else if (args.InvokedItemContainer?.Tag is string typeName) pageType = Type.GetType(typeName);
+            if (args.InvokedItemContainer?.Tag is string typeName) pageType = Type.GetType(typeName);
             if (pageType != null && pageType != lastPageOpened)
             {
                 if (pageType == typeof(SearchView))

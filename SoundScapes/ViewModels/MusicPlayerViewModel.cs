@@ -7,6 +7,7 @@ using SoundScapes.Classes;
 using SoundScapes.Interfaces;
 using SoundScapes.Models;
 using SoundScapes.Views.Dialogs;
+using System.Diagnostics;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
@@ -17,6 +18,7 @@ namespace SoundScapes.ViewModels;
 public partial class MusicPlayerViewModel : ObservableObject
 {
     private readonly IMusicPlayer _musicPlayer;
+    private readonly ISettings _settings;
     [ObservableProperty]
     private SongModel _currentSong = new();
     [ObservableProperty]
@@ -50,9 +52,14 @@ public partial class MusicPlayerViewModel : ObservableObject
     public event EventHandler<SongModel>? SongPlaylistChanged;
     private readonly System.Timers.Timer _musicPositionUpdate = new() { Interval = 500 };
     
-    public MusicPlayerViewModel(IMusicPlayer musicPlayer)
+    public MusicPlayerViewModel(IMusicPlayer musicPlayer, ISettings settings)
     {
+        _settings = settings;
+        _settings.Load();
         _musicPlayer = musicPlayer;
+        _musicPlayer.MediaPlayer.Volume = _settings.SettingsModel.Volume;
+        VolumeValue = _settings.SettingsModel.Volume;
+
         _playSongCommand = new RelayCommand(PlaySongCommand_Execute);
         _nextSongCommand = new RelayCommand(NextSongCommand_Execute);
         _previousSongCommand = new RelayCommand(PreviousSongCommand_Execute);
@@ -63,6 +70,10 @@ public partial class MusicPlayerViewModel : ObservableObject
         _musicPositionUpdate.Elapsed += (o,e) =>
         {
             CheckMediaPlayerPosition();
+        };
+        _musicPlayer.ExceptionThrown += (o, e) =>
+        {
+            NextSongCommand_Execute();
         };
     }
 
@@ -102,6 +113,8 @@ public partial class MusicPlayerViewModel : ObservableObject
             playlistViewModel.Songs = null;
             playlistViewModel.Songs = playlistViewModel.CurrentPlaylistSelected?.SongsInPlaylist;
         }
+
+        _settings.Save();
 
         // Check and update the amount of items in the playlist
         playlistViewModel.CheckAmountOfItemsInPlaylist();
@@ -336,6 +349,7 @@ public partial class MusicPlayerViewModel : ObservableObject
     partial void OnVolumeValueChanging(double value)
     {
         _musicPlayer.MediaPlayer.Volume = (int)value;
+        _settings.SettingsModel.Volume = (int)value;
+        _settings.Save();
     }
-
 }

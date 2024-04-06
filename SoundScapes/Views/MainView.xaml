@@ -25,7 +25,7 @@
                 <RowDefinition Height="32"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <ui:NavigationView Name="NavigationView" Grid.RowSpan="2" PaneDisplayMode="LeftMinimal" IsPaneOpen="False" ItemInvoked="NavigationView_ItemInvoked" IsBackButtonVisible="Collapsed" IsTitleBarAutoPaddingEnabled="False">
+            <ui:NavigationView Name="NavigationView" Grid.RowSpan="2" IsSettingsVisible="False" PaneDisplayMode="LeftMinimal" IsPaneOpen="False" ItemInvoked="NavigationView_ItemInvoked" IsBackButtonVisible="Collapsed" IsTitleBarAutoPaddingEnabled="False">
                 <ui:NavigationView.MenuItems>
                     <ui:NavigationViewItem Tag="SoundScapes.Views.SearchView" Content="Пошук" Icon="Find"/>
                     <ui:NavigationViewItem Tag="SoundScapes.Views.PlaylistView" Content="Плейлисти" Icon="Audio"/>

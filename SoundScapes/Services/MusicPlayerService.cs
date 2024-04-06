@@ -19,6 +19,8 @@ public class MusicPlayerService : IMusicPlayer
     public bool IsRepeating { get; private set; }
     public MusicPlayerService() => MediaPlayer = new(LibVLC);
 
+    public event EventHandler? ExceptionThrown;
+
     public async Task OnPlaySong(SongModel currentSong)
     {
         try
@@ -57,6 +59,7 @@ public class MusicPlayerService : IMusicPlayer
         catch (Exception ex)
         {
             Trace.WriteLine(ex.Message);
+            ExceptionThrown?.Invoke(this, EventArgs.Empty);
         }
     }
 

@@ -18,6 +18,7 @@ public partial class App : Application
     {
         Core.Initialize();
         Environment.SetEnvironmentVariable("SLAVA_UKRAINI", "1");
+        
         AppHost = Host.CreateDefaultBuilder()
         .ConfigureServices((hostContext, services) =>
         {
@@ -30,11 +31,9 @@ public partial class App : Application
             services.AddTransient<PlaylistEditItemView>();
             services.AddTransient<PlaylistAddSongItemView>();
             services.AddSingleton<SearchView>();
-            services.AddSingleton<SettingsView>();
 
             // View Models
             services.AddSingleton<SearchViewModel>();
-            services.AddSingleton<SettingsViewModel>();
             services.AddSingleton<MusicPlayerViewModel>();
             services.AddSingleton<PlaylistViewModel>();
             services.AddTransient<PlaylistAddItemViewModel>();
@@ -43,6 +42,7 @@ public partial class App : Application
 
             // Services
             services.AddSingleton<IMusicPlayer, MusicPlayerService>();
+            services.AddSingleton<ISettings, SettingsService>();
         })
         .Build();
     }

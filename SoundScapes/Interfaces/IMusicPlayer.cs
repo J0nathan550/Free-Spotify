@@ -14,6 +14,7 @@ public interface IMusicPlayer
     CancellationTokenSource CancellationTokenSourcePlay { get; }
     bool IsPaused { get; }
     bool IsRepeating { get; }
+    event EventHandler ExceptionThrown;
     Task OnPlaySong(SongModel currentSong);
     void OnPauseSong();
     void OnRepeatingSong();

@@ -4,6 +4,7 @@ using FontAwesome.WPF;
 using Microsoft.Extensions.DependencyInjection;
 using ModernWpf.Controls;
 using SoundScapes.Classes;
+using SoundScapes.Interfaces;
 using SoundScapes.Models;
 using SoundScapes.Views.Dialogs;
 using System.Windows;
@@ -53,9 +54,14 @@ public partial class PlaylistViewModel : ObservableObject
     private bool _isInsidePlaylist = false;
 
     private readonly MusicPlayerViewModel _musicPlayerView;
+    private readonly ISettings _settings;
 
-    public PlaylistViewModel(MusicPlayerViewModel musicPlayer)
+    public PlaylistViewModel(MusicPlayerViewModel musicPlayer, ISettings settings)
     {
+        _settings = settings;
+        Playlists = _settings.SettingsModel.Playlists;
+        OriginalPlaylists = _settings.SettingsModel.Playlists;
+
         AddPlaylistCommand = new AsyncRelayCommand(AddPlaylistCommand_ExecuteAsync);
         EditPlaylistCommand = new AsyncRelayCommand(EditPlaylistCommand_ExecuteAsync);
         InstallPlaylistCommand = new AsyncRelayCommand(InstallPlaylistCommand_ExecuteAsync);
@@ -204,6 +210,7 @@ public partial class PlaylistViewModel : ObservableObject
             Songs = CurrentPlaylistSelected.SongsInPlaylist;
         }
 
+        UpdateViewPlaylist();
         CheckAmountOfItemsInPlaylist();
         RecalculatePlaylists();
     }
@@ -331,6 +338,13 @@ public partial class PlaylistViewModel : ObservableObject
         Songs = temp;
     }
 
+    public void UpdateViewPlaylist()
+    {
+        var temp = Playlists;
+        Playlists = null;
+        Playlists = temp;
+    }
+
     partial void OnCurrentSongChanged(SongModel? value)
     {
         if (value == null) return;
@@ -338,5 +352,14 @@ public partial class PlaylistViewModel : ObservableObject
         _musicPlayerView.PlayMediaIcon = FontAwesomeIcon.Pause;
         _musicPlayerView.PlaySong();
         CurrentSongIndex = Songs?.IndexOf(value) ?? -1;
+    }
+
+    partial void OnPlaylistsChanged(List<PlaylistModel>? value)
+    {
+        if (value != null)
+        {
+            _settings.SettingsModel.Playlists = value;
+            _settings.Save();
+        }
     }
 }
