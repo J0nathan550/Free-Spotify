@@ -18,7 +18,7 @@ public partial class SongModel : ObservableObject
     [ObservableProperty]
     private long _durationLong = 0;
     [ObservableProperty]
-    private TrackId _songID;
+    private string _songID = string.Empty;
 
     public override string ToString()
     {

@@ -2,6 +2,7 @@
 using SoundScapes.Interfaces;
 using SoundScapes.Models;
 using SpotifyExplode;
+using SpotifyExplode.Tracks;
 using System.Diagnostics;
 using YoutubeExplode;
 using YoutubeExplode.Videos.Streams;
@@ -32,7 +33,7 @@ public class MusicPlayerService : IMusicPlayer
             CancelPlayingMusic();
 
             // Get YouTube ID and stream info
-            var youtubeID = await SpotifyClient.Tracks.GetYoutubeIdAsync(currentSong.SongID, CancellationTokenSourcePlay.Token);
+            var youtubeID = await SpotifyClient.Tracks.GetYoutubeIdAsync(TrackId.Parse(currentSong.SongID), CancellationTokenSourcePlay.Token);
             var streamInfo = await YoutubeClient.Videos.Streams.GetManifestAsync($"https://youtube.com/watch?v={youtubeID}", CancellationTokenSourcePlay.Token);
 
             // If cancellation was requested, stop playback and return
@@ -55,6 +56,10 @@ public class MusicPlayerService : IMusicPlayer
 
             // If cancellation was requested, stop playback and return
             CancelPlayingMusic();
+        }
+        catch (TaskCanceledException ex)
+        {
+            Trace.WriteLine(ex.Message);
         }
         catch (Exception ex)
         {
