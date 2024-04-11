@@ -16,4 +16,9 @@ public partial class PlaylistModel : ObservableObject
     private string _duration = "0:00";
     [ObservableProperty]
     private List<SongModel> _songsInPlaylist = [];
+
+    public override string ToString()
+    {
+        return Title;
+    }
 }

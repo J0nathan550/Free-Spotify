@@ -52,8 +52,8 @@ public class MusicPlayerService : IMusicPlayer
 
             // Set media and start playback
             MediaPlayer.Media = media;
-            if (!IsPaused) MediaPlayer.Play();
-
+            MediaPlayer.Play();
+            if (IsPaused) MediaPlayer.SetPause(true);
             // If cancellation was requested, stop playback and return
             CancelPlayingMusic();
         }

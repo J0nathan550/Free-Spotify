@@ -3,6 +3,7 @@ using FontAwesome.WPF;
 using ModernWpf.Controls;
 using SoundScapes.Classes;
 using SoundScapes.Models;
+using SoundScapes.Views;
 using SpotifyExplode;
 using System.Net.Http;
 using System.Windows;
@@ -13,6 +14,7 @@ public partial class SearchViewModel : ObservableObject
 {
     private readonly SpotifyClient _spotifyClient = new();
     private readonly MusicPlayerViewModel _musicPlayerView;
+
     [ObservableProperty]
     private string? _searchText;
     [ObservableProperty]
@@ -30,10 +32,9 @@ public partial class SearchViewModel : ObservableObject
     public SearchViewModel(MusicPlayerViewModel musicPlayerView)
     {
         _musicPlayerView = musicPlayerView;
-        _musicPlayerView.SongChanged += (o, e) =>
-        {
-            CurrentSong = e;
-        };
+        _musicPlayerView.SongChanged += (o, e) => CurrentSong = e;
+        ErrorText = "Зараз нема ніяких треків. Використовуйте поле зверху щоб почати слухати треки!";
+        ErrorTextVisibility = Visibility.Visible;
     }
 
     partial void OnCurrentSongChanged(SongModel? value)
@@ -41,7 +42,7 @@ public partial class SearchViewModel : ObservableObject
         if (value != null) // when the list in search is getting changed it can send null
         {
             _musicPlayerView.CurrentSong = value;
-            _musicPlayerView.PlayMediaIcon = FontAwesomeIcon.Pause;
+            _musicPlayerView.PlayMediaIcon = _musicPlayerView._musicPlayer.IsPaused ? FontAwesomeIcon.Play : FontAwesomeIcon.Pause;
             _musicPlayerView.PlaySong();
         }
     }
@@ -53,6 +54,7 @@ public partial class SearchViewModel : ObservableObject
         var temp = SongsList;
         SongsList = null;
         SongsList = temp;
+        
     }
 
     private async void SearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)

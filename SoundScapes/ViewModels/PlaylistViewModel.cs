@@ -71,11 +71,9 @@ public partial class PlaylistViewModel : ObservableObject
         OpenPlaylistCommand = new RelayCommand(OpenPlaylistCommand_Execute);
         CheckAmountOfItemsInPlaylist();
         RecalculatePlaylists();
+
         _musicPlayerView = musicPlayer;
-        _musicPlayerView.SongPlaylistChanged += (o, e) =>
-        {
-            CurrentSong = e;
-        };
+        _musicPlayerView.SongPlaylistChanged += (o, e) => CurrentSong = e;
     }
 
     private void OpenPlaylistCommand_Execute()
@@ -94,7 +92,6 @@ public partial class PlaylistViewModel : ObservableObject
 
     private void MoveUpPlaylistCommand_Execute()
     {
-        
         if (CurrentPlaylistSelected == null || OriginalPlaylists == null || Playlists == null || Playlists.Count == 0) return;
         if (!IsInsidePlaylist)
         {
@@ -131,6 +128,7 @@ public partial class PlaylistViewModel : ObservableObject
             Songs = CurrentPlaylistSelected.SongsInPlaylist;
             RecalculatePlaylists();
         }
+        _settings.Save();
     }
 
     private void MoveDownPlaylistCommand_Execute()
@@ -170,6 +168,7 @@ public partial class PlaylistViewModel : ObservableObject
             Songs = CurrentPlaylistSelected.SongsInPlaylist;
             RecalculatePlaylists();
         }
+        _settings.Save();
     }
 
     private async Task RemovePlaylistCommand_ExecuteAsync()
@@ -202,17 +201,19 @@ public partial class PlaylistViewModel : ObservableObject
         if (!IsInsidePlaylist)
         {
             OriginalPlaylists?.Remove(CurrentPlaylistSelected!);
+            Playlists = null;
             Playlists = OriginalPlaylists;
         }
         else if (CurrentPlaylistSelected != null)
         {
             CurrentPlaylistSelected.SongsInPlaylist.RemoveAt(CurrentSongIndex);
             Songs = CurrentPlaylistSelected.SongsInPlaylist;
+            UpdateViewSongList();
         }
-
-        UpdateViewPlaylist();
+        Songs?.Clear();
         CheckAmountOfItemsInPlaylist();
         RecalculatePlaylists();
+        _settings.Save();
     }
 
 
@@ -238,6 +239,7 @@ public partial class PlaylistViewModel : ObservableObject
                 RecalculatePlaylists();
             }
         }
+        _settings.Save();
     }
 
     private async Task AddPlaylistCommand_ExecuteAsync()
@@ -254,6 +256,7 @@ public partial class PlaylistViewModel : ObservableObject
             CheckAmountOfItemsInPlaylist();
             RecalculatePlaylists();
         }
+        _settings.Save();
     }
 
     public void CheckAmountOfItemsInPlaylist()
@@ -291,6 +294,7 @@ public partial class PlaylistViewModel : ObservableObject
 
         ErrorText = string.Empty;
         ErrorTextVisibility = Visibility.Collapsed;
+        
     }
 
     public void RegisterSearchPlaylistBox(AutoSuggestBox autoSuggestBox)
@@ -331,27 +335,67 @@ public partial class PlaylistViewModel : ObservableObject
         }
     }
 
-    public void UpdateViewList()
+    public void UpdateViewSongList()
     {
         var temp = Songs;
         Songs = null;
         Songs = temp;
     }
 
-    public void UpdateViewPlaylist()
-    {
-        var temp = Playlists;
-        Playlists = null;
-        Playlists = temp;
-    }
-
     partial void OnCurrentSongChanged(SongModel? value)
     {
         if (value == null) return;
         _musicPlayerView.CurrentSong = value;
-        _musicPlayerView.PlayMediaIcon = FontAwesomeIcon.Pause;
+        _musicPlayerView.PlayMediaIcon = _musicPlayerView._musicPlayer.IsPaused ? FontAwesomeIcon.Play : FontAwesomeIcon.Pause;
         _musicPlayerView.PlaySong();
         CurrentSongIndex = Songs?.IndexOf(value) ?? -1;
+    }
+
+    partial void OnCurrentPlaylistSelectedChanged(PlaylistModel? value)
+    {
+        if (value == null) return;
+        // Continue with the rest of the method
+        Songs?.Clear();
+        Songs = value.SongsInPlaylist;
+        _musicPlayerView._musicPlayer.CancelPlayingMusic();
+        _musicPlayerView._musicPlayer.MediaPlayer.Stop();
+        _musicPlayerView.MusicPosition = 0;
+        _musicPlayerView.SongDuration = "0:00";
+        _musicPlayerView._musicPositionUpdate.Stop();
+        if (value.SongsInPlaylist.Count == 0)
+        {
+            // Select next playlist if available
+            SelectNextPlaylist();
+            return;
+        }
+        _musicPlayerView.CurrentSong = value.SongsInPlaylist[0];
+        _musicPlayerView.PlayMediaIcon = _musicPlayerView._musicPlayer.IsPaused ? FontAwesomeIcon.Play : FontAwesomeIcon.Pause;
+        _musicPlayerView.PlaySong();
+        CurrentSongIndex = Songs?.IndexOf(value.SongsInPlaylist[0]) ?? -1;
+    }
+
+    private void SelectNextPlaylist()
+    {
+        if (Playlists == null || CurrentPlaylistSelected == null)
+        {
+            _musicPlayerView.CurrentSong = new();
+            return;
+        }
+        int currentIndex = Playlists.IndexOf(CurrentPlaylistSelected);
+
+        // Start from the next playlist index and loop through the playlists
+        for (int i = currentIndex + 1; i < Playlists.Count; i++)
+        {
+            var nextPlaylist = Playlists[i];
+            if (nextPlaylist != null && nextPlaylist.SongsInPlaylist.Count > 0)
+            {
+                // Found a valid playlist, set it as the current playlist and exit the loop
+                CurrentPlaylistSelected = nextPlaylist;
+                return;
+            }
+        }
+
+        _musicPlayerView.CurrentSong = new();
     }
 
     partial void OnPlaylistsChanged(List<PlaylistModel>? value)

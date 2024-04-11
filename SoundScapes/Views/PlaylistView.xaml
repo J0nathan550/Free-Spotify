@@ -18,7 +18,7 @@
         <TextBlock Grid.Row="1" Visibility="{Binding ErrorTextVisibility}" Text="{Binding ErrorText}" Foreground="White" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" TextWrapping="WrapWithOverflow" TextAlignment="Center"/>
         <ui:ListView Grid.Row="1" Margin="2" Background="Transparent" ItemsSource="{Binding Playlists, Mode=TwoWay}" SelectedItem="{Binding CurrentPlaylistSelected}" Visibility="{Binding PlaylistListBoxVisibility}" ui:ScrollViewerHelper.AutoHideScrollBars="False">
             <ui:ListView.ContextMenu>
-                <ContextMenu>
+                <ContextMenu Background="Black">
                     <MenuItem Header="Додати плейлист..." Command="{Binding AddPlaylistCommand}">
                         <MenuItem.Icon>
                             <ui:SymbolIcon Symbol="Add"/>
@@ -48,10 +48,15 @@
                 <DataTemplate DataType="models:PlaylistModel">
                     <Border Cursor="Hand" Margin="2" BorderBrush="#99FFFFFF" BorderThickness="1">
                         <Border.ContextMenu>
-                            <ContextMenu DataContext="{Binding DataContext, Source={extensions:RootObject}}">
+                            <ContextMenu Background="Black" DataContext="{Binding DataContext, Source={extensions:RootObject}}">
                                 <MenuItem Header="Відкрити плейлист..." Command="{Binding OpenPlaylistCommand}">
                                     <MenuItem.Icon>
                                         <ui:SymbolIcon Symbol="OpenFile"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Додати плейлист..." Command="{Binding AddPlaylistCommand}">
+                                    <MenuItem.Icon>
+                                        <ui:SymbolIcon Symbol="Add"/>
                                     </MenuItem.Icon>
                                 </MenuItem>
                                 <MenuItem Header="Редагувати плейлист..." Command="{Binding EditPlaylistCommand}">
@@ -78,7 +83,7 @@
                                         </ui:SymbolIcon>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Завантажити пісні з плейлиста..." Command="{Binding InstallPlaylistCommand}">
+                                <MenuItem Header="Завантажити треки з плейлиста..." Command="{Binding InstallPlaylistCommand}">
                                     <MenuItem.Icon>
                                         <ui:SymbolIcon Symbol="Download"/>
                                     </MenuItem.Icon>
@@ -116,7 +121,7 @@
         </ui:ListView>
         <ui:ListView Grid.Row="1" Background="Transparent" ItemsSource="{Binding Songs, Mode=TwoWay}" SelectedItem="{Binding CurrentSong}" Visibility="{Binding MusicListBoxVisibility}" ui:ScrollViewerHelper.AutoHideScrollBars="False">
             <ui:ListView.ContextMenu>
-                <ContextMenu>
+                <ContextMenu Background="Black">
                     <MenuItem Header="Вийти з плейлиста..." Command="{Binding OpenPlaylistCommand}">
                         <MenuItem.Icon>
                             <ui:SymbolIcon Symbol="ClosePane"/>
@@ -146,13 +151,13 @@
                 <DataTemplate DataType="models:PlaylistModel">
                     <Border Margin="2" Cursor="Hand" BorderBrush="#99FFFFFF" BorderThickness="1">
                         <Border.ContextMenu>
-                            <ContextMenu DataContext="{Binding DataContext, Source={extensions:RootObject}}">
-                                <MenuItem Header="Передвинути плейлист вверх..." Command="{Binding MoveUpPlaylistCommand}">
+                            <ContextMenu Background="Black" DataContext="{Binding DataContext, Source={extensions:RootObject}}">
+                                <MenuItem Header="Передвинути трек вверх..." Command="{Binding MoveUpPlaylistCommand}">
                                     <MenuItem.Icon>
                                         <ui:SymbolIcon Symbol="Up"/>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Передвинути плейлист вниз..." Command="{Binding MoveDownPlaylistCommand}">
+                                <MenuItem Header="Передвинути трек вниз..." Command="{Binding MoveDownPlaylistCommand}">
                                     <MenuItem.Icon>
                                         <ui:SymbolIcon Foreground="White" Symbol="Up" RenderTransformOrigin="0.5,0.5">
                                             <ui:SymbolIcon.RenderTransform>
@@ -166,14 +171,19 @@
                                         </ui:SymbolIcon>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Завантажити пісню..." Command="{Binding InstallPlaylistCommand}">
+                                <MenuItem Header="Завантажити трек..." Command="{Binding InstallPlaylistCommand}">
                                     <MenuItem.Icon>
                                         <ui:SymbolIcon Symbol="Download"/>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Видалити пісню..." Command="{Binding RemovePlaylistCommand}">
+                                <MenuItem Header="Видалити трек..." Command="{Binding RemovePlaylistCommand}">
                                     <MenuItem.Icon>
                                         <ui:SymbolIcon Symbol="Delete"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Вийти з плейлиста..." Command="{Binding OpenPlaylistCommand}">
+                                    <MenuItem.Icon>
+                                        <ui:SymbolIcon Symbol="ClosePane"/>
                                     </MenuItem.Icon>
                                 </MenuItem>
                             </ContextMenu>
