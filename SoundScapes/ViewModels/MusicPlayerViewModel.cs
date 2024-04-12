@@ -205,7 +205,7 @@ public partial class MusicPlayerViewModel : ObservableObject
         }
     }
 
-    private void GoToNextPlaylistIfEmpty(PlaylistViewModel? model)
+    private static void GoToNextPlaylistIfEmpty(PlaylistViewModel? model)
     {
         if (model != null && model.OriginalPlaylists != null)
         {
@@ -227,7 +227,7 @@ public partial class MusicPlayerViewModel : ObservableObject
         }
     }
 
-    private void GoToNextPlaylist(PlaylistViewModel? model)
+    private static void GoToNextPlaylist(PlaylistViewModel? model)
     {
         if (model != null)
         {
@@ -293,7 +293,7 @@ public partial class MusicPlayerViewModel : ObservableObject
         }
     }
 
-    private void GoToPreviousPlaylistIfEmpty(PlaylistViewModel? model)
+    private static void GoToPreviousPlaylistIfEmpty(PlaylistViewModel? model)
     {
         if (model != null && model.OriginalPlaylists != null)
         {
@@ -315,7 +315,7 @@ public partial class MusicPlayerViewModel : ObservableObject
         }
     }
 
-    private void GoToPreviousPlaylist(PlaylistViewModel? model)
+    private static void GoToPreviousPlaylist(PlaylistViewModel? model)
     {
         if (model != null)
         {

@@ -30,6 +30,7 @@ public partial class App : Application
             services.AddTransient<PlaylistAddItemView>();
             services.AddTransient<PlaylistEditItemView>();
             services.AddTransient<PlaylistAddSongItemView>();
+            services.AddTransient<PlaylistInstallSongView>();
             services.AddSingleton<SearchView>();
 
             // View Models
@@ -39,6 +40,7 @@ public partial class App : Application
             services.AddTransient<PlaylistAddItemViewModel>();
             services.AddTransient<PlaylistEditItemViewModel>();
             services.AddTransient<PlaylistAddSongItemViewModel>();
+            services.AddTransient<PlaylistInstallSongViewModel>();
 
             // Services
             services.AddSingleton<IMusicPlayer, MusicPlayerService>();
