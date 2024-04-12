@@ -29,7 +29,7 @@
     <PackageReference Include="Downloader" Version="3.0.6" />
     <PackageReference Include="FFMpegCore" Version="5.1.0" />
     <PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" />
-    <PackageReference Include="LibVLCSharp" Version="3.8.2" />
+    <PackageReference Include="LibVLCSharp.WPF" Version="3.8.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="ModernWpfUI" Version="0.9.6" />
@@ -40,6 +40,9 @@
 	
   <ItemGroup>
     <Compile Update="Views\Dialogs\PlaylistAddSongItemView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\Dialogs\PlaylistInstallSongView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\Dialogs\PlaylistEditItemView.xaml.cs">

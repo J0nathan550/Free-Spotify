@@ -200,6 +200,7 @@ public partial class PlaylistViewModel : ObservableObject
 
         if (!IsInsidePlaylist)
         {
+            Songs?.Clear();
             OriginalPlaylists?.Remove(CurrentPlaylistSelected!);
             Playlists = null;
             Playlists = OriginalPlaylists;
@@ -210,7 +211,6 @@ public partial class PlaylistViewModel : ObservableObject
             Songs = CurrentPlaylistSelected.SongsInPlaylist;
             UpdateViewSongList();
         }
-        Songs?.Clear();
         CheckAmountOfItemsInPlaylist();
         RecalculatePlaylists();
         _settings.Save();
@@ -237,9 +237,9 @@ public partial class PlaylistViewModel : ObservableObject
                 Playlists = OriginalPlaylists;
                 CheckAmountOfItemsInPlaylist();
                 RecalculatePlaylists();
+                _settings.Save();
             }
         }
-        _settings.Save();
     }
 
     private async Task AddPlaylistCommand_ExecuteAsync()
@@ -354,8 +354,6 @@ public partial class PlaylistViewModel : ObservableObject
     partial void OnCurrentPlaylistSelectedChanged(PlaylistModel? value)
     {
         if (value == null) return;
-        // Continue with the rest of the method
-        Songs?.Clear();
         Songs = value.SongsInPlaylist;
         _musicPlayerView._musicPlayer.CancelPlayingMusic();
         _musicPlayerView._musicPlayer.MediaPlayer.Stop();

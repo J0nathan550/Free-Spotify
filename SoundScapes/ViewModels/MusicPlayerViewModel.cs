@@ -164,112 +164,178 @@ public partial class MusicPlayerViewModel : ObservableObject
 
     private void NextSongCommand_Execute()
     {
-        List<SongModel>? songs = IsPlayingFromPlaylist ? App.AppHost?.Services.GetService<PlaylistViewModel>()?.Songs : App.AppHost?.Services.GetService<SearchViewModel>()?.SongsList;
         var model = App.AppHost?.Services.GetService<PlaylistViewModel>();
-        if (songs == null || songs.Count == 0) return;
+        List<SongModel>? songs = IsPlayingFromPlaylist ? model?.Songs : App.AppHost?.Services.GetService<SearchViewModel>()?.SongsList;
+
+        if (songs == null || songs.Count == 0)
+        {
+            GoToNextPlaylistIfEmpty(model);
+            return;
+        }
 
         int currentIndex = songs.FindIndex(n => n == CurrentSong);
+        int index = (currentIndex + 1) % songs.Count;
 
-        // Find the index of the next unique song
-        int index = currentIndex;
-        do
+        if (IsPlayingFromPlaylist && index == 0)
         {
-            index = (index + 1) % songs.Count;
+            GoToNextPlaylist(model);
+            return;
+        }
 
-            // Check if the songs list has reached its maximum count
-            if (index == 0 && IsPlayingFromPlaylist)
+        int loopCount = 0;
+        while (loopCount < songs.Count)
+        {
+            if (songs[index] != CurrentSong)
             {
-                if (model != null)
-                {
-                    int currentIndexPlaylist = model.Playlists!.IndexOf(model.CurrentPlaylistSelected!);
-                    int nextIndex = (currentIndexPlaylist + 1) % model.Playlists.Count;
-                    model.CurrentPlaylistSelected = model.Playlists[nextIndex];
-                    return; // Exit the loop after switching to the next playlist
-                }
-            }
+                CurrentSong = songs[index];
+                SongDuration = "0:00";
+                MusicPosition = 0;
+                _musicPlayer.MediaPlayer.Position = 0;
 
-            if (index == currentIndex && IsPlayingFromPlaylist)
-            {
-                if (model != null)
-                {
-                    int currentIndexPlaylist = model.Playlists!.IndexOf(model.CurrentPlaylistSelected!);
-                    int nextIndex = (currentIndexPlaylist + 1) % model.Playlists.Count;
-                    if (nextIndex != currentIndexPlaylist) // Check if it's not the same playlist
-                    {
-                        model.CurrentPlaylistSelected = model.Playlists[nextIndex];
-                    }
-                }
-            }
-            else if (index == currentIndex && !IsPlayingFromPlaylist)
-            {
+                if (IsPlayingFromPlaylist)
+                    SongPlaylistChanged?.Invoke(this, CurrentSong);
+                else
+                    SongChanged?.Invoke(this, CurrentSong);
+
                 return;
             }
 
-        } while (songs[index] == CurrentSong);
+            index = (index + 1) % songs.Count;
+            loopCount++;
+        }
+    }
 
-        CurrentSong = songs[index];
-        SongDuration = "0:00";
-        MusicPosition = 0;
-        _musicPlayer.MediaPlayer.Position = 0;
+    private void GoToNextPlaylistIfEmpty(PlaylistViewModel? model)
+    {
+        if (model != null && model.OriginalPlaylists != null)
+        {
+            int currentIndexPlaylist = model.Playlists!.IndexOf(model.CurrentPlaylistSelected!);
+            int nextIndex = (currentIndexPlaylist + 1) % model.Playlists.Count;
+            int loopCount = 0;
 
-        if (IsPlayingFromPlaylist) SongPlaylistChanged?.Invoke(this, CurrentSong);
-        else SongChanged?.Invoke(this, CurrentSong);
+            while (loopCount < model.Playlists.Count)
+            {
+                if (model.Playlists[nextIndex].SongsInPlaylist.Count > 0)
+                {
+                    model.CurrentPlaylistSelected = model.Playlists[nextIndex];
+                    return;
+                }
+
+                nextIndex = (nextIndex + 1) % model.Playlists.Count;
+                loopCount++;
+            }
+        }
+    }
+
+    private void GoToNextPlaylist(PlaylistViewModel? model)
+    {
+        if (model != null)
+        {
+            int currentIndexPlaylist = model.Playlists!.IndexOf(model.CurrentPlaylistSelected!);
+            int nextIndex = (currentIndexPlaylist + 1) % model.Playlists.Count;
+
+            int loopCount = 0;
+            while (loopCount < model.Playlists.Count)
+            {
+                if (model.Playlists[nextIndex].SongsInPlaylist.Count > 0)
+                {
+                    model.CurrentPlaylistSelected = null;
+                    model.CurrentPlaylistSelected = model.Playlists[nextIndex];
+                    return;
+                }
+
+                nextIndex = (nextIndex + 1) % model.Playlists.Count;
+                loopCount++;
+            }
+        }
     }
 
     private void PreviousSongCommand_Execute()
     {
-        List<SongModel>? songs = IsPlayingFromPlaylist ? App.AppHost?.Services.GetService<PlaylistViewModel>()?.Songs : App.AppHost?.Services.GetService<SearchViewModel>()?.SongsList;
+        var model = App.AppHost?.Services.GetService<PlaylistViewModel>();
+        List<SongModel>? songs = IsPlayingFromPlaylist ? model?.Songs : App.AppHost?.Services.GetService<SearchViewModel>()?.SongsList;
 
-        if (songs == null || songs.Count == 0) return;
+        if (songs == null || songs.Count == 0)
+        {
+            GoToPreviousPlaylistIfEmpty(model);
+            return;
+        }
 
         int currentIndex = songs.FindIndex(n => n == CurrentSong);
+        int index = (currentIndex - 1 + songs.Count) % songs.Count;
 
-        // Find the index of the previous unique song
-        int index = currentIndex;
-        do
+        if (IsPlayingFromPlaylist && index == songs.Count - 1)
         {
-            index = (index - 1 + songs.Count) % songs.Count;
+            GoToPreviousPlaylist(model);
+            return;
+        }
 
-            // Check if the songs list has reached its minimum count
-            if (index == songs.Count - 1 && IsPlayingFromPlaylist)
+        int loopCount = 0;
+        while (loopCount < songs.Count)
+        {
+            if (songs[index] != CurrentSong)
             {
-                var model = App.AppHost?.Services.GetService<PlaylistViewModel>();
-                if (model != null)
-                {
-                    int currentIndexPlaylist = model.Playlists!.IndexOf(model.CurrentPlaylistSelected!);
-                    int previousIndex = (currentIndexPlaylist - 1 + model.Playlists.Count) % model.Playlists.Count;
-                    model.CurrentPlaylistSelected = model.Playlists[previousIndex];
-                    return; // Exit the loop after switching to the previous playlist
-                }
-            }
+                CurrentSong = songs[index];
+                SongDuration = "0:00";
+                MusicPosition = 0;
+                _musicPlayer.MediaPlayer.Position = 0;
 
-            if (index == currentIndex && IsPlayingFromPlaylist)
-            {
-                var model = App.AppHost?.Services.GetService<PlaylistViewModel>();
-                if (model != null)
-                {
-                    int currentIndexPlaylist = model.Playlists!.IndexOf(model.CurrentPlaylistSelected!);
-                    int previousIndex = (currentIndexPlaylist - 1 + model.Playlists.Count) % model.Playlists.Count;
-                    if (previousIndex != currentIndexPlaylist) // Check if it's not the same playlist
-                    {
-                        model.CurrentPlaylistSelected = model.Playlists[previousIndex];
-                    }
-                }
-            }
-            else if (index == currentIndex && !IsPlayingFromPlaylist)
-            {
+                if (IsPlayingFromPlaylist)
+                    SongPlaylistChanged?.Invoke(this, CurrentSong);
+                else
+                    SongChanged?.Invoke(this, CurrentSong);
+
                 return;
             }
 
-        } while (songs[index] == CurrentSong);
+            index = (index - 1 + songs.Count) % songs.Count;
+            loopCount++;
+        }
+    }
 
-        CurrentSong = songs[index];
-        SongDuration = "0:00";
-        MusicPosition = 0;
-        _musicPlayer.MediaPlayer.Position = 0;
+    private void GoToPreviousPlaylistIfEmpty(PlaylistViewModel? model)
+    {
+        if (model != null && model.OriginalPlaylists != null)
+        {
+            int currentIndexPlaylist = model.Playlists!.IndexOf(model.CurrentPlaylistSelected!);
+            int previousIndex = (currentIndexPlaylist - 1 + model.Playlists.Count) % model.Playlists.Count;
+            int loopCount = 0;
 
-        if (IsPlayingFromPlaylist) SongPlaylistChanged?.Invoke(this, CurrentSong);
-        else SongChanged?.Invoke(this, CurrentSong);
+            while (loopCount < model.Playlists.Count)
+            {
+                if (model.Playlists[previousIndex].SongsInPlaylist.Count > 0)
+                {
+                    model.CurrentPlaylistSelected = model.Playlists[previousIndex];
+                    return;
+                }
+
+                previousIndex = (previousIndex - 1 + model.Playlists.Count) % model.Playlists.Count;
+                loopCount++;
+            }
+        }
+    }
+
+    private void GoToPreviousPlaylist(PlaylistViewModel? model)
+    {
+        if (model != null)
+        {
+            int currentIndexPlaylist = model.Playlists!.IndexOf(model.CurrentPlaylistSelected!);
+            int previousIndex = (currentIndexPlaylist - 1 + model.Playlists.Count) % model.Playlists.Count;
+
+            int loopCount = 0;
+            while (loopCount < model.Playlists.Count)
+            {
+                if (model.Playlists[previousIndex].SongsInPlaylist.Count > 0)
+                {
+                    model.CurrentPlaylistSelected = null;
+                    model.CurrentPlaylistSelected = model.Playlists[previousIndex];
+                    return;
+                }
+
+                previousIndex = (previousIndex - 1 + model.Playlists.Count) % model.Playlists.Count;
+                loopCount++;
+            }
+        }
     }
 
     private void RepeatSongCommand_Execute()
