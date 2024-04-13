@@ -4,6 +4,7 @@ using SoundScapes.Models;
 using SpotifyExplode;
 using SpotifyExplode.Tracks;
 using System.Diagnostics;
+using System.IO;
 using YoutubeExplode;
 using YoutubeExplode.Videos.Streams;
 
@@ -26,35 +27,42 @@ public class MusicPlayerService : IMusicPlayer
     {
         try
         {
-            // Cancel any existing tasks
+            CreateMusicSaveFolderIfNeeded();
+
             CancellationTokenSourcePlay?.Cancel();
             CancellationTokenSourcePlay = new CancellationTokenSource();
 
             CancelPlayingMusic();
 
-            // Get YouTube ID and stream info
-            var youtubeID = await SpotifyClient.Tracks.GetYoutubeIdAsync(TrackId.Parse(currentSong.SongID), CancellationTokenSourcePlay.Token);
-            var streamInfo = await YoutubeClient.Videos.Streams.GetManifestAsync($"https://youtube.com/watch?v={youtubeID}", CancellationTokenSourcePlay.Token);
+            bool fileExists = false;
+            if (File.Exists(@$"SavedMusic\{currentSong.Artist[0]} - {currentSong.Title}.mp3"))
+            {
+                fileExists = true;
+            }
 
-            // If cancellation was requested, stop playback and return
-            CancelPlayingMusic();
-            // Get the audio stream with the highest bitrate
-            var content = streamInfo.GetAudioOnlyStreams().GetWithHighestBitrate();
-            // If cancellation was requested, stop playback and return
             CancelPlayingMusic();
 
-            // Create media and set options
-            var media = new Media(LibVLC, content.Url, FromType.FromLocation);
+            Media? media;
+            if (fileExists)
+            {
+                media = new Media(LibVLC, @$"SavedMusic\{currentSong.Artist[0]} - {currentSong.Title}.mp3", FromType.FromPath);
+            }
+            else
+            {
+                var youtubeID = await SpotifyClient.Tracks.GetYoutubeIdAsync(TrackId.Parse(currentSong.SongID), CancellationTokenSourcePlay.Token);
+                var streamInfo = await YoutubeClient.Videos.Streams.GetManifestAsync($"https://youtube.com/watch?v={youtubeID}", CancellationTokenSourcePlay.Token);
+                CancelPlayingMusic();
+                var content = streamInfo.GetAudioOnlyStreams().GetWithHighestBitrate();
+                media = new Media(LibVLC, content.Url, FromType.FromLocation);
+            }
             media.AddOption(":no-video");
 
-            // If cancellation was requested, stop playback and return
             CancelPlayingMusic();
 
-            // Set media and start playback
             MediaPlayer.Media = media;
             MediaPlayer.Play();
             if (IsPaused) MediaPlayer.SetPause(true);
-            // If cancellation was requested, stop playback and return
+
             CancelPlayingMusic();
         }
         catch (TaskCanceledException ex)
@@ -84,4 +92,12 @@ public class MusicPlayerService : IMusicPlayer
     }
 
     public void OnRepeatingSong() => IsRepeating = !IsRepeating;
+
+    private static void CreateMusicSaveFolderIfNeeded()
+    {
+        if (!Directory.Exists("SavedMusic"))
+        {
+            Directory.CreateDirectory("SavedMusic");
+        }
+    }
 }

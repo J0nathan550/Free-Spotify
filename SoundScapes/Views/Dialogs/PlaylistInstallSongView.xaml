@@ -4,8 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             ui:PrimaryButtonText="Установлено"
-             ui:SecondaryButtonText="Закрыть"
+             ui:PrimaryButtonText="Зачинити, та зберігти"
+             ui:SecondaryButtonCommand="{Binding CancelDownloadCommand}"
+             ui:SecondaryButtonText="Зачинити, та видалити"
+             ui:IsPrimaryButtonEnabled="{Binding IsDownloadFinished}"
              xmlns:ui="http://schemas.modernwpf.com/2019" xmlns:viewmodels="clr-namespace:SoundScapes.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:PlaylistInstallSongViewModel}"
              Background="Black"
              d:DesignHeight="400" d:DesignWidth="800">
@@ -16,12 +18,12 @@
         </Grid.RowDefinitions>
         <TextBlock Margin="0,5" Text="Завантаження Треків" TextAlignment="Center" TextTrimming="CharacterEllipsis" FontSize="19"/>
         <ui:SimpleStackPanel Spacing="10" Margin="10" Grid.Row="1">
-            <ui:ProgressBar Value="50"/>
-            <TextBlock Text="Track: Freddie Dredd - Limbo (1 / 69)" TextTrimming="CharacterEllipsis"/>
-            <TextBlock Text="Data installed: [50.95MB of 95.85MB]" TextTrimming="CharacterEllipsis"/>
-            <TextBlock Text="Internet Speed: 6mb/s" TextTrimming="CharacterEllipsis"/>
-            <TextBlock Text="Estimation time: 0:00" TextTrimming="CharacterEllipsis"/>
-            <TextBlock Text="Progress: 50%" TextTrimming="CharacterEllipsis"/>
+            <ui:ProgressBar Value="{Binding DownloadProgress}" Maximum="100"/>
+            <TextBlock Text="{Binding TrackDescription}" TextTrimming="CharacterEllipsis"/>
+            <TextBlock Text="{Binding DataInstalled}" TextTrimming="CharacterEllipsis"/>
+            <TextBlock Text="{Binding InternetSpeed}" TextTrimming="CharacterEllipsis"/>
+            <TextBlock Text="{Binding EstimationTime}" TextTrimming="CharacterEllipsis"/>
+            <TextBlock Text="{Binding DownloadProgressPercent}" TextTrimming="CharacterEllipsis"/>
         </ui:SimpleStackPanel>
     </Grid>
 </ui:ContentDialog>

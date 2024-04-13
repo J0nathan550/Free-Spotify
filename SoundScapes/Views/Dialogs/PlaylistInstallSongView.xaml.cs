@@ -6,10 +6,11 @@ namespace SoundScapes.Views.Dialogs;
 
 public partial class PlaylistInstallSongView : ContentDialog
 {
+    public readonly PlaylistInstallSongViewModel? playlistInstallSongViewModel;
     public PlaylistInstallSongView()
     {
-        var model = App.AppHost?.Services.GetService<PlaylistInstallSongViewModel>();
-        DataContext = model;
+        playlistInstallSongViewModel = App.AppHost?.Services.GetService<PlaylistInstallSongViewModel>();
+        DataContext = playlistInstallSongViewModel;
         InitializeComponent();
     }
 }

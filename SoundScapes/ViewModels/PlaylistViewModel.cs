@@ -219,13 +219,27 @@ public partial class PlaylistViewModel : ObservableObject
 
     private async Task InstallPlaylistCommand_ExecuteAsync()
     {
-        var contentAddDialog = App.AppHost?.Services.GetService<PlaylistInstallSongView>();
-        var result = await contentAddDialog!.ShowAsync();
-        if (result == ContentDialogResult.Primary)
+        var installDialog = App.AppHost?.Services.GetService<PlaylistInstallSongView>();
+        if (CurrentPlaylistSelected == null || installDialog == null || installDialog.playlistInstallSongViewModel == null) return;
+        installDialog.playlistInstallSongViewModel.DownloadListQueue.Clear();
+        installDialog.playlistInstallSongViewModel.DownloadedListQueue.Clear();
+        if (!IsInsidePlaylist)
         {
-            return;
+            installDialog.playlistInstallSongViewModel.DownloadListQueue = CurrentPlaylistSelected.SongsInPlaylist;
         }
-        //delete
+        else
+        {
+            if (CurrentSong == null)
+            {
+                return;
+            }
+            var list = new List<SongModel>
+            {
+                CurrentSong
+            };
+            installDialog.playlistInstallSongViewModel.DownloadListQueue = list;
+        }
+        await installDialog!.ShowAsync();
     }
 
     private async Task EditPlaylistCommand_ExecuteAsync()

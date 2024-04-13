@@ -205,7 +205,7 @@ public partial class MusicPlayerViewModel : ObservableObject
         }
     }
 
-    private static void GoToNextPlaylistIfEmpty(PlaylistViewModel? model)
+    private void GoToNextPlaylistIfEmpty(PlaylistViewModel? model)
     {
         if (model != null && model.OriginalPlaylists != null)
         {
@@ -217,7 +217,14 @@ public partial class MusicPlayerViewModel : ObservableObject
             {
                 if (model.Playlists[nextIndex].SongsInPlaylist.Count > 0)
                 {
+                    model.CurrentPlaylistSelected = null;
                     model.CurrentPlaylistSelected = model.Playlists[nextIndex];
+                    
+                    if (IsPlayingFromPlaylist)
+                        SongPlaylistChanged?.Invoke(this, CurrentSong);
+                    else
+                        SongChanged?.Invoke(this, CurrentSong);
+
                     return;
                 }
 
@@ -227,7 +234,7 @@ public partial class MusicPlayerViewModel : ObservableObject
         }
     }
 
-    private static void GoToNextPlaylist(PlaylistViewModel? model)
+    private void GoToNextPlaylist(PlaylistViewModel? model)
     {
         if (model != null)
         {
@@ -241,6 +248,12 @@ public partial class MusicPlayerViewModel : ObservableObject
                 {
                     model.CurrentPlaylistSelected = null;
                     model.CurrentPlaylistSelected = model.Playlists[nextIndex];
+                    
+                    if (IsPlayingFromPlaylist)
+                        SongPlaylistChanged?.Invoke(this, CurrentSong);
+                    else
+                        SongChanged?.Invoke(this, CurrentSong);
+
                     return;
                 }
 
@@ -293,7 +306,7 @@ public partial class MusicPlayerViewModel : ObservableObject
         }
     }
 
-    private static void GoToPreviousPlaylistIfEmpty(PlaylistViewModel? model)
+    private void GoToPreviousPlaylistIfEmpty(PlaylistViewModel? model)
     {
         if (model != null && model.OriginalPlaylists != null)
         {
@@ -305,7 +318,14 @@ public partial class MusicPlayerViewModel : ObservableObject
             {
                 if (model.Playlists[previousIndex].SongsInPlaylist.Count > 0)
                 {
+                    model.CurrentPlaylistSelected = null;
                     model.CurrentPlaylistSelected = model.Playlists[previousIndex];
+
+                    if (IsPlayingFromPlaylist)
+                        SongPlaylistChanged?.Invoke(this, CurrentSong);
+                    else
+                        SongChanged?.Invoke(this, CurrentSong);
+
                     return;
                 }
 
@@ -315,7 +335,7 @@ public partial class MusicPlayerViewModel : ObservableObject
         }
     }
 
-    private static void GoToPreviousPlaylist(PlaylistViewModel? model)
+    private void GoToPreviousPlaylist(PlaylistViewModel? model)
     {
         if (model != null)
         {
@@ -329,6 +349,12 @@ public partial class MusicPlayerViewModel : ObservableObject
                 {
                     model.CurrentPlaylistSelected = null;
                     model.CurrentPlaylistSelected = model.Playlists[previousIndex];
+
+                    if (IsPlayingFromPlaylist)
+                        SongPlaylistChanged?.Invoke(this, CurrentSong);
+                    else
+                        SongChanged?.Invoke(this, CurrentSong);
+
                     return;
                 }
 
