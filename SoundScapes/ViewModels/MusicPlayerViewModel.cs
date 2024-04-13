@@ -69,15 +69,25 @@ public partial class MusicPlayerViewModel : ObservableObject
         _musicPlayer.MediaPlayer.Volume = (int)VolumeValue;
         _musicPositionUpdate.Elapsed += (o,e) => CheckMediaPlayerPosition();
         _musicPlayer.ExceptionThrown += (o,e) => NextSongCommand_Execute();
+
+        IsPlayingFromPlaylist = true;
     }
 
     private async Task AddFavoriteSongCommand_Execute()
     {
         var contentAddDialog = App.AppHost?.Services.GetService<PlaylistAddSongItemView>();
         var playlistViewModel = App.AppHost?.Services.GetService<PlaylistViewModel>();
+        var musicPlayerViewModel = App.AppHost?.Services.GetService<MusicPlayerViewModel>();
+
+        if (musicPlayerViewModel!.IsPlayingFromPlaylist) return;
 
         // Check if any necessary service or data is missing
         if (CurrentSong == null || contentAddDialog?.viewModel == null || playlistViewModel?.OriginalPlaylists == null) return;
+
+        if (string.IsNullOrEmpty(CurrentSong.SongID))
+        {
+            return;
+        }
 
         // Show the dialog and wait for the result
         var result = await contentAddDialog!.ShowAsync();
@@ -210,7 +220,8 @@ public partial class MusicPlayerViewModel : ObservableObject
         if (model != null && model.OriginalPlaylists != null)
         {
             int currentIndexPlaylist = model.Playlists!.IndexOf(model.CurrentPlaylistSelected!);
-            int nextIndex = (currentIndexPlaylist + 1) % model.Playlists.Count;
+            if (currentIndexPlaylist == -1) return;
+            int nextIndex = (currentIndexPlaylist + 1) % model.Playlists.Count; // there was a bug
             int loopCount = 0;
 
             while (loopCount < model.Playlists.Count)
@@ -311,6 +322,7 @@ public partial class MusicPlayerViewModel : ObservableObject
         if (model != null && model.OriginalPlaylists != null)
         {
             int currentIndexPlaylist = model.Playlists!.IndexOf(model.CurrentPlaylistSelected!);
+            if (currentIndexPlaylist == -1) return;
             int previousIndex = (currentIndexPlaylist - 1 + model.Playlists.Count) % model.Playlists.Count;
             int loopCount = 0;
 
@@ -379,14 +391,12 @@ public partial class MusicPlayerViewModel : ObservableObject
         {
             var searchViewModel = App.AppHost?.Services.GetService<SearchViewModel>();
             if (searchViewModel == null || searchViewModel.SongsList == null) return;
-
             ToggleShuffle(searchViewModel.SongsList);
         }
         else
         {
             var playlistViewModel = App.AppHost?.Services.GetService<PlaylistViewModel>();
             if (playlistViewModel == null || playlistViewModel.Songs == null) return;
-
             ToggleShuffle(playlistViewModel.Songs);
         }
     }
@@ -482,6 +492,15 @@ public partial class MusicPlayerViewModel : ObservableObject
                 Source = track.Thumb
             });
         }), true);
+    }
+
+    public void CancelPlayingMusic()
+    {
+        _musicPlayer.MediaPlayer.Stop();
+        _musicPositionUpdate.Stop();
+        CurrentSong = new();
+        MusicPosition = 0;
+        SongDuration = "0:00";
     }
 
     private bool IsValidMediaPlayerState()

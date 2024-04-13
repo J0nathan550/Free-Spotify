@@ -4,9 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             ui:PrimaryButtonText="Зачинити, та зберігти"
+             ui:PrimaryButtonText="Закрити та зберігти"
              ui:SecondaryButtonCommand="{Binding CancelDownloadCommand}"
-             ui:SecondaryButtonText="Зачинити, та видалити"
+             ui:SecondaryButtonText="Закрити та видалити"
              ui:IsPrimaryButtonEnabled="{Binding IsDownloadFinished}"
              xmlns:ui="http://schemas.modernwpf.com/2019" xmlns:viewmodels="clr-namespace:SoundScapes.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:PlaylistInstallSongViewModel}"
              Background="Black"
@@ -19,10 +19,8 @@
         <TextBlock Margin="0,5" Text="Завантаження Треків" TextAlignment="Center" TextTrimming="CharacterEllipsis" FontSize="19"/>
         <ui:SimpleStackPanel Spacing="10" Margin="10" Grid.Row="1">
             <ui:ProgressBar Value="{Binding DownloadProgress}" Maximum="100"/>
-            <TextBlock Text="{Binding TrackDescription}" TextTrimming="CharacterEllipsis"/>
+            <TextBlock Text="{Binding TrackDescription}" TextTrimming="CharacterEllipsis" TextAlignment="{Binding TrackDescriptionAlignment}" TextWrapping="{Binding TrackDescriptionWrapping}"/>
             <TextBlock Text="{Binding DataInstalled}" TextTrimming="CharacterEllipsis"/>
-            <TextBlock Text="{Binding InternetSpeed}" TextTrimming="CharacterEllipsis"/>
-            <TextBlock Text="{Binding EstimationTime}" TextTrimming="CharacterEllipsis"/>
             <TextBlock Text="{Binding DownloadProgressPercent}" TextTrimming="CharacterEllipsis"/>
         </ui:SimpleStackPanel>
     </Grid>

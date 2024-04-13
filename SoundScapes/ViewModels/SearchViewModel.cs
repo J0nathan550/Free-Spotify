@@ -43,6 +43,7 @@ public partial class SearchViewModel : ObservableObject
         {
             _musicPlayerView.CurrentSong = value;
             _musicPlayerView.PlayMediaIcon = _musicPlayerView._musicPlayer.IsPaused ? FontAwesomeIcon.Play : FontAwesomeIcon.Pause;
+            _musicPlayerView.IsPlayingFromPlaylist = false;
             _musicPlayerView.PlaySong();
         }
     }

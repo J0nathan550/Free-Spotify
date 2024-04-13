@@ -7,6 +7,7 @@ using SoundScapes.Classes;
 using SoundScapes.Interfaces;
 using SoundScapes.Models;
 using SoundScapes.Views.Dialogs;
+using System.IO;
 using System.Windows;
 
 namespace SoundScapes.ViewModels;
@@ -61,6 +62,15 @@ public partial class PlaylistViewModel : ObservableObject
         _settings = settings;
         Playlists = _settings.SettingsModel.Playlists;
         OriginalPlaylists = _settings.SettingsModel.Playlists;
+
+        for (int i = 0; i < OriginalPlaylists.Count; i++)
+        {
+            if (OriginalPlaylists[i].SongsInPlaylist.Count > 0)
+            {
+                Songs = OriginalPlaylists[i].SongsInPlaylist;
+                break;
+            }
+        }
 
         AddPlaylistCommand = new AsyncRelayCommand(AddPlaylistCommand_ExecuteAsync);
         EditPlaylistCommand = new AsyncRelayCommand(EditPlaylistCommand_ExecuteAsync);
@@ -173,72 +183,99 @@ public partial class PlaylistViewModel : ObservableObject
 
     private async Task RemovePlaylistCommand_ExecuteAsync()
     {
-        ContentDialog removeDialog;
+        string title = IsInsidePlaylist ? "Видалення трека з плейлиста" : "Видалення плейлиста";
+        string content = IsInsidePlaylist ? "Ви впевнені у тому щоб видалити цей трек з плейлиста?" : "Ви впевнені у тому щоб видалити цей плейлист?";
+
+        ContentDialog removeDialog = new()
+        {
+            Title = title,
+            Content = content,
+            PrimaryButtonText = "Так",
+            SecondaryButtonText = "Ні"
+        };
+
+        ContentDialogResult result = await removeDialog.ShowAsync();
+        if (result != ContentDialogResult.Primary) return;
+
+        _musicPlayerView.CancelPlayingMusic();
         if (!IsInsidePlaylist)
         {
-            removeDialog = new ContentDialog
+            foreach (var file in CurrentPlaylistSelected!.SongsInPlaylist)
             {
-                Title = "Видалення плейлиста",
-                Content = "Ви впевнені у тому щоб видалити цей плейлист?",
-                PrimaryButtonText = "Так",
-                SecondaryButtonText = "Ні"
-            };
+                string filePath = Path.Combine("SavedMusic", $"{file.Artist[0]} - {file.Title}.mp3");
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+            }
+            Songs?.Clear();
+            OriginalPlaylists?.Remove(CurrentPlaylistSelected!);
+            var temp = Playlists;
+            Playlists = null;
+            Playlists = temp;
         }
         else
         {
-            removeDialog = new ContentDialog
+            if (CurrentSongIndex >= 0 && CurrentSongIndex < CurrentPlaylistSelected!.SongsInPlaylist.Count)
             {
-                Title = "Видалення трека з плейлиста",
-                Content = "Ви впевнені у тому щоб видалити цей трек з плейлиста?",
-                PrimaryButtonText = "Так",
-                SecondaryButtonText = "Ні"
-            };
+                string filePath = Path.Combine("SavedMusic", $"{CurrentPlaylistSelected.SongsInPlaylist[CurrentSongIndex].Artist[0]} - {CurrentPlaylistSelected.SongsInPlaylist[CurrentSongIndex].Title}.mp3");
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+                CurrentPlaylistSelected.SongsInPlaylist.RemoveAt(CurrentSongIndex);
+                Songs = CurrentPlaylistSelected.SongsInPlaylist;
+                UpdateViewSongList();
+            }
         }
 
-        var result = await removeDialog.ShowAsync();
-        if (result != ContentDialogResult.Primary) return;
-
-        if (!IsInsidePlaylist)
-        {
-            Songs?.Clear();
-            OriginalPlaylists?.Remove(CurrentPlaylistSelected!);
-            Playlists = null;
-            Playlists = OriginalPlaylists;
-        }
-        else if (CurrentPlaylistSelected != null)
-        {
-            CurrentPlaylistSelected.SongsInPlaylist.RemoveAt(CurrentSongIndex);
-            Songs = CurrentPlaylistSelected.SongsInPlaylist;
-            UpdateViewSongList();
-        }
         CheckAmountOfItemsInPlaylist();
         RecalculatePlaylists();
         _settings.Save();
     }
 
-
     private async Task InstallPlaylistCommand_ExecuteAsync()
     {
         var installDialog = App.AppHost?.Services.GetService<PlaylistInstallSongView>();
-        if (CurrentPlaylistSelected == null || installDialog == null || installDialog.playlistInstallSongViewModel == null) return;
+        if (installDialog == null || installDialog.playlistInstallSongViewModel == null || CurrentPlaylistSelected == null) return;
+
         installDialog.playlistInstallSongViewModel.DownloadListQueue.Clear();
         installDialog.playlistInstallSongViewModel.DownloadedListQueue.Clear();
+
+        var downloadQueueList = new List<SongModel>();
+
         if (!IsInsidePlaylist)
         {
-            installDialog.playlistInstallSongViewModel.DownloadListQueue = CurrentPlaylistSelected.SongsInPlaylist;
+            downloadQueueList.AddRange(CurrentPlaylistSelected.SongsInPlaylist.Where(file => !File.Exists(Path.Combine("SavedMusic", $"{file.Artist[0]} - {file.Title}.mp3"))));
+            if (downloadQueueList.Count == 0) 
+            {
+                ContentDialog contentDialog = new()
+                {
+                    Title = "Завантаження Треків",
+                    Content = $"Усі трекі у цьому плейлисті вже завантаженні,\nі не потребують повторного завантаження!",
+                    PrimaryButtonText = "OK"
+                };
+                await contentDialog.ShowAsync();
+                return;
+            }
         }
         else
         {
-            if (CurrentSong == null)
+            if (CurrentSong == null || File.Exists(Path.Combine("SavedMusic", $"{CurrentSong.Artist[0]} - {CurrentSong.Title}.mp3")))
             {
+                ContentDialog contentDialog = new()
+                {
+                    Title = "Завантаження Треків",
+                    Content = $"Трек вже існує, і не потребує повторного завантаження.",
+                    PrimaryButtonText = "OK"
+                };
+                await contentDialog.ShowAsync();
                 return;
             }
-            var list = new List<SongModel>
-            {
-                CurrentSong
-            };
-            installDialog.playlistInstallSongViewModel.DownloadListQueue = list;
+            downloadQueueList.Add(CurrentSong);
         }
+
+        installDialog.playlistInstallSongViewModel.DownloadListQueue = downloadQueueList;
         await installDialog!.ShowAsync();
     }
 
@@ -371,6 +408,7 @@ public partial class PlaylistViewModel : ObservableObject
         _musicPlayerView.CurrentSong = value;
         _musicPlayerView.PlayMediaIcon = _musicPlayerView._musicPlayer.IsPaused ? FontAwesomeIcon.Play : FontAwesomeIcon.Pause;
         _musicPlayerView.PlaySong();
+        _musicPlayerView.IsPlayingFromPlaylist = true;
         CurrentSongIndex = Songs?.IndexOf(value) ?? -1;
     }
 
@@ -392,6 +430,7 @@ public partial class PlaylistViewModel : ObservableObject
         _musicPlayerView.CurrentSong = value.SongsInPlaylist[0];
         _musicPlayerView.PlayMediaIcon = _musicPlayerView._musicPlayer.IsPaused ? FontAwesomeIcon.Play : FontAwesomeIcon.Pause;
         _musicPlayerView.PlaySong();
+        _musicPlayerView.IsPlayingFromPlaylist = true;
         CurrentSongIndex = Songs?.IndexOf(value.SongsInPlaylist[0]) ?? -1;
     }
 
@@ -416,6 +455,7 @@ public partial class PlaylistViewModel : ObservableObject
             }
         }
 
+        _musicPlayerView.IsPlayingFromPlaylist = true;
         _musicPlayerView.CurrentSong = new();
     }
 

@@ -45,7 +45,7 @@ public partial class PlaylistAddSongItemViewModel : ObservableObject
 
     private void CheckBoxSelectedCommand_Execute(object? obj)
     {
-        if (obj is CheckBox checkbox)
+        if (obj is System.Windows.Controls.CheckBox checkbox)
         {
             if (checkbox.IsChecked == true)
             {

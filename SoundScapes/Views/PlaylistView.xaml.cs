@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SoundScapes.ViewModels;
-using System.Windows.Controls;
 
 namespace SoundScapes.Views;
 
-public partial class PlaylistView : UserControl
+public partial class PlaylistView : System.Windows.Controls.UserControl
 {
     public PlaylistView()
     {

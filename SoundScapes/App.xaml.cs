@@ -7,6 +7,7 @@ using SoundScapes.ViewModels;
 using SoundScapes.Views;
 using SoundScapes.Views.Dialogs;
 using System.Windows;
+using Application = System.Windows.Application;
 
 namespace SoundScapes;
 
@@ -16,6 +17,8 @@ public partial class App : Application
 
     public App()
     {
+        Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
+
         Core.Initialize();
         Environment.SetEnvironmentVariable("SLAVA_UKRAINI", "1");
         
@@ -27,11 +30,12 @@ public partial class App : Application
             services.AddSingleton<MainView>();
             services.AddSingleton<MusicPlayerView>();
             services.AddSingleton<PlaylistView>();
+            services.AddSingleton<SearchView>();
             services.AddTransient<PlaylistAddItemView>();
             services.AddTransient<PlaylistEditItemView>();
             services.AddTransient<PlaylistAddSongItemView>();
             services.AddTransient<PlaylistInstallSongView>();
-            services.AddSingleton<SearchView>();
+            services.AddTransient<UnhandledExceptionWindow>();
 
             // View Models
             services.AddSingleton<SearchViewModel>();
@@ -41,12 +45,21 @@ public partial class App : Application
             services.AddTransient<PlaylistEditItemViewModel>();
             services.AddTransient<PlaylistAddSongItemViewModel>();
             services.AddTransient<PlaylistInstallSongViewModel>();
+            services.AddTransient<UnhandledExceptionWindowViewModel>();
 
             // Services
             services.AddSingleton<IMusicPlayer, MusicPlayerService>();
             services.AddSingleton<ISettings, SettingsService>();
         })
         .Build();
+    }
+
+    private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+    {
+        e.Handled = true;
+        var errorWindow = AppHost!.Services.GetRequiredService<UnhandledExceptionWindow>();
+        errorWindow.viewModel!.ErrorMessage = e.Exception.Message + "\n\n\n" + e.Exception.StackTrace;
+        errorWindow!.ShowDialog();
     }
 
     protected override async void OnStartup(StartupEventArgs e)
