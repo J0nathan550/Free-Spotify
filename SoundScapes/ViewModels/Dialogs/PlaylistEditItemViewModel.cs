@@ -38,14 +38,17 @@ public partial class PlaylistEditItemViewModel : ObservableObject
         }
     }
 
-    partial void OnTitleChanged(string value)
+    public void RegisterTitleTextBox(System.Windows.Controls.TextBox textBox)
     {
-        if (string.IsNullOrEmpty(value))
+        textBox.TextChanged += (o, e) =>
         {
-            IsPrimaryButtonEnabled = false;
-            return;
-        }
-        IsPrimaryButtonEnabled = true;
+            if (string.IsNullOrEmpty(textBox.Text))
+            {
+                IsPrimaryButtonEnabled = false;
+                return;
+            }
+            IsPrimaryButtonEnabled = true;
+        };
     }
 
     partial void OnIconChanged(string value)

@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using ModernWpf.Controls;
 using SoundScapes.Models;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace SoundScapes.ViewModels;
 

@@ -3,7 +3,6 @@ using FontAwesome.WPF;
 using ModernWpf.Controls;
 using SoundScapes.Classes;
 using SoundScapes.Models;
-using SoundScapes.Views;
 using SpotifyExplode;
 using System.Net.Http;
 using System.Windows;
@@ -55,7 +54,6 @@ public partial class SearchViewModel : ObservableObject
         var temp = SongsList;
         SongsList = null;
         SongsList = temp;
-        
     }
 
     private async void SearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)

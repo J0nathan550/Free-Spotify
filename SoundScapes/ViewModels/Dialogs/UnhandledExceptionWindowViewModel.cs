@@ -24,7 +24,7 @@ public partial class UnhandledExceptionWindowViewModel : ObservableObject
             {
                 CreateNoWindow = true,
                 UseShellExecute = true,
-                 FileName = "https://github.com/J0nathan550/Free-Spotify/issues"
+                FileName = "https://github.com/J0nathan550/Free-Spotify/issues"
             };
             Process.Start(processStartInfo);
         }

@@ -31,21 +31,21 @@ public partial class App : Application
             services.AddSingleton<MusicPlayerView>();
             services.AddSingleton<PlaylistView>();
             services.AddSingleton<SearchView>();
-            services.AddTransient<PlaylistAddItemView>();
-            services.AddTransient<PlaylistEditItemView>();
-            services.AddTransient<PlaylistAddSongItemView>();
-            services.AddTransient<PlaylistInstallSongView>();
-            services.AddTransient<UnhandledExceptionWindow>();
+            services.AddSingleton<PlaylistAddItemView>();
+            services.AddSingleton<PlaylistEditItemView>();
+            services.AddSingleton<PlaylistAddSongItemView>();
+            services.AddSingleton<PlaylistInstallSongView>();
+            services.AddSingleton<UnhandledExceptionWindow>();
 
             // View Models
             services.AddSingleton<SearchViewModel>();
             services.AddSingleton<MusicPlayerViewModel>();
             services.AddSingleton<PlaylistViewModel>();
-            services.AddTransient<PlaylistAddItemViewModel>();
-            services.AddTransient<PlaylistEditItemViewModel>();
-            services.AddTransient<PlaylistAddSongItemViewModel>();
-            services.AddTransient<PlaylistInstallSongViewModel>();
-            services.AddTransient<UnhandledExceptionWindowViewModel>();
+            services.AddSingleton<PlaylistAddItemViewModel>();
+            services.AddSingleton<PlaylistEditItemViewModel>();
+            services.AddSingleton<PlaylistAddSongItemViewModel>();
+            services.AddSingleton<PlaylistInstallSongViewModel>();
+            services.AddSingleton<UnhandledExceptionWindowViewModel>();
 
             // Services
             services.AddSingleton<IMusicPlayer, MusicPlayerService>();

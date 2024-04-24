@@ -11,5 +11,6 @@ public partial class PlaylistEditItemView : ContentDialog
         var model = App.AppHost?.Services.GetService<PlaylistEditItemViewModel>();
         DataContext = model;
         InitializeComponent();
+        model?.RegisterTitleTextBox(TitleTextBox);
     }
 }
