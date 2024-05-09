@@ -25,10 +25,10 @@ public partial class PlaylistAddSongItemViewModel : ObservableObject
     private RelayCommand<object>? _checkBoxSelectedCommand;
     public PlaylistAddSongItemViewModel()
     {
-        var model = App.AppHost?.Services.GetService<PlaylistViewModel>();
+        PlaylistViewModel? model = App.AppHost?.Services.GetService<PlaylistViewModel>();
         if (model == null || model.OriginalPlaylists == null) return;
         Playlists = null;
-        foreach (var item in model.OriginalPlaylists)
+        foreach (PlaylistModel item in model.OriginalPlaylists)
         {
             item.IsChecked = false;
         }
@@ -63,7 +63,7 @@ public partial class PlaylistAddSongItemViewModel : ObservableObject
             else
             {
                 if (checkbox.Tag is not PlaylistModel model) return;
-                var item = PlaylistsSelected.Where(m => m.Title == model.Title && m.Duration == model.Duration).FirstOrDefault();
+                PlaylistModel? item = PlaylistsSelected.Where(m => m.Title == model.Title && m.Duration == model.Duration).FirstOrDefault();
                 if (item != null)
                 {
                     PlaylistsSelected.Remove(item);
@@ -82,9 +82,9 @@ public partial class PlaylistAddSongItemViewModel : ObservableObject
             if (Playlists == null) return;
             List<PlaylistModel> filteredPlaylists = [];
 
-            foreach (var item in Playlists)
+            foreach (PlaylistModel item in Playlists)
             {
-                foreach (var selectedPlaylist in PlaylistsSelected)
+                foreach (PlaylistModel selectedPlaylist in PlaylistsSelected)
                 {
                     // Check if the titles match to determine equality
                     

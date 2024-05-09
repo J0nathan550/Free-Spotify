@@ -49,10 +49,10 @@ public class MusicPlayerService : IMusicPlayer
             }
             else
             {
-                var youtubeID = await SpotifyClient.Tracks.GetYoutubeIdAsync(TrackId.Parse(currentSong.SongID), CancellationTokenSourcePlay.Token);
-                var streamInfo = await YoutubeClient.Videos.Streams.GetManifestAsync($"https://youtube.com/watch?v={youtubeID}", CancellationTokenSourcePlay.Token);
+                string? youtubeID = await SpotifyClient.Tracks.GetYoutubeIdAsync(TrackId.Parse(currentSong.SongID), CancellationTokenSourcePlay.Token);
+                StreamManifest streamInfo = await YoutubeClient.Videos.Streams.GetManifestAsync($"https://youtube.com/watch?v={youtubeID}", CancellationTokenSourcePlay.Token);
                 CancelPlayingMusic();
-                var content = streamInfo.GetAudioOnlyStreams().GetWithHighestBitrate();
+                IStreamInfo content = streamInfo.GetAudioOnlyStreams().GetWithHighestBitrate();
                 media = new Media(LibVLC, content.Url, FromType.FromLocation);
             }
             media.AddOption(":no-video");

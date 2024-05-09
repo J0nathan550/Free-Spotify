@@ -122,7 +122,7 @@ public partial class PlaylistInstallSongViewModel : ObservableObject
             await _downloader.Clear();
             _downloader.Dispose();
         }
-        foreach (var item in DownloadedListQueue)
+        foreach (SongModel item in DownloadedListQueue)
         {
             try
             {
@@ -145,7 +145,7 @@ public partial class PlaylistInstallSongViewModel : ObservableObject
         if (DownloadListQueue.Count == 0) return;
         try
         {
-            var link = await spotifyClient.Tracks.GetDownloadUrlAsync(DownloadListQueue[_currentFilesDownloaded].SongID, cancellationToken);
+            string? link = await spotifyClient.Tracks.GetDownloadUrlAsync(DownloadListQueue[_currentFilesDownloaded].SongID, cancellationToken);
             await _downloader.DownloadFileTaskAsync(new DownloadPackage() { Address = link, FileName = $@"SavedMusic\{DownloadListQueue[_currentFilesDownloaded].Artist[0]} - {DownloadListQueue[_currentFilesDownloaded].Title}.mp3" }, cancellationToken);
         }
         catch (TaskCanceledException)

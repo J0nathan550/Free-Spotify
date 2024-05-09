@@ -7,7 +7,7 @@ public partial class MusicPlayerView : System.Windows.Controls.UserControl
 {
     public MusicPlayerView()
     {
-        var model = App.AppHost?.Services.GetService<MusicPlayerViewModel>();
+        MusicPlayerViewModel? model = App.AppHost?.Services.GetService<MusicPlayerViewModel>();
         DataContext = model;
         InitializeComponent();
         model?.NextSongCommand.Execute(this);

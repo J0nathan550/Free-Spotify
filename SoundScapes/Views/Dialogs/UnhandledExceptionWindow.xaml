@@ -21,10 +21,10 @@
             </Grid.RowDefinitions>
             <ui:SimpleStackPanel Margin="20" Spacing="20">
                 <TextBlock Text="Трапилась помилка про яку ми незнаємо!" Foreground="White" FontSize="24" TextTrimming="CharacterEllipsis" TextWrapping="WrapWithOverflow" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                <TextBlock Text="Просимо вас надіслати помилку що є у поле у внизу щоб ми її вирішили!" Foreground="White" FontSize="22" TextTrimming="CharacterEllipsis" TextAlignment="Center" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                <TextBlock Text="Просимо вас надіслати помилку що є у полі знизу щоб ми її вирішили!" Foreground="White" FontSize="22" TextTrimming="CharacterEllipsis" TextAlignment="Center" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                 <TextBox IsReadOnly="True" IsReadOnlyCaretVisible="False" AcceptsReturn="True" AcceptsTab="True" Text="{Binding ErrorMessage}"/>
             </ui:SimpleStackPanel>
-            <Button Grid.Row="1" Background="Transparent" BorderThickness="1" BorderBrush="#99FFFFFF" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Command="{Binding SendToGithubCommand}">
+            <Button Grid.Row="1" Background="Transparent" BorderThickness="1" BorderBrush="#99FFFFFF" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Command="{Binding SendToGithubCommand}" IsDefault="True">
                 <TextBlock Text="Відправити помилку на GitHub"/>
             </Button>
         </Grid>

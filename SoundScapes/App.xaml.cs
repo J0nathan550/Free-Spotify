@@ -31,6 +31,7 @@ public partial class App : Application
             services.AddSingleton<MusicPlayerView>();
             services.AddSingleton<PlaylistView>();
             services.AddSingleton<SearchView>();
+            services.AddSingleton<HelpView>();
             services.AddSingleton<PlaylistAddItemView>();
             services.AddSingleton<PlaylistEditItemView>();
             services.AddSingleton<PlaylistAddSongItemView>();
@@ -57,7 +58,7 @@ public partial class App : Application
     private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
     {
         e.Handled = true;
-        var errorWindow = AppHost!.Services.GetRequiredService<UnhandledExceptionWindow>();
+        UnhandledExceptionWindow errorWindow = AppHost!.Services.GetRequiredService<UnhandledExceptionWindow>();
         errorWindow.viewModel!.ErrorMessage = e.Exception.Message + "\n\n\n" + e.Exception.StackTrace;
         errorWindow!.ShowDialog();
     }
@@ -66,7 +67,7 @@ public partial class App : Application
     {
         await AppHost!.StartAsync();
 
-        var startupForm = AppHost.Services.GetRequiredService<MainWindow>();
+        MainWindow startupForm = AppHost.Services.GetRequiredService<MainWindow>();
         startupForm.Show();
 
         base.OnStartup(e);

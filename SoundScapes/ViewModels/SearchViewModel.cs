@@ -32,7 +32,7 @@ public partial class SearchViewModel : ObservableObject
     {
         _musicPlayerView = musicPlayerView;
         _musicPlayerView.SongChanged += (o, e) => CurrentSong = e;
-        ErrorText = "Зараз нема ніяких треків. Використовуйте поле зверху щоб почати слухати треки!";
+        ErrorText = "Нема жодного знайденого трека. Використовуйте поле зверху щоб почати пошук!";
         ErrorTextVisibility = Visibility.Visible;
     }
 
@@ -51,7 +51,7 @@ public partial class SearchViewModel : ObservableObject
 
     public void UpdateViewList()
     {
-        var temp = SongsList;
+        List<SongModel>? temp = SongsList;
         SongsList = null;
         SongsList = temp;
     }
@@ -65,9 +65,9 @@ public partial class SearchViewModel : ObservableObject
             ResultsBoxVisibility = Visibility.Collapsed;
             try
             {
-                var tracks = await _spotifyClient.Search.GetTracksAsync(SearchText);
+                List<SpotifyExplode.Search.TrackSearchResult> tracks = await _spotifyClient.Search.GetTracksAsync(SearchText);
                 List<SongModel> trackList = [];
-                foreach (var track in tracks)
+                foreach (SpotifyExplode.Search.TrackSearchResult track in tracks)
                 {
                     trackList.Add(new SongModel() { Index = globalIndex++, Title = track.Title, Artist = ArtistConverter.FormatArtists(track.Artists), SongID = track.Id, Duration = TimeConverter.ConvertMsToTime(track.DurationMs), Icon = track.Album.Images[0].Url, DurationLong = track.DurationMs });
                 }

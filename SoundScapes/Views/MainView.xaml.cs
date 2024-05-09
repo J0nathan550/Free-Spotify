@@ -9,7 +9,7 @@ namespace SoundScapes.Views
         public MainView()
         {
             InitializeComponent();
-
+            NavigationView.Focus();
             ContentFrame.Navigate(typeof(SearchView));
             NavigationView.SelectedItem = NavigationView.MenuItems[0];
             lastPageOpened = typeof(SearchView);
@@ -24,6 +24,16 @@ namespace SoundScapes.Views
             {
                 ContentFrame.Navigate(pageType);
                 lastPageOpened = pageType;
+            }
+        }
+
+        private void MainView_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == System.Windows.Input.Key.F1 && lastPageOpened != typeof(HelpView))
+            {
+                ContentFrame.Navigate(typeof(HelpView));
+                NavigationView.SelectedItem = NavigationView.MenuItems[2];
+                lastPageOpened = typeof(HelpView);
             }
         }
     }

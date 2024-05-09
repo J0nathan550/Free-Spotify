@@ -8,7 +8,7 @@ public partial class PlaylistAddItemView : ContentDialog
 {
     public PlaylistAddItemView()
     {
-        var model = App.AppHost?.Services.GetService<PlaylistAddItemViewModel>();
+        PlaylistAddItemViewModel? model = App.AppHost?.Services.GetService<PlaylistAddItemViewModel>();
         DataContext = model;
         InitializeComponent();
         model?.RegisterTitleTextBox(TitleTextBox);

@@ -6,9 +6,11 @@ namespace SoundScapes.Views.Dialogs;
 
 public partial class PlaylistEditItemView : ContentDialog
 {
+    public PlaylistEditItemViewModel? model;
+
     public PlaylistEditItemView()
     {
-        var model = App.AppHost?.Services.GetService<PlaylistEditItemViewModel>();
+        model = App.AppHost?.Services.GetService<PlaylistEditItemViewModel>();
         DataContext = model;
         InitializeComponent();
         model?.RegisterTitleTextBox(TitleTextBox);

@@ -75,9 +75,9 @@ public partial class MusicPlayerViewModel : ObservableObject
 
     private async Task AddFavoriteSongCommand_Execute()
     {
-        var contentAddDialog = App.AppHost?.Services.GetService<PlaylistAddSongItemView>();
-        var playlistViewModel = App.AppHost?.Services.GetService<PlaylistViewModel>();
-        var musicPlayerViewModel = App.AppHost?.Services.GetService<MusicPlayerViewModel>();
+        PlaylistAddSongItemView? contentAddDialog = App.AppHost?.Services.GetService<PlaylistAddSongItemView>();
+        PlaylistViewModel? playlistViewModel = App.AppHost?.Services.GetService<PlaylistViewModel>();
+        MusicPlayerViewModel? musicPlayerViewModel = App.AppHost?.Services.GetService<MusicPlayerViewModel>();
 
         if (musicPlayerViewModel!.IsPlayingFromPlaylist) return;
 
@@ -90,19 +90,19 @@ public partial class MusicPlayerViewModel : ObservableObject
         }
 
         // Show the dialog and wait for the result
-        var result = await contentAddDialog!.ShowAsync();
+        ContentDialogResult result = await contentAddDialog!.ShowAsync();
 
         // If the user didn't confirm the dialog, return
         if (result != ContentDialogResult.Primary) return;
 
-        var playlistsSelected = contentAddDialog.viewModel.PlaylistsSelected;
-        var originalPlaylists = playlistViewModel.OriginalPlaylists;
+        List<PlaylistModel> playlistsSelected = contentAddDialog.viewModel.PlaylistsSelected;
+        List<PlaylistModel> originalPlaylists = playlistViewModel.OriginalPlaylists;
 
         // Iterate over selected playlists and add the current song to each playlist
-        foreach (var playlist in playlistsSelected)
+        foreach (PlaylistModel playlist in playlistsSelected)
         {
             // Find the index of the playlist in the original playlists list
-            var index = originalPlaylists.FindIndex(p => p.Title == playlist.Title && p.Duration == playlist.Duration);
+            int index = originalPlaylists.FindIndex(p => p.Title == playlist.Title && p.Duration == playlist.Duration);
             if (index != -1)
             {
                 // Add the current song to the playlist if it doesn't exist already
@@ -167,6 +167,11 @@ public partial class MusicPlayerViewModel : ObservableObject
         _musicPositionUpdate.Stop();
         _musicPlayer.CancellationTokenSourcePlay.Cancel();
         _musicPlayer.CancelPlayingMusic();
+        if (_musicPlayer.IsPaused)
+        {
+            _musicPlayer.OnPauseSong();
+            PlayMediaIcon = FontAwesomeIcon.Pause;
+        }
         _musicPlayer.MediaPlayer.Position = 0;
         _musicPlayer.OnPlaySong(CurrentSong);
         _musicPositionUpdate.Start();
@@ -174,7 +179,7 @@ public partial class MusicPlayerViewModel : ObservableObject
 
     private void NextSongCommand_Execute()
     {
-        var model = App.AppHost?.Services.GetService<PlaylistViewModel>();
+        PlaylistViewModel? model = App.AppHost?.Services.GetService<PlaylistViewModel>();
         List<SongModel>? songs = IsPlayingFromPlaylist ? model?.Songs : App.AppHost?.Services.GetService<SearchViewModel>()?.SongsList;
 
         if (songs == null || songs.Count == 0)
@@ -276,7 +281,7 @@ public partial class MusicPlayerViewModel : ObservableObject
 
     private void PreviousSongCommand_Execute()
     {
-        var model = App.AppHost?.Services.GetService<PlaylistViewModel>();
+        PlaylistViewModel? model = App.AppHost?.Services.GetService<PlaylistViewModel>();
         List<SongModel>? songs = IsPlayingFromPlaylist ? model?.Songs : App.AppHost?.Services.GetService<SearchViewModel>()?.SongsList;
 
         if (songs == null || songs.Count == 0)
@@ -389,13 +394,13 @@ public partial class MusicPlayerViewModel : ObservableObject
         // Check if not playing from playlist
         if (!IsPlayingFromPlaylist)
         {
-            var searchViewModel = App.AppHost?.Services.GetService<SearchViewModel>();
+            SearchViewModel? searchViewModel = App.AppHost?.Services.GetService<SearchViewModel>();
             if (searchViewModel == null || searchViewModel.SongsList == null) return;
             ToggleShuffle(searchViewModel.SongsList);
         }
         else
         {
-            var playlistViewModel = App.AppHost?.Services.GetService<PlaylistViewModel>();
+            PlaylistViewModel? playlistViewModel = App.AppHost?.Services.GetService<PlaylistViewModel>();
             if (playlistViewModel == null || playlistViewModel.Songs == null) return;
             ToggleShuffle(playlistViewModel.Songs);
         }
@@ -437,12 +442,12 @@ public partial class MusicPlayerViewModel : ObservableObject
     {
         if (!IsPlayingFromPlaylist)
         {
-            var searchViewModel = App.AppHost?.Services.GetService<SearchViewModel>();
+            SearchViewModel? searchViewModel = App.AppHost?.Services.GetService<SearchViewModel>();
             searchViewModel?.UpdateViewList();
         }
         else
         {
-            var playlistViewModel = App.AppHost?.Services.GetService<PlaylistViewModel>();
+            PlaylistViewModel? playlistViewModel = App.AppHost?.Services.GetService<PlaylistViewModel>();
             playlistViewModel?.UpdateViewSongList();
         }
     }

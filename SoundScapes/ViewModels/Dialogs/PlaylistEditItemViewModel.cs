@@ -17,10 +17,7 @@ public partial class PlaylistEditItemViewModel : ObservableObject
     [ObservableProperty]
     private IAsyncRelayCommand _selectImageCommand;
 
-    public PlaylistEditItemViewModel()
-    {
-        SelectImageCommand = new AsyncRelayCommand(SelectImageCommand_Execute);
-    }
+    public PlaylistEditItemViewModel() => SelectImageCommand = new AsyncRelayCommand(SelectImageCommand_Execute);
 
     private async Task SelectImageCommand_Execute()
     {
@@ -59,13 +56,15 @@ public partial class PlaylistEditItemViewModel : ObservableObject
             return;
         }
 
-        if (!File.Exists(value))
+        Uri path = new Uri(value);
+
+        if (!File.Exists(path.AbsolutePath))
         {
             LoadDefaultImage();
             return;
         }
 
-        Task<bool> isValidImageTask = IsImageAsync(value);
+        Task<bool> isValidImageTask = IsImageAsync(path.AbsolutePath);
 
         isValidImageTask.ContinueWith(task =>
         {

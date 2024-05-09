@@ -9,6 +9,7 @@ using SoundScapes.Models;
 using SoundScapes.Views.Dialogs;
 using System.IO;
 using System.Windows;
+using System.Windows.Media;
 
 namespace SoundScapes.ViewModels;
 
@@ -79,6 +80,7 @@ public partial class PlaylistViewModel : ObservableObject
         MoveDownPlaylistCommand = new RelayCommand(MoveDownPlaylistCommand_Execute);
         MoveUpPlaylistCommand = new RelayCommand(MoveUpPlaylistCommand_Execute);
         OpenPlaylistCommand = new RelayCommand(OpenPlaylistCommand_Execute);
+
         CheckAmountOfItemsInPlaylist();
         RecalculatePlaylists();
 
@@ -105,7 +107,7 @@ public partial class PlaylistViewModel : ObservableObject
         if (CurrentPlaylistSelected == null || OriginalPlaylists == null || Playlists == null || Playlists.Count == 0) return;
         if (!IsInsidePlaylist)
         {
-            var temp = OriginalPlaylists;
+            List<PlaylistModel> temp = OriginalPlaylists;
             int currentIndex = temp.IndexOf(CurrentPlaylistSelected);
             if (currentIndex == 0)
             {
@@ -130,7 +132,7 @@ public partial class PlaylistViewModel : ObservableObject
             {
                 return;
             }
-            var song = list[CurrentSongIndex];
+            SongModel song = list[CurrentSongIndex];
             list.RemoveAt(CurrentSongIndex);
             list.Insert(CurrentSongIndex - 1, song);
             Songs = null;
@@ -146,7 +148,7 @@ public partial class PlaylistViewModel : ObservableObject
         if (CurrentPlaylistSelected == null || OriginalPlaylists == null || Playlists == null || Playlists.Count == 0) return;
         if (!IsInsidePlaylist)
         {
-            var temp = OriginalPlaylists;
+            List<PlaylistModel> temp = OriginalPlaylists;
             int currentIndex = temp.IndexOf(CurrentPlaylistSelected);
             if (currentIndex == temp.Count - 1)
             {
@@ -170,7 +172,7 @@ public partial class PlaylistViewModel : ObservableObject
             {
                 return;
             }
-            var song = list[CurrentSongIndex];
+            SongModel song = list[CurrentSongIndex];
             list.RemoveAt(CurrentSongIndex);
             list.Insert(CurrentSongIndex + 1, song);
             Songs = null;
@@ -200,7 +202,7 @@ public partial class PlaylistViewModel : ObservableObject
         _musicPlayerView.CancelPlayingMusic();
         if (!IsInsidePlaylist)
         {
-            foreach (var file in CurrentPlaylistSelected!.SongsInPlaylist)
+            foreach (SongModel file in CurrentPlaylistSelected!.SongsInPlaylist)
             {
                 string filePath = Path.Combine("SavedMusic", $"{file.Artist[0]} - {file.Title}.mp3");
                 if (File.Exists(filePath))
@@ -210,7 +212,7 @@ public partial class PlaylistViewModel : ObservableObject
             }
             Songs?.Clear();
             OriginalPlaylists?.Remove(CurrentPlaylistSelected!);
-            var temp = Playlists;
+            List<PlaylistModel>? temp = Playlists;
             Playlists = null;
             Playlists = temp;
         }
@@ -236,13 +238,13 @@ public partial class PlaylistViewModel : ObservableObject
 
     private async Task InstallPlaylistCommand_ExecuteAsync()
     {
-        var installDialog = App.AppHost?.Services.GetService<PlaylistInstallSongView>();
+        PlaylistInstallSongView? installDialog = App.AppHost?.Services.GetService<PlaylistInstallSongView>();
         if (installDialog == null || installDialog.playlistInstallSongViewModel == null || CurrentPlaylistSelected == null) return;
 
         installDialog.playlistInstallSongViewModel.DownloadListQueue.Clear();
         installDialog.playlistInstallSongViewModel.DownloadedListQueue.Clear();
 
-        var downloadQueueList = new List<SongModel>();
+        List<SongModel> downloadQueueList = [];
 
         if (!IsInsidePlaylist)
         {
@@ -252,7 +254,7 @@ public partial class PlaylistViewModel : ObservableObject
                 ContentDialog contentDialog = new()
                 {
                     Title = "Завантаження Треків",
-                    Content = $"Усі трекі у цьому плейлисті вже завантаженні,\nі не потребують повторного завантаження!",
+                    Content = $"Усі трекі у цьому плейлисті вже завантаженні,\nабо іх нема у плейлисті взагалі!",
                     PrimaryButtonText = "OK"
                 };
                 await contentDialog.ShowAsync();
@@ -281,17 +283,19 @@ public partial class PlaylistViewModel : ObservableObject
 
     private async Task EditPlaylistCommand_ExecuteAsync()
     {
-        var contentAddDialog = App.AppHost?.Services.GetService<PlaylistEditItemView>();
-        var result = await contentAddDialog!.ShowAsync();
+        PlaylistEditItemView? contentEditDialog = App.AppHost?.Services.GetService<PlaylistEditItemView>();
+        contentEditDialog!.model!.Title = CurrentPlaylistSelected!.Title;
+        contentEditDialog.model.Icon = CurrentPlaylistSelected.Icon;
+        ContentDialogResult result = await contentEditDialog!.ShowAsync();
         if (result == ContentDialogResult.Primary)
         {
             if (CurrentPlaylistSelected == null) return;
-            var temp = OriginalPlaylists;
+            List<PlaylistModel>? temp = OriginalPlaylists;
             if (temp != null)
             {
                 int index = temp.FindIndex(model => model == CurrentPlaylistSelected);
-                temp[index].Title = contentAddDialog.TitleTextBox.Text;
-                temp[index].Icon = contentAddDialog.IconImage.Source.ToString();
+                temp[index].Title = contentEditDialog.TitleTextBox.Text;
+                temp[index].Icon = contentEditDialog.IconImage.Source.ToString();
                 Playlists = null;
                 OriginalPlaylists = temp;
                 Playlists = OriginalPlaylists;
@@ -304,11 +308,11 @@ public partial class PlaylistViewModel : ObservableObject
 
     private async Task AddPlaylistCommand_ExecuteAsync()
     {
-        var contentAddDialog = App.AppHost?.Services.GetService<PlaylistAddItemView>();
-        var result = await contentAddDialog!.ShowAsync();
+        PlaylistAddItemView? contentAddDialog = App.AppHost?.Services.GetService<PlaylistAddItemView>();
+        ContentDialogResult result = await contentAddDialog!.ShowAsync();
         if (result == ContentDialogResult.Primary)
         {
-            var temp = OriginalPlaylists;
+            List<PlaylistModel>? temp = OriginalPlaylists;
             temp?.Add(new PlaylistModel() { Title = contentAddDialog.TitleTextBox.Text, Icon = contentAddDialog.IconImage.Source.ToString() });
             Playlists = null;
             OriginalPlaylists = temp;
@@ -376,15 +380,15 @@ public partial class PlaylistViewModel : ObservableObject
     {
         if (OriginalPlaylists == null) return;
 
-        foreach (var playlist in OriginalPlaylists)
+        foreach (PlaylistModel playlist in OriginalPlaylists)
         {
             long totalTime = 0;
             HashSet<string> uniqueAuthors = [];
 
-            foreach (var song in playlist.SongsInPlaylist)
+            foreach (SongModel song in playlist.SongsInPlaylist)
             {
                 totalTime += song.DurationLong;
-                foreach (var author in song.Artist.Split(','))
+                foreach (string author in song.Artist.Split(','))
                 {
                     uniqueAuthors.Add(author.Trim());
                 }
@@ -397,7 +401,7 @@ public partial class PlaylistViewModel : ObservableObject
 
     public void UpdateViewSongList()
     {
-        var temp = Songs;
+        List<SongModel>? temp = Songs;
         Songs = null;
         Songs = temp;
     }
@@ -446,7 +450,7 @@ public partial class PlaylistViewModel : ObservableObject
         // Start from the next playlist index and loop through the playlists
         for (int i = currentIndex + 1; i < Playlists.Count; i++)
         {
-            var nextPlaylist = Playlists[i];
+            PlaylistModel nextPlaylist = Playlists[i];
             if (nextPlaylist != null && nextPlaylist.SongsInPlaylist.Count > 0)
             {
                 // Found a valid playlist, set it as the current playlist and exit the loop

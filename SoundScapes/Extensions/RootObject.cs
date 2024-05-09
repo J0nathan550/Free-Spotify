@@ -9,7 +9,7 @@ namespace SoundScapes.Extensions
     {
         public override object? ProvideValue(IServiceProvider serviceProvider)
         {
-            var rootObjectProvider = serviceProvider.GetService(typeof(IRootObjectProvider)) as IRootObjectProvider;
+            IRootObjectProvider? rootObjectProvider = serviceProvider.GetService(typeof(IRootObjectProvider)) as IRootObjectProvider;
             return rootObjectProvider?.RootObject;
         }
     }

@@ -11,10 +11,7 @@ public partial class UnhandledExceptionWindowViewModel : ObservableObject
     [ObservableProperty]
     private RelayCommand _sendToGithubCommand;
 
-    public UnhandledExceptionWindowViewModel()
-    {
-        SendToGithubCommand = new RelayCommand(SendToGithubCommand_Execute);
-    }
+    public UnhandledExceptionWindowViewModel() => SendToGithubCommand = new RelayCommand(SendToGithubCommand_Execute);
 
     private void SendToGithubCommand_Execute()
     {

@@ -8,6 +8,7 @@
              xmlns:viewsmodels="clr-namespace:SoundScapes.ViewModels" 
              mc:Ignorable="d" 
              d:Background="Black"
+             Keyboard.KeyDown="MainView_KeyDown"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -29,6 +30,7 @@
                 <ui:NavigationView.MenuItems>
                     <ui:NavigationViewItem Tag="SoundScapes.Views.SearchView" Content="Пошук" Icon="Find"/>
                     <ui:NavigationViewItem Tag="SoundScapes.Views.PlaylistView" Content="Плейлисти" Icon="Audio"/>
+                    <ui:NavigationViewItem Tag="SoundScapes.Views.HelpView" Content="Допомога" Icon="Help"/>
                 </ui:NavigationView.MenuItems>
             </ui:NavigationView>
             <TextBlock Text="SoundScapes" HorizontalAlignment="Center" FontSize="11" VerticalAlignment="Bottom" TextAlignment="Center" Foreground="White" Margin="0,0,10,5"/>

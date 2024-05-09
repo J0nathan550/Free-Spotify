@@ -17,10 +17,7 @@ public partial class PlaylistAddItemViewModel : ObservableObject
     [ObservableProperty]
     private IAsyncRelayCommand _selectImageCommand;
 
-    public PlaylistAddItemViewModel()
-    {
-        SelectImageCommand = new AsyncRelayCommand(SelectImageCommand_Execute);
-    }
+    public PlaylistAddItemViewModel() => SelectImageCommand = new AsyncRelayCommand(SelectImageCommand_Execute);
 
     private async Task SelectImageCommand_Execute()
     {
