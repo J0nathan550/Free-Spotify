@@ -238,7 +238,7 @@ public partial class PlaylistViewModel : ObservableObject
 
     private async Task InstallPlaylistCommand_ExecuteAsync()
     {
-        PlaylistInstallSongView? installDialog = App.AppHost?.Services.GetService<PlaylistInstallSongView>();
+        PlaylistInstallSongView? installDialog = App.AppHost?.Services.GetRequiredService<PlaylistInstallSongView>();
         if (installDialog == null || installDialog.playlistInstallSongViewModel == null || CurrentPlaylistSelected == null) return;
 
         installDialog.playlistInstallSongViewModel.DownloadListQueue.Clear();
@@ -283,7 +283,7 @@ public partial class PlaylistViewModel : ObservableObject
 
     private async Task EditPlaylistCommand_ExecuteAsync()
     {
-        PlaylistEditItemView? contentEditDialog = App.AppHost?.Services.GetService<PlaylistEditItemView>();
+        PlaylistEditItemView? contentEditDialog = App.AppHost?.Services.GetRequiredService<PlaylistEditItemView>();
         contentEditDialog!.model!.Title = CurrentPlaylistSelected!.Title;
         contentEditDialog.model.Icon = CurrentPlaylistSelected.Icon;
         ContentDialogResult result = await contentEditDialog!.ShowAsync();
@@ -308,7 +308,7 @@ public partial class PlaylistViewModel : ObservableObject
 
     private async Task AddPlaylistCommand_ExecuteAsync()
     {
-        PlaylistAddItemView? contentAddDialog = App.AppHost?.Services.GetService<PlaylistAddItemView>();
+        PlaylistAddItemView? contentAddDialog = App.AppHost?.Services.GetRequiredService<PlaylistAddItemView>();
         ContentDialogResult result = await contentAddDialog!.ShowAsync();
         if (result == ContentDialogResult.Primary)
         {

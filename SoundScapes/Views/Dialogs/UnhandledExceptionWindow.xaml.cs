@@ -10,7 +10,7 @@ namespace SoundScapes.Views.Dialogs
 
         public UnhandledExceptionWindow()
         {
-            viewModel = App.AppHost?.Services.GetService<UnhandledExceptionWindowViewModel>();
+            viewModel = App.AppHost?.Services.GetRequiredService<UnhandledExceptionWindowViewModel>();
             DataContext = viewModel;
             InitializeComponent();
         }

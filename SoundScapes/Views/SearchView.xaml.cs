@@ -7,7 +7,7 @@ public partial class SearchView : System.Windows.Controls.UserControl
 {
     public SearchView()
     {
-        SearchViewModel? searchViewModel = App.AppHost?.Services.GetService<SearchViewModel>();
+        SearchViewModel? searchViewModel = App.AppHost?.Services.GetRequiredService<SearchViewModel>();
         DataContext = searchViewModel;
         InitializeComponent();
         searchViewModel?.RegisterSearchBox(SearchBox);

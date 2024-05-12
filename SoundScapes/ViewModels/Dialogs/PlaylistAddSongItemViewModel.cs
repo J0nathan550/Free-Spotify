@@ -25,7 +25,7 @@ public partial class PlaylistAddSongItemViewModel : ObservableObject
     private RelayCommand<object>? _checkBoxSelectedCommand;
     public PlaylistAddSongItemViewModel()
     {
-        PlaylistViewModel? model = App.AppHost?.Services.GetService<PlaylistViewModel>();
+        PlaylistViewModel? model = App.AppHost?.Services.GetRequiredService<PlaylistViewModel>();
         if (model == null || model.OriginalPlaylists == null) return;
         Playlists = null;
         foreach (PlaylistModel item in model.OriginalPlaylists)

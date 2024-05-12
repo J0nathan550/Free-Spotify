@@ -75,9 +75,9 @@ public partial class MusicPlayerViewModel : ObservableObject
 
     private async Task AddFavoriteSongCommand_Execute()
     {
-        PlaylistAddSongItemView? contentAddDialog = App.AppHost?.Services.GetService<PlaylistAddSongItemView>();
-        PlaylistViewModel? playlistViewModel = App.AppHost?.Services.GetService<PlaylistViewModel>();
-        MusicPlayerViewModel? musicPlayerViewModel = App.AppHost?.Services.GetService<MusicPlayerViewModel>();
+        PlaylistAddSongItemView? contentAddDialog = App.AppHost?.Services.GetRequiredService<PlaylistAddSongItemView>();
+        PlaylistViewModel? playlistViewModel = App.AppHost?.Services.GetRequiredService<PlaylistViewModel>();
+        MusicPlayerViewModel? musicPlayerViewModel = App.AppHost?.Services.GetRequiredService<MusicPlayerViewModel>();
 
         if (musicPlayerViewModel!.IsPlayingFromPlaylist) return;
 
@@ -179,8 +179,8 @@ public partial class MusicPlayerViewModel : ObservableObject
 
     private void NextSongCommand_Execute()
     {
-        PlaylistViewModel? model = App.AppHost?.Services.GetService<PlaylistViewModel>();
-        List<SongModel>? songs = IsPlayingFromPlaylist ? model?.Songs : App.AppHost?.Services.GetService<SearchViewModel>()?.SongsList;
+        PlaylistViewModel? model = App.AppHost?.Services.GetRequiredService<PlaylistViewModel>();
+        List<SongModel>? songs = IsPlayingFromPlaylist ? model?.Songs : App.AppHost?.Services.GetRequiredService<SearchViewModel>()?.SongsList;
 
         if (songs == null || songs.Count == 0)
         {
@@ -281,8 +281,8 @@ public partial class MusicPlayerViewModel : ObservableObject
 
     private void PreviousSongCommand_Execute()
     {
-        PlaylistViewModel? model = App.AppHost?.Services.GetService<PlaylistViewModel>();
-        List<SongModel>? songs = IsPlayingFromPlaylist ? model?.Songs : App.AppHost?.Services.GetService<SearchViewModel>()?.SongsList;
+        PlaylistViewModel? model = App.AppHost?.Services.GetRequiredService<PlaylistViewModel>();
+        List<SongModel>? songs = IsPlayingFromPlaylist ? model?.Songs : App.AppHost?.Services.GetRequiredService<SearchViewModel>()?.SongsList;
 
         if (songs == null || songs.Count == 0)
         {
@@ -391,18 +391,11 @@ public partial class MusicPlayerViewModel : ObservableObject
 
     private void ShuffleSongCommand_Execute()
     {
-        // Check if not playing from playlist
         if (!IsPlayingFromPlaylist)
         {
-            SearchViewModel? searchViewModel = App.AppHost?.Services.GetService<SearchViewModel>();
+            SearchViewModel? searchViewModel = App.AppHost?.Services.GetRequiredService<SearchViewModel>();
             if (searchViewModel == null || searchViewModel.SongsList == null) return;
             ToggleShuffle(searchViewModel.SongsList);
-        }
-        else
-        {
-            PlaylistViewModel? playlistViewModel = App.AppHost?.Services.GetService<PlaylistViewModel>();
-            if (playlistViewModel == null || playlistViewModel.Songs == null) return;
-            ToggleShuffle(playlistViewModel.Songs);
         }
     }
 
@@ -442,12 +435,12 @@ public partial class MusicPlayerViewModel : ObservableObject
     {
         if (!IsPlayingFromPlaylist)
         {
-            SearchViewModel? searchViewModel = App.AppHost?.Services.GetService<SearchViewModel>();
+            SearchViewModel? searchViewModel = App.AppHost?.Services.GetRequiredService<SearchViewModel>();
             searchViewModel?.UpdateViewList();
         }
         else
         {
-            PlaylistViewModel? playlistViewModel = App.AppHost?.Services.GetService<PlaylistViewModel>();
+            PlaylistViewModel? playlistViewModel = App.AppHost?.Services.GetRequiredService<PlaylistViewModel>();
             playlistViewModel?.UpdateViewSongList();
         }
     }

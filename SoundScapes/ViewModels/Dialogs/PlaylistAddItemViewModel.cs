@@ -1,8 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Drawing;
+using Microsoft.Win32;
 using System.IO;
-using System.Windows.Forms;
+using System.Windows.Media.Imaging;
 
 namespace SoundScapes.ViewModels;
 
@@ -15,11 +15,11 @@ public partial class PlaylistAddItemViewModel : ObservableObject
     [ObservableProperty]
     private bool _isPrimaryButtonEnabled = false;
     [ObservableProperty]
-    private IAsyncRelayCommand _selectImageCommand;
+    private RelayCommand _selectImageCommand;
 
-    public PlaylistAddItemViewModel() => SelectImageCommand = new AsyncRelayCommand(SelectImageCommand_Execute);
+    public PlaylistAddItemViewModel() => SelectImageCommand = new RelayCommand(SelectImageCommand_Execute);
 
-    private async Task SelectImageCommand_Execute()
+    private void SelectImageCommand_Execute()
     {
         OpenFileDialog openFileDialog = new()
         {
@@ -27,10 +27,10 @@ public partial class PlaylistAddItemViewModel : ObservableObject
             InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)
         };
 
-        if (openFileDialog.ShowDialog() == DialogResult.OK)
+        if (openFileDialog.ShowDialog() == true)
         {
             string filePath = openFileDialog.FileName;
-            if (!await IsImageAsync(filePath)) return;
+            if (!IsImageAsync(filePath)) return;
             Icon = filePath;
         }
     }
@@ -62,22 +62,23 @@ public partial class PlaylistAddItemViewModel : ObservableObject
             return;
         }
 
-        Task<bool> isValidImageTask = IsImageAsync(value);
-
-        isValidImageTask.ContinueWith(task =>
-        {
-            bool isValidImage = task.Result;
-            if (!isValidImage) LoadDefaultImage();
-        }, TaskScheduler.FromCurrentSynchronizationContext());
+        if (!IsImageAsync(value)) LoadDefaultImage();
     }
 
-    private static async Task<bool> IsImageAsync(string filePath)
+    private static bool IsImageAsync(string filePath)
     {
         try
         {
             using FileStream fs = new(filePath, FileMode.Open, FileAccess.Read);
-            await Task.Run(() => Image.FromStream(fs));
-            return true;
+            try
+            {
+                BitmapDecoder.Create(fs, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
         catch (Exception)
         {

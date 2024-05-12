@@ -10,7 +10,7 @@ public partial class PlaylistAddSongItemView : ContentDialog
 
     public PlaylistAddSongItemView()
     {
-        viewModel = App.AppHost?.Services.GetService<PlaylistAddSongItemViewModel>();
+        viewModel = App.AppHost?.Services.GetRequiredService<PlaylistAddSongItemViewModel>();
         DataContext = viewModel;
         InitializeComponent();
         viewModel?.RegisterSearchPlaylistBox(SearchPlaylistBox);

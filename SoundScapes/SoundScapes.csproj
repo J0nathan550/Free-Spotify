@@ -24,7 +24,6 @@
   </ItemGroup>
 	
   <ItemGroup>
-    <PackageReference Include="Autoupdater.NET.Official" Version="1.8.5" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
     <PackageReference Include="Downloader" Version="3.0.6" />
     <PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" />
@@ -34,7 +33,7 @@
     <PackageReference Include="ModernWpfUI" Version="0.9.6" />
     <PackageReference Include="SpotifyExplode" Version="1.0.8" />
     <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.20" />
-    <PackageReference Include="YoutubeExplode" Version="6.3.13" />
+    <PackageReference Include="YoutubeExplode" Version="6.3.14" />
   </ItemGroup>
 	
   <ItemGroup>

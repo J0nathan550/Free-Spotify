@@ -10,7 +10,7 @@ public partial class PlaylistEditItemView : ContentDialog
 
     public PlaylistEditItemView()
     {
-        model = App.AppHost?.Services.GetService<PlaylistEditItemViewModel>();
+        model = App.AppHost?.Services.GetRequiredService<PlaylistEditItemViewModel>();
         DataContext = model;
         InitializeComponent();
         model?.RegisterTitleTextBox(TitleTextBox);

@@ -7,7 +7,6 @@ using SoundScapes.ViewModels;
 using SoundScapes.Views;
 using SoundScapes.Views.Dialogs;
 using System.Windows;
-using Application = System.Windows.Application;
 
 namespace SoundScapes;
 
@@ -32,20 +31,20 @@ public partial class App : Application
             services.AddSingleton<PlaylistView>();
             services.AddSingleton<SearchView>();
             services.AddSingleton<HelpView>();
-            services.AddSingleton<PlaylistAddItemView>();
-            services.AddSingleton<PlaylistEditItemView>();
-            services.AddSingleton<PlaylistAddSongItemView>();
-            services.AddSingleton<PlaylistInstallSongView>();
+            services.AddTransient<PlaylistAddItemView>();
+            services.AddTransient<PlaylistEditItemView>();
+            services.AddTransient<PlaylistAddSongItemView>();
+            services.AddTransient<PlaylistInstallSongView>();
             services.AddSingleton<UnhandledExceptionWindow>();
 
             // View Models
             services.AddSingleton<SearchViewModel>();
             services.AddSingleton<MusicPlayerViewModel>();
-            services.AddSingleton<PlaylistViewModel>();
-            services.AddSingleton<PlaylistAddItemViewModel>();
-            services.AddSingleton<PlaylistEditItemViewModel>();
-            services.AddSingleton<PlaylistAddSongItemViewModel>();
-            services.AddSingleton<PlaylistInstallSongViewModel>();
+            services.AddTransient<PlaylistViewModel>();
+            services.AddTransient<PlaylistAddItemViewModel>();
+            services.AddTransient<PlaylistEditItemViewModel>();
+            services.AddTransient<PlaylistAddSongItemViewModel>();
+            services.AddTransient<PlaylistInstallSongViewModel>();
             services.AddSingleton<UnhandledExceptionWindowViewModel>();
 
             // Services

@@ -9,7 +9,7 @@ public partial class PlaylistInstallSongView : ContentDialog
     public readonly PlaylistInstallSongViewModel? playlistInstallSongViewModel;
     public PlaylistInstallSongView()
     {
-        playlistInstallSongViewModel = App.AppHost?.Services.GetService<PlaylistInstallSongViewModel>();
+        playlistInstallSongViewModel = App.AppHost?.Services.GetRequiredService<PlaylistInstallSongViewModel>();
         DataContext = playlistInstallSongViewModel;
         InitializeComponent();
     }

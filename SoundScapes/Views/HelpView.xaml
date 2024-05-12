@@ -3,10 +3,147 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:SoundScapes.Views"
+             xmlns:local="clr-namespace:SoundScapes.Views" xmlns:ui="http://schemas.modernwpf.com/2019"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        
+    <UserControl.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+        </Style>
+    </UserControl.Resources>
+    <Grid Margin="4">
+        <TabControl>
+            <TabItem Header="Вступ">
+                <StackPanel Margin="20">
+                    <TextBlock Text="Ласкаво просимо до SoundScapes!" FontWeight="Bold" FontSize="20" Margin="0,0,0,20"/>
+                    <TextBlock Text="SoundScapes - це ідеальний спосіб насолодитися вашою улюбленою музикою, дослухатися до нових виконавців та створити власні плейлисти для будь-якого настрою. Наш інтуїтивний інтерфейс робить навігацію легкою та приємною, дозволяючи вам швидко знайти та насолодитися музикою, яка вам подобається." TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    <TextBlock Text="У SoundScapes є безліч сторінок та функцій, які ви можете відкрити для додаткової інформації та зручного користування. Зокрема, ви можете завітати на сторінку пошуку, щоб знайти ваші улюблені треки, переглянути сторінку плейлистів для управління вашими музичними колекціями, а також використовувати музикальний програвач, щоб насолоджуватися музикою безперервно." TextWrapping="Wrap"/>
+                    <TextBlock Text="Не зволікайте, розпочніть своє музичне подорож ще сьогодні з SoundScapes!" TextWrapping="Wrap" Margin="0,20,0,0"/>
+                </StackPanel>
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Навігація" Foreground="White" TextTrimming="CharacterEllipsis"/>
+                        <ui:SymbolIcon Grid.Column="1" Foreground="White" Symbol="List" Margin="5,0,0,0"/>
+                    </Grid>
+                </TabItem.Header>
+                <ScrollViewer ui:ScrollViewerHelper.AutoHideScrollBars="False">
+                    <StackPanel Margin="20">
+                        <TextBlock FontWeight="Bold" Text="Інструкції щодо навігації:" Margin="0,0,0,5"/>
+
+                        <TextBlock Text="1. Меню навігації:" Margin="20,0,0,5"/>
+                        <TextBlock Text="   - Вгорі ліворуч від назви програми знаходяться три полоски, що утворюють меню." Margin="40,0,0,5"/>
+                        <TextBlock Text="   - Натискаючи на ці полоски, ви відкриваєте меню навігації." Margin="40,0,0,5"/>
+
+                        <TextBlock Text="2. Вибір сторінок:" Margin="20,0,0,5"/>
+                        <TextBlock Text="   - У меню навігації виберіть потрібну сторінку, натиснувши на неї лівою клавішею миші." Margin="40,0,0,5"/>
+                        <TextBlock Text="   - Після цього програма автоматично перенаправить вас на обрану сторінку." Margin="40,0,0,5"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+            <!-- Вкладка "Функціонал пошуку" -->
+            <TabItem>
+                <TabItem.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Сторінка 'Пошук'" Foreground="White" TextTrimming="CharacterEllipsis"/>
+                        <ui:SymbolIcon Grid.Column="1" Foreground="White" Symbol="Find" Margin="5,0,0,0"/>
+                    </Grid>
+                </TabItem.Header>
+                <ScrollViewer ui:ScrollViewerHelper.AutoHideScrollBars="False">
+                    <StackPanel Margin="20">
+                        <TextBlock TextWrapping="Wrap" Foreground="White" TextTrimming="CharacterEllipsis">
+                        <Bold>Опис:</Bold> Сторінка пошуку дозволяє знаходити треки (пісні), які вас цікавлять. Для початку пошуку виконайте наступні кроки:
+                        </TextBlock>
+                        <StackPanel Margin="20">
+                            <TextBlock TextWrapping="Wrap" Foreground="White" TextTrimming="CharacterEllipsis">
+                            1. Натисніть лівою клавішею миші на поле для введення тексту, що містить текст "Що ви сьогодні хочете послухати?".
+                            </TextBlock>
+                            <TextBlock TextWrapping="Wrap" Foreground="White" TextTrimming="CharacterEllipsis">
+                            2. Введіть свій запит за допомогою клавіатури. Ви можете шукати будь-яку інформацію, яка вам потрібна, наприклад: "rick astley", "daft punk", "daft punk around the world", тощо.
+                            </TextBlock>
+                            <TextBlock TextWrapping="Wrap" Foreground="White" TextTrimming="CharacterEllipsis">
+                            3. Натисніть клавішу ENTER або кнопку пошуку (зображену як лупа) лівою клавішею миші.
+                            </TextBlock>
+                            <TextBlock TextWrapping="Wrap" Foreground="White" TextTrimming="CharacterEllipsis">
+                            4. Після завантаження доступних результатів ви можете обрати трек (пісню), який вас цікавить.
+                            </TextBlock>
+                        </StackPanel>
+                        <TextBlock TextWrapping="Wrap" Foreground="White" TextTrimming="CharacterEllipsis">
+                        <Bold>Примітка:</Bold> Якщо у вас виникли проблеми, такі як відсутність звуку, переконайтеся, що ваші динаміки, навушники або інші аудіо пристрої підключені належним чином, а також, що на вашому комп'ютері встановлені відповідні звукові драйвери.
+                        </TextBlock>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem>
+                <TabItem.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Сторінка 'Плейлисти'" Foreground="White" TextTrimming="CharacterEllipsis"/>
+                        <ui:SymbolIcon Grid.Column="1" Foreground="White" Symbol="Audio" Margin="5,0,0,0"/>
+                    </Grid>
+                </TabItem.Header>
+                <ScrollViewer ui:ScrollViewerHelper.AutoHideScrollBars="False">
+                    <StackPanel Margin="20">
+                        <TextBlock Text="Сторінка 'Плейлисти'" FontWeight="Bold" FontSize="20" Margin="0,0,0,20"/>
+                        <TextBlock Text="Для початку роботи з плейлистами, натисніть праву клавішу миші у порожньому полі програми, щоб відкрити контекстне меню. Звідси виберіть опцію 'Створити плейлист', щоб відкрити діалогове вікно створення нового плейлиста. Просто введіть назву плейлиста та, за бажанням, оберіть зображення для плейлиста." TextWrapping="Wrap" Margin="0,0,0,10"/>
+                        <TextBlock Text="Після створення плейлиста, ви можете користуватися функціоналом через контекстне меню, натискаючи праву клавішу миші на плейлист. Звідси ви зможете додавати, видаляти та управляти піснями у вашому плейлисті." TextWrapping="Wrap" Margin="0,0,0,10"/>
+                        <TextBlock Text="Щоб додати пісню до плейлиста, перейдіть до сторінки пошуку, знайдіть потрібну пісню, натисніть на неї лівою кнопкою миші, а потім натисніть кнопку з іконкою серця, щоб додати пісню до плейлиста. Виберіть плейлист з доступних опцій та натисніть 'Додати'." TextWrapping="Wrap" Margin="0,0,0,10"/>
+                        <TextBlock Text="Після додавання пісні до плейлиста, ви можете перейти до сторінки плейлистів та вибрати плейлист, щоб прослухати пісні у ньому. У вас також є опція завантаження усіх пісень з плейлиста на ваш комп'ютер. Просто натисніть праву кнопку миші на плейлисті та оберіть 'Завантажити треки'." TextWrapping="Wrap"/>
+                        <TextBlock Text="Якщо ви бажаєте завантажити лише окрему пісню, також ви можете це зробити. У контекстному меню плейлиста, оберіть опцію 'Відкрити плейлист' та знайдіть потрібну пісню. Після вибору пісні, натисніть кнопку 'Завантажити', щоб завантажити її на ваш пристрій." TextWrapping="Wrap" Margin="0,0,0,20"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Вкладка "Медіа-програвач" -->
+            <TabItem>
+                <TabItem.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Музичний Програвач" Foreground="White" TextTrimming="CharacterEllipsis"/>
+                        <ui:SymbolIcon Grid.Column="1" Foreground="White" Symbol="MusicInfo" Margin="5,0,0,0"/>
+                    </Grid>
+                </TabItem.Header>
+                <ScrollViewer ui:ScrollViewerHelper.AutoHideScrollBars="False">
+                    <StackPanel Margin="20">
+                        <TextBlock FontWeight="Bold" Text="Інструкції по користуванню музичним програвачем:" Margin="0,0,0,5"/>
+
+                        <TextBlock Text="1. Вибір джерела відтворення:" Margin="20,0,0,5"/>
+                        <TextBlock Text="   - Під час перегляду сторінки з піснями, програвач відтворюватиме виключно результати пошуку." Margin="40,0,0,5"/>
+                        <TextBlock Text="   - Під час перегляду сторінки плейлистів, він програтиме пісні з обраного плейлиста." Margin="40,0,0,5"/>
+
+                        <TextBlock Text="2. Візуальна інформація про поточний трек:" Margin="20,0,0,5"/>
+                        <TextBlock Text="   - Для кожної пісні відображається зображення, назва, та виконавець, а також кнопка у вигляді серця." Margin="40,0,0,5"/>
+                        <TextBlock Text="   - Натискання на кнопку серця дозволяє додати пісню до плейлиста, якщо він вже існує." Margin="40,0,0,5"/>
+
+                        <TextBlock Text="3. Функціонал керування програвачем:" Margin="20,0,0,5"/>
+                        <TextBlock Text="   - Кнопка 'Перетасувати' змінює порядок пісень на сторінці пошуку." Margin="40,0,0,5"/>
+                        <TextBlock Text="   - Кнопка 'Попередня пісня' відтворює попередню пісню, а 'Наступна пісня' - наступну." Margin="40,0,0,5"/>
+                        <TextBlock Text="   - Кнопка 'Пауза' вмикає або призупиняє відтворення пісні." Margin="40,0,0,5"/>
+                        <TextBlock Text="   - Кнопка 'Повтору' якщо включена у кінці пісні буде програвати її знову і знову." Margin="40,0,0,5"/>
+
+                        <TextBlock Text="4. Управління прогресом та гучністю:" Margin="20,0,0,5"/>
+                        <TextBlock Text="   - Повзунок прогресу дозволяє переміщати позицію програвання пісні." Margin="40,0,0,5"/>
+                        <TextBlock Text="   - Повзунок гучності дозволяє регулювати гучність відтворення." Margin="40,0,0,5"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
     </Grid>
 </UserControl>
