@@ -12,9 +12,9 @@ namespace SoundScapes.ViewModels;
 public partial class PlaylistInstallSongViewModel : ObservableObject
 {
     [ObservableProperty]
-    private IAsyncRelayCommand _cancelDownloadCommand;
+    private RelayCommand _cancelDownloadCommand;
     [ObservableProperty]
-    private IAsyncRelayCommand _finishDownloadCommand;
+    private RelayCommand _finishDownloadCommand;
     [ObservableProperty]
     private List<SongModel> _downloadListQueue = [];
     [ObservableProperty]
@@ -43,9 +43,9 @@ public partial class PlaylistInstallSongViewModel : ObservableObject
     {
         _downloader.DownloadProgressChanged += DownloadService_DownloadProgressChanged;
         _downloader.DownloadFileCompleted += DownloadService_DownloadFileCompleted;
-        
-        CancelDownloadCommand = new AsyncRelayCommand(CancelDownloadCommand_Execute);
-        FinishDownloadCommand = new AsyncRelayCommand(FinishDownloadCommand_Execute); 
+
+        CancelDownloadCommand = new RelayCommand(CancelDownloadCommand_Execute);
+        FinishDownloadCommand = new RelayCommand(FinishDownloadCommand_Execute);
 
         TrackDescription = $"Трек: ... ({_currentFilesDownloaded} / {DownloadedListQueue.Count})";
         DataInstalled = "Завантажено: [0 МБ] з [... МБ]";
@@ -55,25 +55,23 @@ public partial class PlaylistInstallSongViewModel : ObservableObject
         CreateMusicSaveFolder();
     }
 
-    private async Task FinishDownloadCommand_Execute() => await FinishDownload();
+    private void FinishDownloadCommand_Execute() => FinishDownload();
 
-    private async Task FinishDownload()
+    private void FinishDownload()
     {
         IsDownloadFinished = true;
         _downloader.CancelAsync();
-        await _downloader.Clear();
-        _downloader.Dispose();
         cancelDownloadingSongs?.Cancel();
         cancelDownloadingSongs = null;
     }
 
-    private async void DownloadService_DownloadFileCompleted(object? sender, System.ComponentModel.AsyncCompletedEventArgs e)
+    private void DownloadService_DownloadFileCompleted(object? sender, System.ComponentModel.AsyncCompletedEventArgs e)
     {
         DownloadedListQueue.Add(DownloadListQueue[_currentFilesDownloaded]);
         _currentFilesDownloaded++;
         if (_currentFilesDownloaded == DownloadListQueue.Count)
         {
-            await FinishDownload();
+            FinishDownload();
             return;
         }
         cancelDownloadingSongs ??= new();
@@ -83,16 +81,16 @@ public partial class PlaylistInstallSongViewModel : ObservableObject
 
     private void DownloadService_DownloadProgressChanged(object? sender, DownloadProgressChangedEventArgs e)
     {
-        if(DownloadListQueue == null) return;
+        if (DownloadListQueue == null) return;
         TrackDescription = $"Трек: {DownloadListQueue[_currentFilesDownloaded].Artist[0]} - {DownloadListQueue[_currentFilesDownloaded].Title} ({_currentFilesDownloaded + 1} / {DownloadListQueue.Count})";
         DataInstalled = $"Завантажено: [{CalculateBytesSize(e.ReceivedBytesSize)} з {CalculateBytesSize(e.TotalBytesToReceive)}]";
         DownloadProgressPercent = $"Прогресс: {e.ProgressPercentage:F1}%";
         DownloadProgress = e.ProgressPercentage;
     }
 
-    private async Task CancelDownloadCommand_Execute()
+    private void CancelDownloadCommand_Execute()
     {
-        await CancelDownload();
+        CancelDownload();
     }
 
     const double INV_KB = 1 / 1024.0;
@@ -115,15 +113,13 @@ public partial class PlaylistInstallSongViewModel : ObservableObject
         return $"{(size * INV_GB):F1} ГБ";
     }
 
-    private async Task CancelDownload()
+    private void CancelDownload()
     {
         cancelDownloadingSongs?.Cancel();
         cancelDownloadingSongs = null;
         if (_currentFilesDownloaded != DownloadListQueue.Count)
         {
             _downloader.CancelAsync();
-            await _downloader.Clear();
-            _downloader.Dispose();
         }
         foreach (SongModel item in DownloadedListQueue)
         {
