@@ -7,9 +7,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ui:ThemeResources RequestedTheme="Dark" AccentColor="White" />
                 <ui:XamlControlsResources />
-                <!-- Other merged dictionaries here -->
             </ResourceDictionary.MergedDictionaries>
-            <!-- Other app resources here -->
             <SolidColorBrush x:Key="NavigationViewDefaultPaneBackground" Color="#050505" />
         </ResourceDictionary>
     </Application.Resources>

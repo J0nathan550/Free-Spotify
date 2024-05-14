@@ -9,7 +9,6 @@ using SoundScapes.Models;
 using SoundScapes.Views.Dialogs;
 using System.IO;
 using System.Windows;
-using System.Windows.Media;
 
 namespace SoundScapes.ViewModels;
 
@@ -278,7 +277,11 @@ public partial class PlaylistViewModel : ObservableObject
         }
 
         installDialog.playlistInstallSongViewModel.DownloadListQueue = downloadQueueList;
-        await installDialog!.ShowAsync();
+        var result = await installDialog!.ShowAsync();
+        if (result == ContentDialogResult.None)
+        {
+            installDialog.playlistInstallSongViewModel.CancelDownloadCommand.Execute(null);
+        }
     }
 
     private async Task EditPlaylistCommand_ExecuteAsync()

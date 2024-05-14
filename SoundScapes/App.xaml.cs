@@ -35,7 +35,7 @@ public partial class App : Application
             services.AddTransient<PlaylistEditItemView>();
             services.AddTransient<PlaylistAddSongItemView>();
             services.AddTransient<PlaylistInstallSongView>();
-            services.AddSingleton<UnhandledExceptionWindow>();
+            services.AddTransient<UnhandledExceptionWindow>();
 
             // View Models
             services.AddSingleton<SearchViewModel>();

@@ -14,6 +14,8 @@ public partial class PlaylistInstallSongViewModel : ObservableObject
     [ObservableProperty]
     private IAsyncRelayCommand _cancelDownloadCommand;
     [ObservableProperty]
+    private IAsyncRelayCommand _finishDownloadCommand;
+    [ObservableProperty]
     private List<SongModel> _downloadListQueue = [];
     [ObservableProperty]
     private List<SongModel> _downloadedListQueue = [];
@@ -43,7 +45,8 @@ public partial class PlaylistInstallSongViewModel : ObservableObject
         _downloader.DownloadFileCompleted += DownloadService_DownloadFileCompleted;
         
         CancelDownloadCommand = new AsyncRelayCommand(CancelDownloadCommand_Execute);
-        
+        FinishDownloadCommand = new AsyncRelayCommand(FinishDownloadCommand_Execute); 
+
         TrackDescription = $"Трек: ... ({_currentFilesDownloaded} / {DownloadedListQueue.Count})";
         DataInstalled = "Завантажено: [0 МБ] з [... МБ]";
         DownloadProgressPercent = "Прогресс: 0%";
@@ -51,6 +54,8 @@ public partial class PlaylistInstallSongViewModel : ObservableObject
 
         CreateMusicSaveFolder();
     }
+
+    private async Task FinishDownloadCommand_Execute() => await FinishDownload();
 
     private async Task FinishDownload()
     {
@@ -87,8 +92,6 @@ public partial class PlaylistInstallSongViewModel : ObservableObject
 
     private async Task CancelDownloadCommand_Execute()
     {
-        cancelDownloadingSongs?.Cancel();
-        cancelDownloadingSongs = null;
         await CancelDownload();
     }
 
