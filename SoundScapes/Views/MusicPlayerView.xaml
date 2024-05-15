@@ -24,14 +24,26 @@
                     <ColumnDefinition/>
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
-                <Image Grid.Column="0" Source="{Binding CurrentSong.Icon}" HorizontalAlignment="Left" Margin="15,10,10,10" RenderOptions.BitmapScalingMode="Fant"/>
+                <Image Grid.Column="0" Source="{Binding CurrentSong.Icon}" HorizontalAlignment="Left" Margin="15,10,10,10" RenderOptions.BitmapScalingMode="Fant">
+                    <Image.Effect>
+                        <DropShadowEffect BlurRadius="10" ShadowDepth="4" Direction="-90"/>
+                    </Image.Effect>
+                </Image>
                 <Grid Margin="5,0,0,0" Grid.Column="1">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <TextBlock Text="{Binding CurrentSong.Title, TargetNullValue=...}" FontWeight="Bold" VerticalAlignment="Bottom" TextTrimming="CharacterEllipsis" Foreground="White" FontSize="18" FontFamily="Arial"/>
-                    <TextBlock Grid.Row="1" Text="{Binding CurrentSong.Artist, TargetNullValue=...}" FontWeight="Bold" TextTrimming="CharacterEllipsis" Foreground="White" FontSize="14" FontFamily="Arial"/>
+                    <TextBlock Text="{Binding CurrentSong.Title, TargetNullValue=...}" FontWeight="Bold" VerticalAlignment="Bottom" TextTrimming="CharacterEllipsis" Foreground="White" FontSize="18" FontFamily="Arial">
+                        <TextBlock.Effect>
+                            <DropShadowEffect BlurRadius="4" ShadowDepth="2" Direction="-90"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
+                    <TextBlock Grid.Row="1" Text="{Binding CurrentSong.Artist, TargetNullValue=...}" FontWeight="Bold" TextTrimming="CharacterEllipsis" Foreground="White" FontSize="14" FontFamily="Arial">
+                        <TextBlock.Effect>
+                            <DropShadowEffect BlurRadius="4" ShadowDepth="2" Direction="-90"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
                 </Grid>
                 <Button Grid.Column="2" Margin="20,0,20,0" VerticalAlignment="Center" Command="{Binding AddFavoriteSongCommand}" Background="Transparent" Cursor="Hand">
                     <fa:FontAwesome Icon="HeartOutline" Foreground="White" FontSize="16" />
@@ -72,9 +84,17 @@
                         <ColumnDefinition/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="{Binding SongDuration, TargetNullValue=0:00}" Margin="0,7,10,0" Foreground="White" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
+                    <TextBlock Text="{Binding SongDuration, TargetNullValue=0:00}" Margin="0,7,10,0" Foreground="White" FontWeight="Bold" TextTrimming="CharacterEllipsis">
+                        <TextBlock.Effect>
+                            <DropShadowEffect BlurRadius="4" ShadowDepth="2" Direction="-90"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
                     <Slider Name="musicSlider" IsMoveToPointEnabled="True" Cursor="Hand" Grid.Column="1" Value="{Binding MusicPosition, Mode=TwoWay}" Maximum="1"/>
-                    <TextBlock Grid.Column="2" Text="{Binding CurrentSong.Duration, TargetNullValue=0:00}" Margin="10,7,0,0" Foreground="White" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
+                    <TextBlock Grid.Column="2" Text="{Binding CurrentSong.Duration, TargetNullValue=0:00}" Margin="10,7,0,0" Foreground="White" FontWeight="Bold" TextTrimming="CharacterEllipsis">
+                        <TextBlock.Effect>
+                            <DropShadowEffect BlurRadius="4" ShadowDepth="2" Direction="-90"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
                 </Grid>
             </Grid>
             <Grid Grid.Column="2" Margin="0,0,5,0" HorizontalAlignment="Right">

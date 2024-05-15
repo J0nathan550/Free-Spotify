@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SoundScapes.ViewModels;
+using System.Windows.Controls;
 
 namespace SoundScapes.Views;
 
-public partial class SearchView : System.Windows.Controls.UserControl
+public partial class SearchView : UserControl
 {
     public SearchView()
     {

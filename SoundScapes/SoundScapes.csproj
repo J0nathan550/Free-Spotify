@@ -35,17 +35,5 @@
     <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.20" />
     <PackageReference Include="YoutubeExplode" Version="6.3.14" />
   </ItemGroup>
-	
-  <ItemGroup>
-    <Compile Update="Views\Dialogs\PlaylistAddSongItemView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\Dialogs\PlaylistInstallSongView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\Dialogs\PlaylistEditItemView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
 
 </Project>

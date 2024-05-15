@@ -2,11 +2,10 @@
 using CommunityToolkit.Mvvm.Input;
 using FontAwesome.WPF;
 using Microsoft.Extensions.DependencyInjection;
-using ModernWpf.Controls;
 using SoundScapes.Classes;
 using SoundScapes.Interfaces;
 using SoundScapes.Models;
-using SoundScapes.Views.Dialogs;
+using System.Collections.ObjectModel;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
@@ -44,11 +43,7 @@ public partial class MusicPlayerViewModel : ObservableObject
     private double _musicPosition = 0.0;
     [ObservableProperty]
     private string _songDuration = "0:00";
-    [ObservableProperty]
-    private bool _isPlayingFromPlaylist = false;
     
-    public event EventHandler<SongModel>? SongChanged;
-    public event EventHandler<SongModel>? SongPlaylistChanged;
     public readonly System.Timers.Timer _musicPositionUpdate = new() { Interval = 500 };
     
     public MusicPlayerViewModel(IMusicPlayer musicPlayer, ISettings settings)
@@ -69,64 +64,11 @@ public partial class MusicPlayerViewModel : ObservableObject
         _musicPlayer.MediaPlayer.Volume = (int)VolumeValue;
         _musicPositionUpdate.Elapsed += (o,e) => CheckMediaPlayerPosition();
         _musicPlayer.ExceptionThrown += (o,e) => NextSongCommand_Execute();
-
-        IsPlayingFromPlaylist = true;
     }
 
     private async Task AddFavoriteSongCommand_Execute()
     {
-        PlaylistAddSongItemView? contentAddDialog = App.AppHost?.Services.GetRequiredService<PlaylistAddSongItemView>();
-        PlaylistViewModel? playlistViewModel = App.AppHost?.Services.GetRequiredService<PlaylistViewModel>();
-        MusicPlayerViewModel? musicPlayerViewModel = App.AppHost?.Services.GetRequiredService<MusicPlayerViewModel>();
-
-        if (musicPlayerViewModel!.IsPlayingFromPlaylist) return;
-
-        // Check if any necessary service or data is missing
-        if (CurrentSong == null || contentAddDialog?.viewModel == null || playlistViewModel?.OriginalPlaylists == null) return;
-
-        if (string.IsNullOrEmpty(CurrentSong.SongID))
-        {
-            return;
-        }
-
-        // Show the dialog and wait for the result
-        ContentDialogResult result = await contentAddDialog!.ShowAsync();
-
-        // If the user didn't confirm the dialog, return
-        if (result != ContentDialogResult.Primary) return;
-
-        List<PlaylistModel> playlistsSelected = contentAddDialog.viewModel.PlaylistsSelected;
-        List<PlaylistModel> originalPlaylists = playlistViewModel.OriginalPlaylists;
-
-        // Iterate over selected playlists and add the current song to each playlist
-        foreach (PlaylistModel playlist in playlistsSelected)
-        {
-            // Find the index of the playlist in the original playlists list
-            int index = originalPlaylists.FindIndex(p => p.Title == playlist.Title && p.Duration == playlist.Duration);
-            if (index != -1)
-            {
-                // Add the current song to the playlist if it doesn't exist already
-                if (!originalPlaylists[index].SongsInPlaylist.Contains(CurrentSong))
-                {
-                    originalPlaylists[index].SongsInPlaylist.Add(CurrentSong);
-                }
-            }
-        }
-
-        // If inside a specific playlist, update the songs list
-        if (playlistViewModel.IsInsidePlaylist)
-        {
-            playlistViewModel.Songs = null;
-            playlistViewModel.Songs = playlistViewModel.CurrentPlaylistSelected?.SongsInPlaylist;
-        }
-
-        _settings.Save();
-
-        // Check and update the amount of items in the playlist
-        playlistViewModel.CheckAmountOfItemsInPlaylist();
-
-        // Recalculate the playlists
-        playlistViewModel.RecalculatePlaylists();
+        await Task.Delay(1);
     }
 
     public void CheckMediaPlayerPosition()
@@ -179,206 +121,96 @@ public partial class MusicPlayerViewModel : ObservableObject
 
     private void NextSongCommand_Execute()
     {
-        PlaylistViewModel? model = App.AppHost?.Services.GetRequiredService<PlaylistViewModel>();
-        List<SongModel>? songs = IsPlayingFromPlaylist ? model?.Songs : App.AppHost?.Services.GetRequiredService<SearchViewModel>()?.SongsList;
+        SearchViewModel? searchViewModel = App.AppHost?.Services.GetRequiredService<SearchViewModel>();
+        ObservableCollection<SongModel>? songs = searchViewModel!.SongsList;
 
         if (songs == null || songs.Count == 0)
         {
-            GoToNextPlaylistIfEmpty(model);
             return;
         }
 
-        int currentIndex = songs.FindIndex(n => n == CurrentSong);
-        int index = (currentIndex + 1) % songs.Count;
+        int currentIndex = songs.IndexOf(CurrentSong);
 
-        if (IsPlayingFromPlaylist && index == 0)
+        // If the current song is not found, currentIndex will be -1
+        if (currentIndex == -1)
         {
-            GoToNextPlaylist(model);
             return;
         }
 
-        int loopCount = 0;
-        while (loopCount < songs.Count)
+        // Start searching for the next song from the current index
+        for (int i = currentIndex + 1; i < songs.Count; i++)
         {
-            if (songs[index] != CurrentSong)
+            // Wrap around to the start of the list if necessary
+            if (i == songs.Count)
             {
-                CurrentSong = songs[index];
+                i = 0;
+            }
+
+            // If a different song is found, set it as the current song
+            if (!songs[i].Equals(CurrentSong))
+            {
+                CurrentSong = songs[i];
+                searchViewModel.CurrentSong = CurrentSong;
                 SongDuration = "0:00";
                 MusicPosition = 0;
                 _musicPlayer.MediaPlayer.Position = 0;
-
-                if (IsPlayingFromPlaylist)
-                    SongPlaylistChanged?.Invoke(this, CurrentSong);
-                else
-                    SongChanged?.Invoke(this, CurrentSong);
-
                 return;
             }
-
-            index = (index + 1) % songs.Count;
-            loopCount++;
         }
-    }
 
-    private void GoToNextPlaylistIfEmpty(PlaylistViewModel? model)
-    {
-        if (model != null && model.OriginalPlaylists != null)
-        {
-            int currentIndexPlaylist = model.Playlists!.IndexOf(model.CurrentPlaylistSelected!);
-            if (currentIndexPlaylist == -1) return;
-            int nextIndex = (currentIndexPlaylist + 1) % model.Playlists.Count; // there was a bug
-            int loopCount = 0;
-
-            while (loopCount < model.Playlists.Count)
-            {
-                if (model.Playlists[nextIndex].SongsInPlaylist.Count > 0)
-                {
-                    model.CurrentPlaylistSelected = null;
-                    model.CurrentPlaylistSelected = model.Playlists[nextIndex];
-                    
-                    if (IsPlayingFromPlaylist)
-                        SongPlaylistChanged?.Invoke(this, CurrentSong);
-                    else
-                        SongChanged?.Invoke(this, CurrentSong);
-
-                    return;
-                }
-
-                nextIndex = (nextIndex + 1) % model.Playlists.Count;
-                loopCount++;
-            }
-        }
-    }
-
-    private void GoToNextPlaylist(PlaylistViewModel? model)
-    {
-        if (model != null)
-        {
-            int currentIndexPlaylist = model.Playlists!.IndexOf(model.CurrentPlaylistSelected!);
-            int nextIndex = (currentIndexPlaylist + 1) % model.Playlists.Count;
-
-            int loopCount = 0;
-            while (loopCount < model.Playlists.Count)
-            {
-                if (model.Playlists[nextIndex].SongsInPlaylist.Count > 0)
-                {
-                    model.CurrentPlaylistSelected = null;
-                    model.CurrentPlaylistSelected = model.Playlists[nextIndex];
-                    
-                    if (IsPlayingFromPlaylist)
-                        SongPlaylistChanged?.Invoke(this, CurrentSong);
-                    else
-                        SongChanged?.Invoke(this, CurrentSong);
-
-                    return;
-                }
-
-                nextIndex = (nextIndex + 1) % model.Playlists.Count;
-                loopCount++;
-            }
-        }
+        // If no different song is found, set the first song in the list as the current song
+        CurrentSong = songs[0];
+        searchViewModel.CurrentSong = CurrentSong;
+        SongDuration = "0:00";
+        MusicPosition = 0;
+        _musicPlayer.MediaPlayer.Position = 0;
     }
 
     private void PreviousSongCommand_Execute()
     {
-        PlaylistViewModel? model = App.AppHost?.Services.GetRequiredService<PlaylistViewModel>();
-        List<SongModel>? songs = IsPlayingFromPlaylist ? model?.Songs : App.AppHost?.Services.GetRequiredService<SearchViewModel>()?.SongsList;
+        SearchViewModel? searchViewModel = App.AppHost?.Services.GetRequiredService<SearchViewModel>();
+        ObservableCollection<SongModel>? songs = searchViewModel!.SongsList;
 
         if (songs == null || songs.Count == 0)
         {
-            GoToPreviousPlaylistIfEmpty(model);
             return;
         }
 
-        int currentIndex = songs.FindIndex(n => n == CurrentSong);
-        int index = (currentIndex - 1 + songs.Count) % songs.Count;
+        int currentIndex = songs.IndexOf(CurrentSong);
 
-        if (IsPlayingFromPlaylist && index == songs.Count - 1)
+        // If the current song is not found, currentIndex will be -1
+        if (currentIndex == -1)
         {
-            GoToPreviousPlaylist(model);
             return;
         }
 
-        int loopCount = 0;
-        while (loopCount < songs.Count)
+        // Start searching for the previous song from the current index
+        for (int i = currentIndex - 1; i >= 0; i--)
         {
-            if (songs[index] != CurrentSong)
+            // Wrap around to the end of the list if necessary
+            if (i < 0)
             {
-                CurrentSong = songs[index];
+                i = songs.Count - 1;
+            }
+
+            // If a different song is found, set it as the current song
+            if (!songs[i].Equals(CurrentSong))
+            {
+                CurrentSong = songs[i];
+                searchViewModel.CurrentSong = CurrentSong;
                 SongDuration = "0:00";
                 MusicPosition = 0;
                 _musicPlayer.MediaPlayer.Position = 0;
-
-                if (IsPlayingFromPlaylist)
-                    SongPlaylistChanged?.Invoke(this, CurrentSong);
-                else
-                    SongChanged?.Invoke(this, CurrentSong);
-
                 return;
             }
-
-            index = (index - 1 + songs.Count) % songs.Count;
-            loopCount++;
         }
-    }
 
-    private void GoToPreviousPlaylistIfEmpty(PlaylistViewModel? model)
-    {
-        if (model != null && model.OriginalPlaylists != null)
-        {
-            int currentIndexPlaylist = model.Playlists!.IndexOf(model.CurrentPlaylistSelected!);
-            if (currentIndexPlaylist == -1) return;
-            int previousIndex = (currentIndexPlaylist - 1 + model.Playlists.Count) % model.Playlists.Count;
-            int loopCount = 0;
-
-            while (loopCount < model.Playlists.Count)
-            {
-                if (model.Playlists[previousIndex].SongsInPlaylist.Count > 0)
-                {
-                    model.CurrentPlaylistSelected = null;
-                    model.CurrentPlaylistSelected = model.Playlists[previousIndex];
-
-                    if (IsPlayingFromPlaylist)
-                        SongPlaylistChanged?.Invoke(this, CurrentSong);
-                    else
-                        SongChanged?.Invoke(this, CurrentSong);
-
-                    return;
-                }
-
-                previousIndex = (previousIndex - 1 + model.Playlists.Count) % model.Playlists.Count;
-                loopCount++;
-            }
-        }
-    }
-
-    private void GoToPreviousPlaylist(PlaylistViewModel? model)
-    {
-        if (model != null)
-        {
-            int currentIndexPlaylist = model.Playlists!.IndexOf(model.CurrentPlaylistSelected!);
-            int previousIndex = (currentIndexPlaylist - 1 + model.Playlists.Count) % model.Playlists.Count;
-
-            int loopCount = 0;
-            while (loopCount < model.Playlists.Count)
-            {
-                if (model.Playlists[previousIndex].SongsInPlaylist.Count > 0)
-                {
-                    model.CurrentPlaylistSelected = null;
-                    model.CurrentPlaylistSelected = model.Playlists[previousIndex];
-
-                    if (IsPlayingFromPlaylist)
-                        SongPlaylistChanged?.Invoke(this, CurrentSong);
-                    else
-                        SongChanged?.Invoke(this, CurrentSong);
-
-                    return;
-                }
-
-                previousIndex = (previousIndex - 1 + model.Playlists.Count) % model.Playlists.Count;
-                loopCount++;
-            }
-        }
+        // If no different song is found, set the last song in the list as the current song
+        CurrentSong = songs[^1];
+        searchViewModel.CurrentSong = CurrentSong;
+        SongDuration = "0:00";
+        MusicPosition = 0;
+        _musicPlayer.MediaPlayer.Position = 0;
     }
 
     private void RepeatSongCommand_Execute()
@@ -391,18 +223,16 @@ public partial class MusicPlayerViewModel : ObservableObject
 
     private void ShuffleSongCommand_Execute()
     {
-        if (!IsPlayingFromPlaylist)
-        {
-            SearchViewModel? searchViewModel = App.AppHost?.Services.GetRequiredService<SearchViewModel>();
-            if (searchViewModel == null || searchViewModel.SongsList == null) return;
-            ToggleShuffle(searchViewModel.SongsList);
-        }
+        SearchViewModel? searchViewModel = App.AppHost?.Services.GetRequiredService<SearchViewModel>();
+        if (searchViewModel == null || searchViewModel.SongsList == null) return;
+        ToggleShuffle(searchViewModel.SongsList);
     }
 
-    private void ToggleShuffle(List<SongModel> songs)
+    private void ToggleShuffle(ObservableCollection<SongModel> songs)
     {
         IsShuffling = !IsShuffling;
-        List<SongModel> temp = new(songs); // Create a copy of the list
+
+        List<SongModel> temp = new(songs); // Create a copy of the ObservableCollection
 
         if (IsShuffling)
         {
@@ -415,33 +245,24 @@ public partial class MusicPlayerViewModel : ObservableObject
             ShuffleMediaBrush = new SolidColorBrush(Colors.White);
         }
 
-        songs.Clear(); // Clear the original list
-        songs.AddRange(temp); // Update the original list with the shuffled or unshuffled temp list
-        UpdateViewList();
+        // Clear the original ObservableCollection and add items from the temp list
+        songs.Clear();
+        foreach (SongModel song in temp)
+        {
+            songs.Add(song);
+        }
     }
 
     private static void ShuffleList(List<SongModel> list)
     {
         Random rand = new();
-        for (int i = 0; i < list.Count * 2; i++)
+        for (int i = 0; i < list.Count; i++)
         {
-            int a = rand.Next(0, list.Count - 1);
-            int b = rand.Next(0, list.Count - 1);
-            (list[b], list[a]) = (list[a], list[b]);
-        }
-    }
-
-    private void UpdateViewList()
-    {
-        if (!IsPlayingFromPlaylist)
-        {
-            SearchViewModel? searchViewModel = App.AppHost?.Services.GetRequiredService<SearchViewModel>();
-            searchViewModel?.UpdateViewList();
-        }
-        else
-        {
-            PlaylistViewModel? playlistViewModel = App.AppHost?.Services.GetRequiredService<PlaylistViewModel>();
-            playlistViewModel?.UpdateViewSongList();
+            int j = rand.Next(i, list.Count);
+            if (i != j)
+            {
+                (list[j], list[i]) = (list[i], list[j]);
+            }
         }
     }
 

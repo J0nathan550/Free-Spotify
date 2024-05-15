@@ -26,25 +26,12 @@ public partial class App : Application
         {
             // Views
             services.AddSingleton<MainWindow>();
-            services.AddSingleton<MainView>();
-            services.AddSingleton<MusicPlayerView>();
-            services.AddSingleton<PlaylistView>();
-            services.AddSingleton<SearchView>();
-            services.AddSingleton<HelpView>();
-            services.AddTransient<PlaylistAddItemView>();
-            services.AddTransient<PlaylistEditItemView>();
-            services.AddTransient<PlaylistAddSongItemView>();
-            services.AddTransient<PlaylistInstallSongView>();
             services.AddTransient<UnhandledExceptionWindow>();
 
             // View Models
             services.AddSingleton<SearchViewModel>();
+            services.AddSingleton<PlaylistViewModel>();
             services.AddSingleton<MusicPlayerViewModel>();
-            services.AddTransient<PlaylistViewModel>();
-            services.AddTransient<PlaylistAddItemViewModel>();
-            services.AddTransient<PlaylistEditItemViewModel>();
-            services.AddTransient<PlaylistAddSongItemViewModel>();
-            services.AddTransient<PlaylistInstallSongViewModel>();
             services.AddSingleton<UnhandledExceptionWindowViewModel>();
 
             // Services
