@@ -1,41 +1,40 @@
 ﻿using ModernWpf.Controls;
-using System.Windows.Controls;
-using System.Windows.Input;
 
-namespace SoundScapes.Views;
-
-public partial class MainView : UserControl
+namespace SoundScapes.Views
 {
-    private Type? lastPageOpened;
-
-    public MainView()
+    public partial class MainView : System.Windows.Controls.UserControl
     {
-        InitializeComponent();
-        NavigationView.Focus();
-        ContentFrame.Navigate(typeof(MusicHubView));
-        NavigationView.SelectedItem = NavigationView.MenuItems[0];
-        lastPageOpened = typeof(MusicHubView);
-    }
+        private Type? lastPageOpened;
 
-    private void NavigationView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
-    {
-        Type? pageType = null;
-
-        if (args.InvokedItemContainer?.Tag is string typeName) pageType = Type.GetType(typeName);
-        if (pageType != null && pageType != lastPageOpened)
+        public MainView()
         {
-            ContentFrame.Navigate(pageType);
-            lastPageOpened = pageType;
+            InitializeComponent();
+            NavigationView.Focus();
+            ContentFrame.Navigate(typeof(SearchView));
+            NavigationView.SelectedItem = NavigationView.MenuItems[0];
+            lastPageOpened = typeof(SearchView);
         }
-    }
 
-    private void MainView_KeyDown(object sender, KeyEventArgs e)
-    {
-        if (e.Key == Key.F1 && lastPageOpened != typeof(HelpView))
+        private void NavigationView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {
-            ContentFrame.Navigate(typeof(HelpView));
-            NavigationView.SelectedItem = NavigationView.MenuItems[1];
-            lastPageOpened = typeof(HelpView);
+            Type? pageType = null;
+
+            if (args.InvokedItemContainer?.Tag is string typeName) pageType = Type.GetType(typeName);
+            if (pageType != null && pageType != lastPageOpened)
+            {
+                ContentFrame.Navigate(pageType);
+                lastPageOpened = pageType;
+            }
+        }
+
+        private void MainView_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == System.Windows.Input.Key.F1 && lastPageOpened != typeof(HelpView))
+            {
+                ContentFrame.Navigate(typeof(HelpView));
+                NavigationView.SelectedItem = NavigationView.MenuItems[2];
+                lastPageOpened = typeof(HelpView);
+            }
         }
     }
 }

@@ -28,7 +28,8 @@
             </Grid.RowDefinitions>
             <ui:NavigationView Name="NavigationView" Grid.RowSpan="2" IsSettingsVisible="False" PaneDisplayMode="LeftMinimal" IsPaneOpen="False" ItemInvoked="NavigationView_ItemInvoked" IsBackButtonVisible="Collapsed" IsTitleBarAutoPaddingEnabled="False">
                 <ui:NavigationView.MenuItems>
-                    <ui:NavigationViewItem Tag="SoundScapes.Views.MusicHubView" Content="Головна" Icon="Play"/>
+                    <ui:NavigationViewItem Tag="SoundScapes.Views.SearchView" Content="Пошук" Icon="Find"/>
+                    <ui:NavigationViewItem Tag="SoundScapes.Views.PlaylistView" Content="Плейлисти" Icon="Audio"/>
                     <ui:NavigationViewItem Tag="SoundScapes.Views.HelpView" Content="Допомога" Icon="Help"/>
                 </ui:NavigationView.MenuItems>
             </ui:NavigationView>

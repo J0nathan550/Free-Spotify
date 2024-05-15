@@ -1,15 +1,15 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SoundScapes.ViewModels;
-using System.Windows.Controls;
 
 namespace SoundScapes.Views;
 
-public partial class PlaylistView : UserControl
+public partial class PlaylistView : System.Windows.Controls.UserControl
 {
-    public readonly PlaylistViewModel playlistViewModel = App.AppHost!.Services.GetRequiredService<PlaylistViewModel>();
     public PlaylistView()
     {
-        DataContext = playlistViewModel;
+        PlaylistViewModel? model = App.AppHost?.Services.GetRequiredService<PlaylistViewModel>();
+        DataContext = model;
         InitializeComponent();
+        model?.RegisterSearchPlaylistBox(SearchPlaylistBox);
     }
 }

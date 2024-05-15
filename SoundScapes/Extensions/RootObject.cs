@@ -2,14 +2,15 @@
 using System.Windows.Markup;
 using System.Xaml;
 
-namespace SoundScapes.Extensions;
-
-[MarkupExtensionReturnType(typeof(ContentControl))]
-public class RootObject : MarkupExtension
+namespace SoundScapes.Extensions
 {
-    public override object? ProvideValue(IServiceProvider serviceProvider)
+    [MarkupExtensionReturnType(typeof(ContentControl))]
+    public class RootObject : MarkupExtension
     {
-        IRootObjectProvider? rootObjectProvider = serviceProvider.GetService(typeof(IRootObjectProvider)) as IRootObjectProvider;
-        return rootObjectProvider?.RootObject;
+        public override object? ProvideValue(IServiceProvider serviceProvider)
+        {
+            IRootObjectProvider? rootObjectProvider = serviceProvider.GetService(typeof(IRootObjectProvider)) as IRootObjectProvider;
+            return rootObjectProvider?.RootObject;
+        }
     }
 }

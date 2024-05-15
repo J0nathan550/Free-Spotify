@@ -23,4 +23,9 @@ public partial class SongModel : ObservableObject
     {
         return $"{Index} {Title}";
     }
+
+    public static implicit operator List<object>(SongModel? v)
+    {
+        throw new NotImplementedException();
+    }
 }

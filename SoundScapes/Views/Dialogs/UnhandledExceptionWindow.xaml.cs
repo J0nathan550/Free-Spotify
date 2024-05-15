@@ -2,16 +2,17 @@
 using SoundScapes.ViewModels;
 using System.Windows;
 
-namespace SoundScapes.Views.Dialogs;
-
-public partial class UnhandledExceptionWindow : Window
+namespace SoundScapes.Views.Dialogs
 {
-    public readonly UnhandledExceptionWindowViewModel? viewModel;
-
-    public UnhandledExceptionWindow()
+    public partial class UnhandledExceptionWindow : Window
     {
-        viewModel = App.AppHost?.Services.GetRequiredService<UnhandledExceptionWindowViewModel>();
-        DataContext = viewModel;
-        InitializeComponent();
+        public readonly UnhandledExceptionWindowViewModel? viewModel;
+
+        public UnhandledExceptionWindow()
+        {
+            viewModel = App.AppHost?.Services.GetRequiredService<UnhandledExceptionWindowViewModel>();
+            DataContext = viewModel;
+            InitializeComponent();
+        }
     }
 }
