@@ -16,9 +16,11 @@
 
   <ItemGroup>
     <None Remove="Assets\SoundScapesIconResource.ico" />
+    <None Remove="Assets\SoundScapesSplash.ico" />
   </ItemGroup>
 
   <ItemGroup>
+    <SplashScreen Include="Assets\SoundScapesSplash.ico" />
     <Content Include="Assets\SoundScapesIconResource.ico" />
     <Resource Include="Assets\SoundScapesIcon.ico" />
   </ItemGroup>
