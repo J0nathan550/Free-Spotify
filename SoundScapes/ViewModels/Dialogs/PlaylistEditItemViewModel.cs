@@ -56,15 +56,13 @@ public partial class PlaylistEditItemViewModel : ObservableObject
             return;
         }
 
-        Uri path = new Uri(value);
-
-        if (!File.Exists(path.AbsolutePath))
+        if (!File.Exists(value))
         {
             LoadDefaultImage();
             return;
         }
 
-        if (!IsImageAsync(path.AbsolutePath)) LoadDefaultImage();
+        if (!IsImageAsync(value)) LoadDefaultImage();
     }
 
     private static bool IsImageAsync(string filePath)
@@ -72,15 +70,8 @@ public partial class PlaylistEditItemViewModel : ObservableObject
         try
         {
             using FileStream fs = new(filePath, FileMode.Open, FileAccess.Read);
-            try
-            {
-                BitmapDecoder.Create(fs, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            BitmapDecoder.Create(fs, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+            return true;
         }
         catch (Exception)
         {

@@ -278,7 +278,7 @@ public partial class PlaylistViewModel : ObservableObject
     {
         PlaylistEditItemView? contentEditDialog = App.AppHost?.Services.GetRequiredService<PlaylistEditItemView>();
         contentEditDialog!.model!.Title = CurrentPlaylistSelected!.Title;
-        contentEditDialog.model.Icon = CurrentPlaylistSelected.Icon;
+        contentEditDialog.model.Icon = new Uri(CurrentPlaylistSelected.Icon).LocalPath;
         ContentDialogResult result = await contentEditDialog!.ShowAsync();
         if (result == ContentDialogResult.Primary)
         {
