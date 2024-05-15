@@ -5,9 +5,12 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <!-- Використовується тема Dark з використанням білого кольору як акценту -->
                 <ui:ThemeResources RequestedTheme="Dark" AccentColor="White" />
+                <!-- Додаток ресурсів для XAML-контролів -->
                 <ui:XamlControlsResources />
             </ResourceDictionary.MergedDictionaries>
+            <!-- Визначення кольору фону для бічного панелі навігації -->
             <SolidColorBrush x:Key="NavigationViewDefaultPaneBackground" Color="#050505" />
         </ResourceDictionary>
     </Application.Resources>

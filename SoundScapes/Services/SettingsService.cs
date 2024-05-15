@@ -6,11 +6,20 @@ using System.Text.Json;
 
 namespace SoundScapes.Services;
 
+/// <summary>
+/// Служба для збереження та завантаження налаштувань.
+/// </summary>
 public class SettingsService : ISettings
 {
+    // Шлях до файлу налаштувань.
     public string FilePath { get; private set; } = "settings.json";
+
+    // Модель налаштувань.
     public SettingsModel SettingsModel { get; private set; } = new SettingsModel();
 
+    /// <summary>
+    /// Метод завантаження налаштувань.
+    /// </summary>
     public void Load()
     {
         try
@@ -24,11 +33,14 @@ public class SettingsService : ISettings
         }
         catch (Exception ex)
         {
-            Trace.WriteLine($"Error loading settings: {ex.Message}");
+            Trace.WriteLine($"Помилка завантаження налаштувань: {ex.Message}");
             File.Delete(FilePath);
         }
     }
 
+    /// <summary>
+    /// Метод збереження налаштувань.
+    /// </summary>
     public void Save()
     {
         try
@@ -38,7 +50,7 @@ public class SettingsService : ISettings
         }
         catch (Exception ex)
         {
-            Trace.WriteLine($"Error saving settings: {ex.Message}");
+            Trace.WriteLine($"Помилка збереження налаштувань: {ex.Message}");
         }
     }
 }

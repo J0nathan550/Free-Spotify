@@ -13,18 +13,24 @@
              d:DesignHeight="400" d:DesignWidth="800">
     <Grid>
         <ScrollViewer Grid.Row="0" ui:ScrollViewerHelper.AutoHideScrollBars="False">
+            <!-- Прокрутка стекованої панелі -->
             <StackPanel>
                 <TextBox Name="TitleTextBox" Margin="5" ui:ControlHelper.PlaceholderForeground="White" ui:ControlHelper.PlaceholderText="Напишіть назву плейлиста..."/>
+                <!-- Текстове поле для введення назви плейлиста -->
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <Border BorderThickness="1" BorderBrush="#99FFFFFF" Margin="5" Width="64" Height="64" Grid.Column="0" CornerRadius="2">
+                        <!-- Межа для зображення -->
                         <Image Name="IconImage" Source="{Binding Icon}" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="Fant"/>
+                        <!-- Зображення плейлиста -->
                     </Border>
                     <Button Grid.Column="1" Margin="5" HorizontalAlignment="Stretch" BorderThickness="1" BorderBrush="#99FFFFFF" VerticalAlignment="Stretch" Background="Black" Command="{Binding SelectImageCommand}">
+                        <!-- Кнопка для вибору зображення з комп'ютера -->
                         <TextBlock Text="Обрати зоображення з комп'ютера..." TextTrimming="CharacterEllipsis"/>
+                        <!-- Текст кнопки -->
                     </Button>
                 </Grid>
             </StackPanel>

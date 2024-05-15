@@ -3,31 +3,37 @@ using FontAwesome.WPF;
 using ModernWpf.Controls;
 using SoundScapes.Classes;
 using SoundScapes.Models;
+using SoundScapes.ViewModels;
 using SpotifyExplode;
 using System.Net.Http;
 using System.Windows;
 
-namespace SoundScapes.ViewModels;
-
+/// <summary>
+/// ViewModel для пошуку треків.
+/// </summary>
 public partial class SearchViewModel : ObservableObject
 {
     private readonly SpotifyClient _spotifyClient = new();
     private readonly MusicPlayerViewModel _musicPlayerView;
 
     [ObservableProperty]
-    private string? _searchText;
+    private string? _searchText; // Текст для пошуку
     [ObservableProperty]
-    private string? _errorText;
+    private string? _errorText; // Текст помилки
     [ObservableProperty]
-    private Visibility? _errorTextVisibility = Visibility.Collapsed;
+    private Visibility? _errorTextVisibility = Visibility.Collapsed; // Видимість тексту помилки
     [ObservableProperty]
-    private Visibility? _resultsBoxVisibility = Visibility.Visible;
+    private Visibility? _resultsBoxVisibility = Visibility.Visible; // Видимість результатів пошуку
     [ObservableProperty]
-    private List<SongModel>? _songsList = [];
+    private List<SongModel>? _songsList = []; // Список треків
     [ObservableProperty]
-    private SongModel? _currentSong = null;
+    private SongModel? _currentSong = null; // Поточний трек
     private int globalIndex = 0;
 
+    /// <summary>
+    /// Конструктор класу SearchViewModel.
+    /// </summary>
+    /// <param name="musicPlayerView">ViewModel плеєра музики.</param>
     public SearchViewModel(MusicPlayerViewModel musicPlayerView)
     {
         _musicPlayerView = musicPlayerView;
@@ -36,9 +42,10 @@ public partial class SearchViewModel : ObservableObject
         ErrorTextVisibility = Visibility.Visible;
     }
 
+    // Подія, що відбувається при зміні поточного треку
     partial void OnCurrentSongChanged(SongModel? value)
     {
-        if (value != null) // when the list in search is getting changed it can send null
+        if (value != null) // коли список у пошуку змінюється, може відправити null
         {
             _musicPlayerView.CurrentSong = value;
             _musicPlayerView.PlayMediaIcon = _musicPlayerView._musicPlayer.IsPaused ? FontAwesomeIcon.Play : FontAwesomeIcon.Pause;
@@ -46,9 +53,11 @@ public partial class SearchViewModel : ObservableObject
             _musicPlayerView.PlaySong();
         }
     }
-    
+
+    // Реєстрація полів для пошуку
     public void RegisterSearchBox(AutoSuggestBox searchBox) => searchBox!.QuerySubmitted += SearchBox_QuerySubmitted;
 
+    // Оновлення списку відображення
     public void UpdateViewList()
     {
         List<SongModel>? temp = SongsList;
@@ -56,6 +65,7 @@ public partial class SearchViewModel : ObservableObject
         SongsList = temp;
     }
 
+    // Обробник події при поданні запиту пошуку
     private async void SearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
     {
         if (!string.IsNullOrEmpty(SearchText))

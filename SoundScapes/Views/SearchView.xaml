@@ -13,19 +13,25 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid Margin="5">
         <Grid.RowDefinitions>
+            <!-- Визначення двох рядків для розміщення контролів -->
             <RowDefinition Height="auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
+        <!-- Пошукове поле -->
         <ui:AutoSuggestBox Grid.Row="0" Name="SearchBox" ui:ControlHelper.PlaceholderText="Що ви хочете сьогодні послухати?" Text="{Binding SearchText, Mode=TwoWay}" QueryIcon="Find" />
+        <!-- Список результатів пошуку -->
         <ui:ListView Grid.Row="1" Visibility="{Binding ResultsBoxVisibility}" ItemsSource="{Binding SongsList}" SelectedItem="{Binding CurrentSong}" Background="Black" Margin="0,5,0,0" ui:ScrollViewerHelper.AutoHideScrollBars="False">
+            <!-- Стиль для елементів списку -->
             <ui:ListView.ItemContainerStyle>
                 <Style TargetType="ui:ListViewItem">
+                    <!-- Встановлення властивостей для горизонтального та вертикального вирівнювання -->
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                     <Setter Property="HorizontalAlignment" Value="Stretch"/>
                     <Setter Property="VerticalAlignment" Value="Stretch"/>
                     <Setter Property="VerticalContentAlignment" Value="Stretch"/>
                     <Setter Property="Padding" Value="0"></Setter>
                     <Style.Triggers>
+                        <!-- Анімація з'явлення елементів списку -->
                         <EventTrigger RoutedEvent="Loaded">
                             <BeginStoryboard>
                                 <Storyboard>
@@ -36,39 +42,47 @@
                     </Style.Triggers>
                 </Style>
             </ui:ListView.ItemContainerStyle>
+            <!-- Шаблон елементів списку -->
             <ui:ListView.ItemTemplate>
                 <DataTemplate DataType="models:SongModel">
                     <Border Margin="2" Cursor="Hand" BorderBrush="#99FFFFFF" BorderThickness="1">
                         <Grid>
+                            <!-- Фонове зображення -->
                             <Grid.Background>
                                 <ImageBrush ImageSource="{Binding Icon}" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="Fant" Opacity="0.5" />
                             </Grid.Background>
                             <Grid.ColumnDefinitions>
+                                <!-- Визначення стовпців для розміщення контролів -->
                                 <ColumnDefinition Width="100"/>
                                 <ColumnDefinition/>
                                 <ColumnDefinition Width="auto"/>
                             </Grid.ColumnDefinitions>
+                            <!-- Зображення пісні -->
                             <Image Margin="5" Grid.Column="0" Source="{Binding Icon}" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="Fant" >
                                 <Image.Effect>
                                     <DropShadowEffect ShadowDepth="3" BlurRadius="4"/>
                                 </Image.Effect>
                             </Image>
+                            <!-- Відомості про пісню -->
                             <Grid Margin="5,0,0,0" Grid.Column="1">
                                 <Grid.RowDefinitions>
                                     <RowDefinition/>
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
+                                <!-- Назва пісні -->
                                 <TextBlock Grid.Row="0" Text="{Binding Title}" FontSize="36" FontWeight="Bold" TextTrimming="CharacterEllipsis">
                                     <TextBlock.Effect>
                                         <DropShadowEffect ShadowDepth="4" BlurRadius="4"/>
                                     </TextBlock.Effect>
                                 </TextBlock>
+                                <!-- Виконавець -->
                                 <TextBlock Grid.Row="1" Text="{Binding Artist}" FontSize="14" FontWeight="Medium" TextTrimming="CharacterEllipsis">
                                     <TextBlock.Effect>
                                         <DropShadowEffect ShadowDepth="3" BlurRadius="4"/>
                                     </TextBlock.Effect>
                                 </TextBlock>
                             </Grid>
+                            <!-- Тривалість пісні -->
                             <TextBlock Margin="0,0,10,0" Grid.Column="2" Text="{Binding Duration}" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis">
                                 <TextBlock.Effect>
                                     <DropShadowEffect ShadowDepth="3" BlurRadius="4"/>
@@ -79,6 +93,7 @@
                 </DataTemplate>
             </ui:ListView.ItemTemplate>
         </ui:ListView>
+        <!-- Текстовий блок для відображення повідомлення про помилку або інформацію -->
         <TextBlock Grid.Row="1" Text="{Binding ErrorText}" Visibility="{Binding ErrorTextVisibility}" Foreground="White" FontWeight="Bold" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
     </Grid>
 </UserControl>

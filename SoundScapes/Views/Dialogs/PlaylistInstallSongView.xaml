@@ -16,10 +16,12 @@
             <RowDefinition Height="auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
+        <!-- Верхній блок з інформацією про завантаження -->
         <ui:SimpleStackPanel>
             <TextBlock Margin="0,5" Text="Завантаження Треків" TextAlignment="Center" TextTrimming="CharacterEllipsis" FontSize="19"/>
             <TextBlock Margin="0,5" Text="Примітка: Деякі звукові файли можуть мати невірний трек, або звуковий файл може не завантажитися через проблеми з серверним API. Якщо звуковий файл виявився неправильним, ви можете видалити трек і знову додати його, щоб звуковий файл програвався з Інтернету." TextAlignment="Center" TextWrapping="WrapWithOverflow" FontSize="14"/>
         </ui:SimpleStackPanel>
+        <!-- Блок з прогресом завантаження та інформацією про трек -->
         <ui:SimpleStackPanel Spacing="10" Margin="10" Grid.Row="1">
             <ui:ProgressBar Value="{Binding DownloadProgress}" Maximum="100"/>
             <TextBlock Text="{Binding TrackDescription}" TextTrimming="CharacterEllipsis" TextAlignment="{Binding TrackDescriptionAlignment}" TextWrapping="{Binding TrackDescriptionWrapping}"/>

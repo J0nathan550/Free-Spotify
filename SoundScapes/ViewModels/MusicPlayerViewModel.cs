@@ -16,49 +16,57 @@ namespace SoundScapes.ViewModels;
 
 public partial class MusicPlayerViewModel : ObservableObject
 {
-    public readonly IMusicPlayer _musicPlayer;
-    private readonly ISettings _settings;
+    public readonly IMusicPlayer _musicPlayer; // Посилання на інтерфейс IMusicPlayer
+    private readonly ISettings _settings; // Посилання на інтерфейс ISettings
+
+    // Властивості, які автоматично генерують сповіщення при зміні значення
     [ObservableProperty]
-    private SongModel _currentSong = new();
+    private SongModel _currentSong = new(); // Поточна пісня
     [ObservableProperty]
-    private FontAwesomeIcon _playMediaIcon = FontAwesomeIcon.Play;
+    private FontAwesomeIcon _playMediaIcon = FontAwesomeIcon.Play; // Іконка кнопки відтворення медіа
     [ObservableProperty]
-    private SolidColorBrush _shuffleMediaBrush = new(Colors.White);
+    private SolidColorBrush _shuffleMediaBrush = new(Colors.White); // Колір кнопки перемішування
     [ObservableProperty]
-    private SolidColorBrush _repeatMediaBrush = new(Colors.White);
+    private SolidColorBrush _repeatMediaBrush = new(Colors.White); // Колір кнопки повторення
     [ObservableProperty]
-    private RelayCommand _playSongCommand;
+    private RelayCommand _playSongCommand; // Команда для відтворення пісні
     [ObservableProperty]
-    private RelayCommand _nextSongCommand;
+    private RelayCommand _nextSongCommand; // Команда для переходу до наступної пісні
     [ObservableProperty]
-    private RelayCommand _previousSongCommand;
+    private RelayCommand _previousSongCommand; // Команда для переходу до попередньої пісні
     [ObservableProperty]
-    private RelayCommand _shuffleSongCommand;
+    private RelayCommand _shuffleSongCommand; // Команда для перемішування пісень
     [ObservableProperty]
-    private RelayCommand _repeatSongCommand;
+    private RelayCommand _repeatSongCommand; // Команда для повторення пісні
     [ObservableProperty]
-    private IAsyncRelayCommand _addFavoriteSongCommand;
+    private IAsyncRelayCommand _addFavoriteSongCommand; // Асинхронна команда для додавання улюбленої пісні
     [ObservableProperty]
-    private double _volumeValue = 100.0;
+    private double _volumeValue = 100.0; // Гучність відтворення
     [ObservableProperty]
-    private double _musicPosition = 0.0;
+    private double _musicPosition = 0.0; // Поточна позиція відтворення музики
     [ObservableProperty]
-    private string _songDuration = "0:00";
+    private string _songDuration = "0:00"; // Тривалість пісні
     [ObservableProperty]
-    private bool _isPlayingFromPlaylist = false;
-    
+    private bool _isPlayingFromPlaylist = false; // Показує, чи відтворюються пісні з плейлисту
+
+    // Події, що виникають при зміні пісні або плейлисту
     public event EventHandler<SongModel>? SongChanged;
     public event EventHandler<SongModel>? SongPlaylistChanged;
+
+    // Таймер для оновлення позиції музики
     public readonly System.Timers.Timer _musicPositionUpdate = new() { Interval = 500 };
-    
+
+    // Конструктор класу MusicPlayerViewModel
     public MusicPlayerViewModel(IMusicPlayer musicPlayer, ISettings settings)
     {
+        // Ініціалізуємо сервіси та налаштування
         _settings = settings;
         _settings.Load();
         _musicPlayer = musicPlayer;
         _musicPlayer.MediaPlayer.Volume = _settings.SettingsModel.Volume;
         VolumeValue = _settings.SettingsModel.Volume;
 
+        // Ініціалізуємо команди
         _playSongCommand = new RelayCommand(PlaySongCommand_Execute);
         _nextSongCommand = new RelayCommand(NextSongCommand_Execute);
         _previousSongCommand = new RelayCommand(PreviousSongCommand_Execute);
@@ -66,22 +74,27 @@ public partial class MusicPlayerViewModel : ObservableObject
         _repeatSongCommand = new RelayCommand(RepeatSongCommand_Execute);
         _addFavoriteSongCommand = new AsyncRelayCommand(AddFavoriteSongCommand_Execute);
 
+        // Обробники подій для таймера оновлення позиції музики та винятків відтворення
         _musicPlayer.MediaPlayer.Volume = (int)VolumeValue;
-        _musicPositionUpdate.Elapsed += (o,e) => CheckMediaPlayerPosition();
-        _musicPlayer.ExceptionThrown += (o,e) => NextSongCommand_Execute();
+        _musicPositionUpdate.Elapsed += (o, e) => CheckMediaPlayerPosition();
+        _musicPlayer.ExceptionThrown += (o, e) => NextSongCommand_Execute();
 
+        // Встановлюємо прапорець, що відтворюються пісні з плейлисту
         IsPlayingFromPlaylist = true;
     }
 
+    // Метод для виконання команди додавання улюбленої пісні
     private async Task AddFavoriteSongCommand_Execute()
     {
+        // Отримуємо необхідні сервіси та дані
         PlaylistAddSongItemView? contentAddDialog = App.AppHost?.Services.GetRequiredService<PlaylistAddSongItemView>();
         PlaylistViewModel? playlistViewModel = App.AppHost?.Services.GetRequiredService<PlaylistViewModel>();
         MusicPlayerViewModel? musicPlayerViewModel = App.AppHost?.Services.GetRequiredService<MusicPlayerViewModel>();
 
+        // Перевіряємо, чи відтворюються пісні з плейлисту
         if (musicPlayerViewModel!.IsPlayingFromPlaylist) return;
 
-        // Check if any necessary service or data is missing
+        // Перевіряємо наявність необхідних сервісів та даних
         if (CurrentSong == null || contentAddDialog?.viewModel == null || playlistViewModel?.OriginalPlaylists == null) return;
 
         if (string.IsNullOrEmpty(CurrentSong.SongID))
@@ -89,23 +102,21 @@ public partial class MusicPlayerViewModel : ObservableObject
             return;
         }
 
-        // Show the dialog and wait for the result
+        // Відображаємо діалогове вікно та очікуємо результат
         ContentDialogResult result = await contentAddDialog!.ShowAsync();
 
-        // If the user didn't confirm the dialog, return
+        // Якщо користувач не підтвердив діалог, виходимо
         if (result != ContentDialogResult.Primary) return;
 
         List<PlaylistModel> playlistsSelected = contentAddDialog.viewModel.PlaylistsSelected;
         List<PlaylistModel> originalPlaylists = playlistViewModel.OriginalPlaylists;
 
-        // Iterate over selected playlists and add the current song to each playlist
+        // Додаємо поточну пісню до кожного вибраного плейлисту
         foreach (PlaylistModel playlist in playlistsSelected)
         {
-            // Find the index of the playlist in the original playlists list
             int index = originalPlaylists.FindIndex(p => p.Title == playlist.Title && p.Duration == playlist.Duration);
             if (index != -1)
             {
-                // Add the current song to the playlist if it doesn't exist already
                 if (!originalPlaylists[index].SongsInPlaylist.Contains(CurrentSong))
                 {
                     originalPlaylists[index].SongsInPlaylist.Add(CurrentSong);
@@ -113,7 +124,7 @@ public partial class MusicPlayerViewModel : ObservableObject
             }
         }
 
-        // If inside a specific playlist, update the songs list
+        // Оновлюємо дані та вигляд плейлисту
         if (playlistViewModel.IsInsidePlaylist)
         {
             playlistViewModel.Songs = null;
@@ -122,13 +133,11 @@ public partial class MusicPlayerViewModel : ObservableObject
 
         _settings.Save();
 
-        // Check and update the amount of items in the playlist
         playlistViewModel.CheckAmountOfItemsInPlaylist();
-
-        // Recalculate the playlists
         playlistViewModel.RecalculatePlaylists();
     }
 
+    // Метод для оновлення позиції музики
     public void CheckMediaPlayerPosition()
     {
         SongDuration = TimeConverter.ConvertMsToTime(_musicPlayer.MediaPlayer.Time);
@@ -145,6 +154,7 @@ public partial class MusicPlayerViewModel : ObservableObject
         }
     }
 
+    // Метод для відтворення пісні
     private void PlaySongCommand_Execute()
     {
         _musicPlayer.OnPauseSong();
@@ -153,6 +163,7 @@ public partial class MusicPlayerViewModel : ObservableObject
         else _musicPositionUpdate.Start();
     }
 
+    // Метод для повторення пісні
     private void RepeatSong()
     {
         SongDuration = "0:00";
@@ -160,6 +171,7 @@ public partial class MusicPlayerViewModel : ObservableObject
         _musicPlayer.MediaPlayer.Position = 0;
     }
 
+    // Метод для відтворення пісні
     public void PlaySong()
     {
         SongDuration = "0:00";
@@ -177,6 +189,7 @@ public partial class MusicPlayerViewModel : ObservableObject
         _musicPositionUpdate.Start();
     }
 
+    // Метод для переходу до наступної пісні
     private void NextSongCommand_Execute()
     {
         PlaylistViewModel? model = App.AppHost?.Services.GetRequiredService<PlaylistViewModel>();
@@ -225,6 +238,7 @@ public partial class MusicPlayerViewModel : ObservableObject
         }
     }
 
+    // Метод для переходу до наступного плейлисту
     private void GoToNextPlaylist(PlaylistViewModel? model)
     {
         if (model != null)
@@ -239,7 +253,7 @@ public partial class MusicPlayerViewModel : ObservableObject
                 {
                     model.CurrentPlaylistSelected = null;
                     model.CurrentPlaylistSelected = model.Playlists[nextIndex];
-                    
+
                     if (IsPlayingFromPlaylist)
                         SongPlaylistChanged?.Invoke(this, CurrentSong);
                     else
@@ -254,6 +268,7 @@ public partial class MusicPlayerViewModel : ObservableObject
         }
     }
 
+    // Метод для переходу до попередньої пісні
     private void PreviousSongCommand_Execute()
     {
         PlaylistViewModel? model = App.AppHost?.Services.GetRequiredService<PlaylistViewModel>();
@@ -301,6 +316,7 @@ public partial class MusicPlayerViewModel : ObservableObject
         }
     }
 
+    // Метод для переходу до попереднього плейлисту
     private void GoToPreviousPlaylist(PlaylistViewModel? model)
     {
         if (model != null)
@@ -330,14 +346,17 @@ public partial class MusicPlayerViewModel : ObservableObject
         }
     }
 
+    // Метод для виконання команди повторення пісні
     private void RepeatSongCommand_Execute()
     {
         _musicPlayer.OnRepeatingSong();
         RepeatMediaBrush = _musicPlayer.IsRepeating ? new SolidColorBrush(Colors.Lime) : new SolidColorBrush(Colors.White);
     }
 
+    // Прапорець для перемішування пісень
     private bool IsShuffling = false;
 
+    // Метод для виконання команди перемішування пісень
     private void ShuffleSongCommand_Execute()
     {
         IsShuffling = !IsShuffling;
@@ -357,6 +376,8 @@ public partial class MusicPlayerViewModel : ObservableObject
         }
     }
 
+
+    // Метод для перемикання режиму перемішування
     private void ToggleShuffle(List<SongModel> songs)
     {
         List<SongModel> temp = new(songs); // Create a copy of the list
@@ -377,6 +398,7 @@ public partial class MusicPlayerViewModel : ObservableObject
         UpdateViewList();
     }
 
+    // Метод для перемішування списку пісень
     private static void ShuffleList(List<SongModel> list)
     {
         Random rand = new();
@@ -388,6 +410,7 @@ public partial class MusicPlayerViewModel : ObservableObject
         }
     }
 
+    // Метод для оновлення відображення списку пісень
     private void UpdateViewList()
     {
         if (!IsPlayingFromPlaylist)
@@ -402,6 +425,16 @@ public partial class MusicPlayerViewModel : ObservableObject
         }
     }
 
+    public void CancelPlayingMusic()
+    {
+        _musicPlayer.MediaPlayer.Stop();
+        _musicPositionUpdate.Stop();
+        CurrentSong = new();
+        MusicPosition = 0;
+        SongDuration = "0:00";
+    }
+
+    // Метод для реєстрації слайдера музики
     public void RegisterMusicSlider(Slider slider)
     {
         // Event handlers for drag start, delta, and completion
@@ -447,15 +480,6 @@ public partial class MusicPlayerViewModel : ObservableObject
                 Source = track.Thumb
             });
         }), true);
-    }
-
-    public void CancelPlayingMusic()
-    {
-        _musicPlayer.MediaPlayer.Stop();
-        _musicPositionUpdate.Stop();
-        CurrentSong = new();
-        MusicPosition = 0;
-        SongDuration = "0:00";
     }
 
     private bool IsValidMediaPlayerState()

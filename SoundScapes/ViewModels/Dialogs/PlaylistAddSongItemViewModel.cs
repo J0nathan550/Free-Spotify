@@ -4,25 +4,46 @@ using Microsoft.Extensions.DependencyInjection;
 using ModernWpf.Controls;
 using SoundScapes.Models;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace SoundScapes.ViewModels;
 
+/// <summary>
+/// ViewModel для елемента додавання пісні до плейлисту.
+/// </summary>
 public partial class PlaylistAddSongItemViewModel : ObservableObject
 {
+    // Властивість, що вказує, чи є вмикана основна кнопка.
     [ObservableProperty]
     private bool _isPrimaryButtonEnabled = false;
+
+    // Початковий список плейлистів.
     [ObservableProperty]
     private List<PlaylistModel> _playlistsOriginal = [];
+
+    // Список плейлистів.
     [ObservableProperty]
     private List<PlaylistModel>? _playlists = [];
+
+    // Вибрані плейлисти.
     [ObservableProperty]
     private List<PlaylistModel> _playlistsSelected = [];
+
+    // Видимість тексту помилки.
     [ObservableProperty]
     private Visibility _errorTextVisibility = Visibility.Collapsed;
+
+    // Видимість тексту пошуку.
     [ObservableProperty]
     private Visibility _searchTextVisibility = Visibility.Visible;
+
+    // Команда вибору прапорця.
     [ObservableProperty]
     private RelayCommand<object>? _checkBoxSelectedCommand;
+
+    /// <summary>
+    /// Конструктор класу PlaylistAddSongItemViewModel.
+    /// </summary>
     public PlaylistAddSongItemViewModel()
     {
         PlaylistViewModel? model = App.AppHost?.Services.GetRequiredService<PlaylistViewModel>();
@@ -42,9 +63,12 @@ public partial class PlaylistAddSongItemViewModel : ObservableObject
         CheckBoxSelectedCommand = new RelayCommand<object>(CheckBoxSelectedCommand_Execute);
     }
 
+    /// <summary>
+    /// Метод виконання команди вибору прапорця.
+    /// </summary>
     private void CheckBoxSelectedCommand_Execute(object? obj)
     {
-        if (obj is System.Windows.Controls.CheckBox checkbox)
+        if (obj is CheckBox checkbox)
         {
             if (checkbox.IsChecked == true)
             {
@@ -73,6 +97,10 @@ public partial class PlaylistAddSongItemViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// Реєстрація AutoSuggestBox для пошуку плейлистів.
+    /// </summary>
+    /// <param name="autoSuggestBox">AutoSuggestBox для реєстрації.</param>
     public void RegisterSearchPlaylistBox(AutoSuggestBox autoSuggestBox)
     {
         autoSuggestBox.QuerySubmitted += (o, e) =>
@@ -86,8 +114,7 @@ public partial class PlaylistAddSongItemViewModel : ObservableObject
             {
                 foreach (PlaylistModel selectedPlaylist in PlaylistsSelected)
                 {
-                    // Check if the titles match to determine equality
-                    
+                    // Перевірка, чи співпадають заголовки для визначення рівності.
                     if (item.Title.Equals(selectedPlaylist.Title, StringComparison.InvariantCultureIgnoreCase))
                     {
                         item.IsChecked = selectedPlaylist.IsChecked;
@@ -103,5 +130,4 @@ public partial class PlaylistAddSongItemViewModel : ObservableObject
             Playlists = filteredPlaylists;
         };
     }
-
 }

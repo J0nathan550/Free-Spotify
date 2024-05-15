@@ -12,51 +12,95 @@ using System.Windows;
 
 namespace SoundScapes.ViewModels;
 
+// Частковий клас PlaylistViewModel, який розширює ObservableObject
 public partial class PlaylistViewModel : ObservableObject
 {
+    // Список плейлистів
     [ObservableProperty]
     private List<PlaylistModel>? _playlists = [];
+
+    // Копія оригінального списку плейлистів
     [ObservableProperty]
     private List<PlaylistModel>? _originalPlaylists = [];
+
+    // Список треків
     [ObservableProperty]
     private List<SongModel>? _songs = [];
+
+    // Поточно обраний плейлист
     [ObservableProperty]
     private PlaylistModel? _currentPlaylistSelected = null;
+
+    // Поточний трек
     [ObservableProperty]
     private SongModel? _currentSong = null;
+
+    // Індекс поточного треку
     private int CurrentSongIndex = -1;
+
+    // Команда відкриття плейлисту
     [ObservableProperty]
     private RelayCommand _openPlaylistCommand;
+
+    // Команда переміщення плейлисту вгору
     [ObservableProperty]
     private RelayCommand _moveUpPlaylistCommand;
+
+    // Команда переміщення плейлисту вниз
     [ObservableProperty]
     private RelayCommand _moveDownPlaylistCommand;
+
+    // Асинхронна команда додавання плейлисту
     [ObservableProperty]
     private IAsyncRelayCommand _addPlaylistCommand;
+
+    // Асинхронна команда редагування плейлисту
     [ObservableProperty]
     private IAsyncRelayCommand _editPlaylistCommand;
+
+    // Асинхронна команда встановлення плейлисту
     [ObservableProperty]
     private IAsyncRelayCommand _installPlaylistCommand;
+
+    // Асинхронна команда видалення плейлисту
     [ObservableProperty]
     private IAsyncRelayCommand _removePlaylistCommand;
+
+    // Видимість тексту помилки
     [ObservableProperty]
     private Visibility _errorTextVisibility = Visibility.Visible;
+
+    // Видимість списку плейлисту
     [ObservableProperty]
     private Visibility _playlistListBoxVisibility = Visibility.Visible;
+
+    // Видимість списку музики
     [ObservableProperty]
     private Visibility _musicListBoxVisibility = Visibility.Collapsed;
+
+    // Текст помилки
     [ObservableProperty]
     private string _errorText = string.Empty;
+
+    // Текст запиту
     [ObservableProperty]
     private string _queryText = string.Empty;
+
+    // Текст заповнювача
     [ObservableProperty]
     private string _placeholderText = "Напишіть назву плейлиста...";
+
+    // Прапорець, який вказує, чи знаходимось ми усередині плейлисту
     [ObservableProperty]
     private bool _isInsidePlaylist = false;
 
+    // Музичний гравець ViewModel
     private readonly MusicPlayerViewModel _musicPlayerView;
+
+    // Налаштування
     private readonly ISettings _settings;
 
+    // Конструктор класу PlaylistViewModel
     public PlaylistViewModel(MusicPlayerViewModel musicPlayer, ISettings settings)
     {
         _settings = settings;
@@ -77,6 +121,7 @@ public partial class PlaylistViewModel : ObservableObject
         RecalculatePlaylists();
     }
 
+    // Метод відкриття плейлисту
     private void OpenPlaylistCommand_Execute()
     {
         IsInsidePlaylist = !IsInsidePlaylist;
@@ -91,6 +136,7 @@ public partial class PlaylistViewModel : ObservableObject
         CheckAmountOfItemsInPlaylist();
     }
 
+    // Метод переміщення плейлисту вгору
     private void MoveUpPlaylistCommand_Execute()
     {
         if (CurrentPlaylistSelected == null || OriginalPlaylists == null || Playlists == null || Playlists.Count == 0) return;
@@ -100,7 +146,7 @@ public partial class PlaylistViewModel : ObservableObject
             int currentIndex = temp.IndexOf(CurrentPlaylistSelected);
             if (currentIndex == 0)
             {
-                // If trying to move up but already at the start, move to the end
+                // Якщо спробувати перемістити вгору, але вже на початку, перемістити в кінець
                 temp.Remove(CurrentPlaylistSelected);
                 temp.Add(CurrentPlaylistSelected);
             }
@@ -132,6 +178,7 @@ public partial class PlaylistViewModel : ObservableObject
         _settings.Save();
     }
 
+    // Метод переміщення плейлисту вниз
     private void MoveDownPlaylistCommand_Execute()
     {
         if (CurrentPlaylistSelected == null || OriginalPlaylists == null || Playlists == null || Playlists.Count == 0) return;
@@ -172,6 +219,7 @@ public partial class PlaylistViewModel : ObservableObject
         _settings.Save();
     }
 
+    // Асинхронний метод видалення плейлисту
     private async Task RemovePlaylistCommand_ExecuteAsync()
     {
         string title = IsInsidePlaylist ? "Видалення трека з плейлиста" : "Видалення плейлиста";
@@ -225,6 +273,7 @@ public partial class PlaylistViewModel : ObservableObject
         _settings.Save();
     }
 
+    // Асинхронний метод встановлення плейлисту
     private async Task InstallPlaylistCommand_ExecuteAsync()
     {
         PlaylistInstallSongView? installDialog = App.AppHost?.Services.GetRequiredService<PlaylistInstallSongView>();
@@ -238,7 +287,7 @@ public partial class PlaylistViewModel : ObservableObject
         if (!IsInsidePlaylist)
         {
             downloadQueueList.AddRange(CurrentPlaylistSelected.SongsInPlaylist.Where(file => !File.Exists(Path.Combine("SavedMusic", $"{file.Artist[0]} - {file.Title}.mp3"))));
-            if (downloadQueueList.Count == 0) 
+            if (downloadQueueList.Count == 0)
             {
                 ContentDialog contentDialog = new()
                 {
@@ -274,6 +323,7 @@ public partial class PlaylistViewModel : ObservableObject
         }
     }
 
+    // Асинхронний метод редагування плейлисту
     private async Task EditPlaylistCommand_ExecuteAsync()
     {
         PlaylistEditItemView? contentEditDialog = App.AppHost?.Services.GetRequiredService<PlaylistEditItemView>();
@@ -299,6 +349,7 @@ public partial class PlaylistViewModel : ObservableObject
         }
     }
 
+    // Асинхронний метод додавання плейлисту
     private async Task AddPlaylistCommand_ExecuteAsync()
     {
         PlaylistAddItemView? contentAddDialog = App.AppHost?.Services.GetRequiredService<PlaylistAddItemView>();
@@ -316,6 +367,7 @@ public partial class PlaylistViewModel : ObservableObject
         _settings.Save();
     }
 
+    // Метод перевірки кількості елементів у плейлисті
     public void CheckAmountOfItemsInPlaylist()
     {
         if (!IsInsidePlaylist)
@@ -351,9 +403,10 @@ public partial class PlaylistViewModel : ObservableObject
 
         ErrorText = string.Empty;
         ErrorTextVisibility = Visibility.Collapsed;
-        
+
     }
 
+    // Метод реєстрації пошукового поля плейлисту
     public void RegisterSearchPlaylistBox(AutoSuggestBox autoSuggestBox)
     {
         autoSuggestBox.QuerySubmitted += (o, e) =>
@@ -369,6 +422,7 @@ public partial class PlaylistViewModel : ObservableObject
         };
     }
 
+    // Метод перерахунку плейлистів
     public void RecalculatePlaylists()
     {
         if (OriginalPlaylists == null) return;
@@ -392,6 +446,7 @@ public partial class PlaylistViewModel : ObservableObject
         }
     }
 
+    // Метод оновлення списку пісень
     public void UpdateViewSongList()
     {
         List<SongModel>? temp = Songs;
@@ -399,6 +454,7 @@ public partial class PlaylistViewModel : ObservableObject
         Songs = temp;
     }
 
+    // Обробник зміни поточного треку
     partial void OnCurrentSongChanged(SongModel? value)
     {
         if (value == null) return;
@@ -409,6 +465,7 @@ public partial class PlaylistViewModel : ObservableObject
         CurrentSongIndex = Songs?.IndexOf(value) ?? -1;
     }
 
+    // Обробник зміни поточного обраного плейлисту
     partial void OnCurrentPlaylistSelectedChanged(PlaylistModel? value)
     {
         if (value == null) return;
@@ -423,6 +480,7 @@ public partial class PlaylistViewModel : ObservableObject
         }
     }
 
+    // Обробник зміни списку плейлистів
     partial void OnPlaylistsChanged(List<PlaylistModel>? value)
     {
         if (value != null)

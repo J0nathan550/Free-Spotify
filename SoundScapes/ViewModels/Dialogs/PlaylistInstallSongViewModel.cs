@@ -9,54 +9,81 @@ using System.Windows;
 
 namespace SoundScapes.ViewModels;
 
+/// <summary>
+/// ViewModel для установки плейлисту пісень
+/// </summary>
 public partial class PlaylistInstallSongViewModel : ObservableObject
 {
+    // Команда для скасування завантаження
     [ObservableProperty]
     private RelayCommand _cancelDownloadCommand;
+    // Команда для завершення завантаження
     [ObservableProperty]
     private RelayCommand _finishDownloadCommand;
+    // Черга для завантаження
     [ObservableProperty]
     private List<SongModel> _downloadListQueue = [];
+    // Черга завантажених пісень
     [ObservableProperty]
     private List<SongModel> _downloadedListQueue = [];
+    // Вирівнювання опису треку
     [ObservableProperty]
     private TextAlignment _trackDescriptionAlignment = TextAlignment.Left;
+    // Обертання опису треку
     [ObservableProperty]
     private TextWrapping _trackDescriptionWrapping = TextWrapping.NoWrap;
+    // Флаг, що вказує, чи завершено завантаження
     [ObservableProperty]
     private bool _isDownloadFinished;
+    // Прогрес завантаження
     [ObservableProperty]
     private double _downloadProgress;
+    // Опис треку
     [ObservableProperty]
     private string? _trackDescription;
+    // Відсоток завантаження
     [ObservableProperty]
     private string? _downloadProgressPercent;
+    // Дані про встановлені файли
     [ObservableProperty]
     private string? _dataInstalled;
 
+    // Токен для скасування завантаження
     private CancellationTokenSource? cancelDownloadingSongs = null;
+    // Сервіс для завантаження файлів
     private readonly DownloadService _downloader = new(new DownloadConfiguration() { Timeout = 5000, ClearPackageOnCompletionWithFailure = true });
+    // Клієнт Spotify API
     private readonly SpotifyClient spotifyClient = new();
+    // Лічильник завантажених файлів
     private int _currentFilesDownloaded = 0;
 
+    /// <summary>
+    /// Конструктор класу
+    /// </summary>
     public PlaylistInstallSongViewModel()
     {
+        // Підписка на події сервісу завантаження
         _downloader.DownloadProgressChanged += DownloadService_DownloadProgressChanged;
         _downloader.DownloadFileCompleted += DownloadService_DownloadFileCompleted;
 
+        // Ініціалізація команд
         CancelDownloadCommand = new RelayCommand(CancelDownloadCommand_Execute);
         FinishDownloadCommand = new RelayCommand(FinishDownloadCommand_Execute);
 
+        // Ініціалізація даних
         TrackDescription = $"Трек: ... ({_currentFilesDownloaded} / {DownloadedListQueue.Count})";
         DataInstalled = "Завантажено: [0 МБ] з [... МБ]";
         DownloadProgressPercent = "Прогресс: 0%";
         DownloadProgress = 0.0;
 
+        // Створення папки для збереження музики
         CreateMusicSaveFolder();
     }
 
+    // Метод для виконання команди завершення завантаження
     private void FinishDownloadCommand_Execute() => FinishDownload();
 
+    // Метод для завершення завантаження
     private void FinishDownload()
     {
         IsDownloadFinished = true;
@@ -65,6 +92,7 @@ public partial class PlaylistInstallSongViewModel : ObservableObject
         cancelDownloadingSongs = null;
     }
 
+    // Метод, що викликається при завершенні завантаження файлу
     private void DownloadService_DownloadFileCompleted(object? sender, System.ComponentModel.AsyncCompletedEventArgs e)
     {
         DownloadedListQueue.Add(DownloadListQueue[_currentFilesDownloaded]);
@@ -79,6 +107,7 @@ public partial class PlaylistInstallSongViewModel : ObservableObject
         StartInstalling(cancelDownloadingSongs.Token);
     }
 
+    // Метод, що викликається при зміні прогресу завантаження
     private void DownloadService_DownloadProgressChanged(object? sender, DownloadProgressChangedEventArgs e)
     {
         if (DownloadListQueue == null) return;
@@ -88,14 +117,18 @@ public partial class PlaylistInstallSongViewModel : ObservableObject
         DownloadProgress = e.ProgressPercentage;
     }
 
+    // Метод для виконання команди скасування завантаження
     private void CancelDownloadCommand_Execute()
     {
         CancelDownload();
     }
 
+    // Константи для переведення байтів у розмір файлу
     const double INV_KB = 1 / 1024.0;
     const double INV_MB = 1 / (1024.0 * 1024.0);
     const double INV_GB = 1 / (1024.0 * 1024.0 * 1024.0);
+
+    // Метод для обчислення розміру файлу у зручному форматі
     private static string CalculateBytesSize(long size)
     {
         if (size < 1024)
@@ -113,6 +146,7 @@ public partial class PlaylistInstallSongViewModel : ObservableObject
         return $"{(size * INV_GB):F1} ГБ";
     }
 
+    // Метод для скасування завантаження
     private void CancelDownload()
     {
         cancelDownloadingSongs?.Cancel();
@@ -137,8 +171,10 @@ public partial class PlaylistInstallSongViewModel : ObservableObject
         }
     }
 
+    // Метод для початку встановлення
     private async void StartInstalling(CancellationToken token) => await StartInstallingAsync(token);
 
+    // Асинхронний метод для початку встановлення
     private async Task StartInstallingAsync(CancellationToken cancellationToken)
     {
         if (DownloadListQueue.Count == 0) return;
@@ -170,6 +206,7 @@ public partial class PlaylistInstallSongViewModel : ObservableObject
         }
     }
 
+    // Метод, що викликається при зміні черги для завантаження
     partial void OnDownloadListQueueChanged(List<SongModel> value)
     {
         if (value != null && !IsDownloadFinished)
@@ -179,6 +216,7 @@ public partial class PlaylistInstallSongViewModel : ObservableObject
         }
     }
 
+    // Метод для створення папки для збереження музики
     private static void CreateMusicSaveFolder()
     {
         try

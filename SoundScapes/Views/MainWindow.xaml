@@ -13,5 +13,5 @@
         WindowStartupLocation="CenterScreen"
         mc:Ignorable="d"
         Title="SoundScapes" Height="450" Width="800">
-        <views:MainView/>
+    <views:MainView/>
 </Window>

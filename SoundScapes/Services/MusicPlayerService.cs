@@ -10,19 +10,44 @@ using YoutubeExplode.Videos.Streams;
 
 namespace SoundScapes.Services;
 
+/// <summary>
+/// Служба відтворення музики.
+/// </summary>
 public class MusicPlayerService : IMusicPlayer
 {
+    // Об'єкт LibVLC для відтворення медіа.
     public LibVLC LibVLC { get; private set; } = new();
-    public MediaPlayer MediaPlayer { get; private set; }
-    public YoutubeClient YoutubeClient { get; private set; } = new();
-    public SpotifyClient SpotifyClient { get; private set; } = new();
-    public CancellationTokenSource CancellationTokenSourcePlay { get; private set; } = new();
-    public bool IsPaused { get; private set; }
-    public bool IsRepeating { get; private set; }
-    public MusicPlayerService() => MediaPlayer = new(LibVLC);
 
+    // Відтворювач медіа.
+    public MediaPlayer MediaPlayer { get; private set; }
+
+    // Клієнт YouTube.
+    public YoutubeClient YoutubeClient { get; private set; } = new();
+
+    // Клієнт Spotify.
+    public SpotifyClient SpotifyClient { get; private set; } = new();
+
+    // Токен для відміни відтворення музики.
+    public CancellationTokenSource CancellationTokenSourcePlay { get; private set; } = new();
+
+    // Прапорець, що вказує, чи призупинено відтворення музики.
+    public bool IsPaused { get; private set; }
+
+    // Прапорець, що вказує, чи ввімкнено повторення музики.
+    public bool IsRepeating { get; private set; }
+
+    /// <summary>
+    /// Конструктор класу MusicPlayerService.
+    /// </summary>
+    public MusicPlayerService() => MediaPlayer = new MediaPlayer(LibVLC);
+
+    // Подія винятку.
     public event EventHandler? ExceptionThrown;
 
+    /// <summary>
+    /// Метод відтворення пісні.
+    /// </summary>
+    /// <param name="currentSong">Поточна пісня, яка буде відтворена.</param>
     public async Task OnPlaySong(SongModel currentSong)
     {
         try
@@ -76,6 +101,9 @@ public class MusicPlayerService : IMusicPlayer
         }
     }
 
+    /// <summary>
+    /// Метод відміни відтворення музики.
+    /// </summary>
     public void CancelPlayingMusic()
     {
         if (CancellationTokenSourcePlay.IsCancellationRequested)
@@ -85,14 +113,23 @@ public class MusicPlayerService : IMusicPlayer
         }
     }
 
+    /// <summary>
+    /// Метод призупинення відтворення пісні.
+    /// </summary>
     public void OnPauseSong()
     {
         IsPaused = !IsPaused;
         MediaPlayer.SetPause(IsPaused);
     }
 
+    /// <summary>
+    /// Метод ввімкнення/вимкнення повторення пісні.
+    /// </summary>
     public void OnRepeatingSong() => IsRepeating = !IsRepeating;
 
+    /// <summary>
+    /// Метод для створення папки для збереження музики, якщо вона не існує.
+    /// </summary>
     private static void CreateMusicSaveFolderIfNeeded()
     {
         if (!Directory.Exists("SavedMusic"))

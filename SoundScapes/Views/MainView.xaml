@@ -1,4 +1,5 @@
-﻿<UserControl x:Class="SoundScapes.Views.MainView"
+﻿<!-- Визначення головного вигляду додатка -->
+<UserControl x:Class="SoundScapes.Views.MainView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -9,8 +10,9 @@
              mc:Ignorable="d" 
              d:Background="Black"
              Keyboard.KeyDown="MainView_KeyDown"
-             d:DesignHeight="450" d:DesignWidth="800">
+    d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
+        <!-- Визначення колонок та рядків для розміщення елементів -->
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="160"/>
             <ColumnDefinition/>
@@ -21,23 +23,28 @@
             <RowDefinition Height="80"/>
         </Grid.RowDefinitions>
 
+        <!-- Навігаційне меню -->
         <Grid Panel.ZIndex="1" Grid.RowSpan="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="32"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <ui:NavigationView Name="NavigationView" Grid.RowSpan="2" IsSettingsVisible="False" PaneDisplayMode="LeftMinimal" IsPaneOpen="False" ItemInvoked="NavigationView_ItemInvoked" IsBackButtonVisible="Collapsed" IsTitleBarAutoPaddingEnabled="False">
+                <!-- Пункти меню -->
                 <ui:NavigationView.MenuItems>
                     <ui:NavigationViewItem Tag="SoundScapes.Views.SearchView" Content="Пошук" Icon="Find"/>
                     <ui:NavigationViewItem Tag="SoundScapes.Views.PlaylistView" Content="Плейлисти" Icon="Audio"/>
                     <ui:NavigationViewItem Tag="SoundScapes.Views.HelpView" Content="Допомога" Icon="Help"/>
                 </ui:NavigationView.MenuItems>
             </ui:NavigationView>
+            <!-- Заголовок -->
             <TextBlock Text="SoundScapes" HorizontalAlignment="Center" FontSize="11" VerticalAlignment="Bottom" TextAlignment="Center" Foreground="White" Margin="0,0,10,5"/>
         </Grid>
 
+        <!-- Фрейм для відображення контенту -->
         <ui:Frame Grid.Row="1" Grid.ColumnSpan="2" Name="ContentFrame"/>
 
+        <!-- Відображення музичного програвача -->
         <views:MusicPlayerView Grid.Row="2" Grid.ColumnSpan="2"/>
     </Grid>
 </UserControl>

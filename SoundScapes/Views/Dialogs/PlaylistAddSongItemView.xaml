@@ -18,8 +18,11 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <ui:AutoSuggestBox Name="SearchPlaylistBox" PlaceholderText="Напишіть назву плейлиста..." Margin="5" Visibility="{Binding SearchTextVisibility}"/>
+        <!-- Поле автоматичного заповнення для пошуку плейлистів -->
         <TextBlock Grid.Row="1" Text="Схоже у вас нема жодного плейлиста..." HorizontalAlignment="Center" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Visibility="{Binding ErrorTextVisibility}"/>
+        <!-- Текст, що відображається, коли немає доступних плейлистів -->
         <ui:ListView Grid.Row="1" ScrollViewer.CanContentScroll="True" Background="Transparent" ItemsSource="{Binding Playlists, Mode=TwoWay}" SelectedItem="{Binding CurrentSelectedPlaylist, Mode=TwoWay}" ui:ScrollViewerHelper.AutoHideScrollBars="False">
+            <!-- Список плейлистів -->
             <ui:ListView.ItemContainerStyle>
                 <Style TargetType="ui:ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -52,6 +55,7 @@
                                 <ColumnDefinition Width="auto"/>
                             </Grid.ColumnDefinitions>
                             <CheckBox Margin="5,0,0,0" IsChecked="{Binding IsChecked, Mode=TwoWay}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType={x:Type ui:ListViewItem}}}" Command="{Binding DataContext.CheckBoxSelectedCommand, RelativeSource={RelativeSource AncestorType={x:Type ui:ListView}}}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}"/>
+                            <!-- Прапорець для вибору плейлиста -->
                             <Image Margin="5" Grid.Column="1" Source="{Binding Icon}" Stretch="Uniform" RenderOptions.BitmapScalingMode="Fant" />
                             <Grid Margin="5,0,0,0" Grid.Column="2">
                                 <Grid.RowDefinitions>
@@ -59,9 +63,12 @@
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
                                 <TextBlock Grid.Row="0" Text="{Binding Title}" FontSize="12" VerticalAlignment="Bottom" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
+                                <!-- Заголовок плейлиста -->
                                 <TextBlock Grid.Row="1" Text="{Binding Authors}" FontSize="10" FontWeight="Medium" TextTrimming="CharacterEllipsis"/>
+                                <!-- Автори плейлиста -->
                             </Grid>
                             <TextBlock Margin="0,0,10,0" Grid.Column="3" Text="{Binding Duration}" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                            <!-- Тривалість плейлиста -->
                         </Grid>
                     </Border>
                 </DataTemplate>

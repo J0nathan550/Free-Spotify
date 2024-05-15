@@ -9,22 +9,28 @@
              Background="Black"
              d:DesignHeight="70" d:DesignWidth="800">
     <Border BorderBrush="#99FFFFFF" BorderThickness="1" Margin="5">
+        <!-- Основна сітка для розміщення елементів управління музикою -->
         <Grid>
+            <!-- Фон зображення поточної пісні -->
             <Grid.Background>
                 <ImageBrush ImageSource="{Binding CurrentSong.Icon}" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="Fant" Opacity="0.15"/>
             </Grid.Background>
+            <!-- Визначення колонок для розміщення елементів -->
             <Grid.ColumnDefinitions>
                 <ColumnDefinition MinWidth="220"/>
                 <ColumnDefinition MinWidth="220"/>
                 <ColumnDefinition MinWidth="220"/>
             </Grid.ColumnDefinitions>
+            <!-- Сітка для відображення інформації про поточну пісню -->
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition/>
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
+                <!-- Зображення поточної пісні -->
                 <Image Grid.Column="0" Source="{Binding CurrentSong.Icon}" HorizontalAlignment="Left" Margin="15,10,10,10" RenderOptions.BitmapScalingMode="Fant"/>
+                <!-- Інформація про пісню (назва та виконавець) -->
                 <Grid Margin="5,0,0,0" Grid.Column="1">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
@@ -33,15 +39,18 @@
                     <TextBlock Text="{Binding CurrentSong.Title, TargetNullValue=...}" FontWeight="Bold" VerticalAlignment="Bottom" TextTrimming="CharacterEllipsis" Foreground="White" FontSize="18" FontFamily="Arial"/>
                     <TextBlock Grid.Row="1" Text="{Binding CurrentSong.Artist, TargetNullValue=...}" FontWeight="Bold" TextTrimming="CharacterEllipsis" Foreground="White" FontSize="14" FontFamily="Arial"/>
                 </Grid>
+                <!-- Кнопка для додавання улюбленої пісні -->
                 <Button Grid.Column="2" Margin="20,0,20,0" VerticalAlignment="Center" Command="{Binding AddFavoriteSongCommand}" Background="Transparent" Cursor="Hand">
                     <fa:FontAwesome Icon="HeartOutline" Foreground="White" FontSize="16" />
                 </Button>
             </Grid>
+            <!-- Сітка для елементів управління музикою -->
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
+                <!-- Кнопки перемикання пісень -->
                 <Grid HorizontalAlignment="Center" Grid.Row="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"/>
@@ -50,39 +59,51 @@
                         <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
+                    <!-- Кнопка перемішування пісень -->
                     <Button Grid.Column="0" Background="Transparent" Command="{Binding ShuffleSongCommand}" Cursor="Hand">
                         <fa:FontAwesome Icon="Random" Foreground="{Binding ShuffleMediaBrush}" FontSize="19" />
                     </Button>
+                    <!-- Кнопка для попередньої пісні -->
                     <Button Grid.Column="1" Background="Transparent" Command="{Binding PreviousSongCommand}" Cursor="Hand">
                         <fa:FontAwesome Icon="ToggleLeft" Foreground="White" FontSize="19" />
                     </Button>
+                    <!-- Кнопка для відтворення/паузи поточної пісні -->
                     <Button Grid.Column="2" Background="Transparent" Command="{Binding PlaySongCommand}" Cursor="Hand">
                         <fa:FontAwesome Icon="{Binding PlayMediaIcon}" Foreground="White" FontSize="19" />
                     </Button>
+                    <!-- Кнопка для наступної пісні -->
                     <Button Grid.Column="3" Background="Transparent" Command="{Binding NextSongCommand}" Cursor="Hand">
                         <fa:FontAwesome Icon="ToggleRight" Foreground="White" FontSize="19" />
                     </Button>
+                    <!-- Кнопка для повторення пісні -->
                     <Button Grid.Column="4" Background="Transparent" Command="{Binding RepeatSongCommand}" Cursor="Hand">
                         <fa:FontAwesome Icon="Repeat" Foreground="{Binding RepeatMediaBrush}" FontSize="19" />
                     </Button>
                 </Grid>
+                <!-- Відображення тривалості пісні та слайдер для перемотування -->
                 <Grid Grid.Row="1">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"/>
                         <ColumnDefinition/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
+                    <!-- Відображення поточної позиції пісні -->
                     <TextBlock Text="{Binding SongDuration, TargetNullValue=0:00}" Margin="0,7,10,0" Foreground="White" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
+                    <!-- Слайдер для перемотування пісні -->
                     <Slider Name="musicSlider" IsMoveToPointEnabled="True" Cursor="Hand" Grid.Column="1" Value="{Binding MusicPosition, Mode=TwoWay}" Maximum="1"/>
+                    <!-- Відображення тривалості пісні -->
                     <TextBlock Grid.Column="2" Text="{Binding CurrentSong.Duration, TargetNullValue=0:00}" Margin="10,7,0,0" Foreground="White" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
                 </Grid>
             </Grid>
+            <!-- Сітка для елементів керування гучністю -->
             <Grid Grid.Column="2" Margin="0,0,5,0" HorizontalAlignment="Right">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
+                <!-- Іконка для регулювання гучності -->
                 <fa:FontAwesome Grid.Column="0" VerticalAlignment="Center" Margin="10" Icon="VolumeUp" Foreground="White" FontSize="19" />
+                <!-- Слайдер для регулювання гучності -->
                 <Slider Grid.Column="1" IsMoveToPointEnabled="True" VerticalAlignment="Center" Cursor="Hand" Value="{Binding VolumeValue, Mode=TwoWay}" Maximum="100" Margin="5" Width="200"/>
             </Grid>
         </Grid>

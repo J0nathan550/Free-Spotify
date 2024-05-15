@@ -4,15 +4,26 @@ using SoundScapes.ViewModels;
 
 namespace SoundScapes.Views.Dialogs;
 
+/// <summary>
+/// Вікно для додавання пісні до плейлисту.
+/// </summary>
 public partial class PlaylistAddSongItemView : ContentDialog
 {
-    public PlaylistAddSongItemViewModel? viewModel;
+    /// <summary>
+    /// ViewModel для додавання пісні до плейлисту.
+    /// </summary>
+    public PlaylistAddSongItemViewModel? viewModel = App.AppHost?.Services.GetRequiredService<PlaylistAddSongItemViewModel>();
 
+    /// <summary>
+    /// Ініціалізує новий екземпляр вікна PlaylistAddSongItemView.
+    /// </summary>
     public PlaylistAddSongItemView()
     {
-        viewModel = App.AppHost?.Services.GetRequiredService<PlaylistAddSongItemViewModel>();
+        // Встановлення контексту даних та ініціалізація компонентів
         DataContext = viewModel;
         InitializeComponent();
+
+        // Реєстрація текстового поля пошуку плейлисту
         viewModel?.RegisterSearchPlaylistBox(SearchPlaylistBox);
     }
 }
