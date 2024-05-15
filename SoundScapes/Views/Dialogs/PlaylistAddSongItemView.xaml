@@ -43,7 +43,7 @@
                     <Border Margin="2" Height="50" Cursor="Hand" BorderBrush="#99FFFFFF" BorderThickness="1">
                         <Grid>
                             <Grid.Background>
-                                <ImageBrush ImageSource="{Binding Icon}" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="Fant" Opacity="0.5" RenderOptions.CachingHint="Unspecified"/>
+                                <ImageBrush ImageSource="{Binding Icon}" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="Fant" Opacity="0.5" />
                             </Grid.Background>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="25"/>
@@ -52,7 +52,7 @@
                                 <ColumnDefinition Width="auto"/>
                             </Grid.ColumnDefinitions>
                             <CheckBox Margin="5,0,0,0" IsChecked="{Binding IsChecked, Mode=TwoWay}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType={x:Type ui:ListViewItem}}}" Command="{Binding DataContext.CheckBoxSelectedCommand, RelativeSource={RelativeSource AncestorType={x:Type ui:ListView}}}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}"/>
-                            <Image Margin="5" Grid.Column="1" Source="{Binding Icon}" Stretch="Uniform" RenderOptions.BitmapScalingMode="Fant" RenderOptions.CachingHint="Unspecified"/>
+                            <Image Margin="5" Grid.Column="1" Source="{Binding Icon}" Stretch="Uniform" RenderOptions.BitmapScalingMode="Fant" />
                             <Grid Margin="5,0,0,0" Grid.Column="2">
                                 <Grid.RowDefinitions>
                                     <RowDefinition/>

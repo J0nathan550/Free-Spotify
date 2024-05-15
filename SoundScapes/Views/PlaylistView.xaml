@@ -15,7 +15,11 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <ui:AutoSuggestBox Name="SearchPlaylistBox" Text="{Binding QueryText, Mode=TwoWay}" ui:ControlHelper.PlaceholderForeground="White" ui:ControlHelper.PlaceholderText="{Binding PlaceholderText}" QueryIcon="Find" Margin="5"/>
-        <TextBlock Grid.Row="1" Visibility="{Binding ErrorTextVisibility}" Text="{Binding ErrorText}" Foreground="White" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" TextWrapping="WrapWithOverflow" TextAlignment="Center"/>
+        <TextBlock Grid.Row="1" Visibility="{Binding ErrorTextVisibility}" Text="{Binding ErrorText}" Foreground="White" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" TextWrapping="WrapWithOverflow" TextAlignment="Center">
+            <TextBlock.Effect>
+                <DropShadowEffect ShadowDepth="3" BlurRadius="4"/>
+            </TextBlock.Effect>
+        </TextBlock>
         <ui:ListView Grid.Row="1" Margin="2" Background="Transparent" ItemsSource="{Binding Playlists, Mode=TwoWay}" SelectedItem="{Binding CurrentPlaylistSelected}" Visibility="{Binding PlaylistListBoxVisibility}" ui:ScrollViewerHelper.AutoHideScrollBars="False">
             <ui:ListView.ContextMenu>
                 <ContextMenu Background="Black">
@@ -97,23 +101,39 @@
                         </Border.ContextMenu>
                         <Grid>
                             <Grid.Background>
-                                <ImageBrush ImageSource="{Binding Icon}" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="Fant" Opacity="0.5" RenderOptions.CachingHint="Unspecified"/>
+                                <ImageBrush ImageSource="{Binding Icon}" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="Fant" Opacity="0.5" />
                             </Grid.Background>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="100"/>
                                 <ColumnDefinition/>
                                 <ColumnDefinition Width="auto"/>
                             </Grid.ColumnDefinitions>
-                            <Image Margin="5" Grid.Column="0" Source="{Binding Icon}" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="Fant" RenderOptions.CachingHint="Unspecified"/>
+                            <Image Margin="5" Grid.Column="0" Source="{Binding Icon}" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="Fant" >
+                                <Image.Effect>
+                                    <DropShadowEffect ShadowDepth="3" Direction="-90"/>
+                                </Image.Effect>
+                            </Image>
                             <Grid Margin="5,0,0,0" Grid.Column="1">
                                 <Grid.RowDefinitions>
                                     <RowDefinition/>
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
-                                <TextBlock Grid.Row="0" Text="{Binding Title}" FontSize="36" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
-                                <TextBlock Grid.Row="1" Text="{Binding Authors}" FontSize="14" FontWeight="Medium" TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Grid.Row="0" Text="{Binding Title}" FontSize="36" FontWeight="Bold" TextTrimming="CharacterEllipsis">
+                                    <TextBlock.Effect>
+                                        <DropShadowEffect ShadowDepth="3" BlurRadius="4"/>
+                                    </TextBlock.Effect>
+                                </TextBlock>
+                                <TextBlock Grid.Row="1" Text="{Binding Authors}" FontSize="14" FontWeight="Medium" TextTrimming="CharacterEllipsis">
+                                    <TextBlock.Effect>
+                                        <DropShadowEffect ShadowDepth="3" BlurRadius="4"/>
+                                    </TextBlock.Effect>
+                                </TextBlock>
                             </Grid>
-                            <TextBlock Margin="0,0,10,0" Grid.Column="2" Text="{Binding Duration}" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                            <TextBlock Margin="0,0,10,0" Grid.Column="2" Text="{Binding Duration}" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect ShadowDepth="3" BlurRadius="4"/>
+                                </TextBlock.Effect>
+                            </TextBlock>
                         </Grid>
                     </Border>
                 </DataTemplate>
@@ -190,23 +210,39 @@
                         </Border.ContextMenu>
                         <Grid>
                             <Grid.Background>
-                                <ImageBrush ImageSource="{Binding Icon}" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="Fant" Opacity="0.5" RenderOptions.CachingHint="Unspecified"/>
+                                <ImageBrush ImageSource="{Binding Icon}" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="Fant" Opacity="0.5" />
                             </Grid.Background>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="100"/>
                                 <ColumnDefinition/>
                                 <ColumnDefinition Width="auto"/>
                             </Grid.ColumnDefinitions>
-                            <Image Margin="5" Grid.Column="0" Source="{Binding Icon}" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="Fant" RenderOptions.CachingHint="Unspecified"/>
+                            <Image Margin="5" Grid.Column="0" Source="{Binding Icon}" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="Fant" >
+                                <Image.Effect>
+                                    <DropShadowEffect ShadowDepth="3" Direction="-90"/>
+                                </Image.Effect>
+                            </Image>
                             <Grid Margin="5,0,0,0" Grid.Column="1">
                                 <Grid.RowDefinitions>
                                     <RowDefinition/>
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
-                                <TextBlock Grid.Row="0" Text="{Binding Title}" FontSize="36" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
-                                <TextBlock Grid.Row="1" Text="{Binding Artist}" FontSize="14" FontWeight="Medium" TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Grid.Row="0" Text="{Binding Title}" FontSize="36" FontWeight="Bold" TextTrimming="CharacterEllipsis">
+                                    <TextBlock.Effect>
+                                        <DropShadowEffect ShadowDepth="3" BlurRadius="4"/>
+                                    </TextBlock.Effect>
+                                </TextBlock>
+                                <TextBlock Grid.Row="1" Text="{Binding Artist}" FontSize="14" FontWeight="Medium" TextTrimming="CharacterEllipsis">
+                                    <TextBlock.Effect>
+                                        <DropShadowEffect ShadowDepth="3" BlurRadius="4"/>
+                                    </TextBlock.Effect>
+                                </TextBlock>
                             </Grid>
-                            <TextBlock Margin="0,0,10,0" Grid.Column="2" Text="{Binding Duration}" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                            <TextBlock Margin="0,0,10,0" Grid.Column="2" Text="{Binding Duration}" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect ShadowDepth="3" BlurRadius="4"/>
+                                </TextBlock.Effect>
+                            </TextBlock>
                         </Grid>
                     </Border>
                 </DataTemplate>
